@@ -1,14 +1,14 @@
-using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField, Range(0f, 10f)] private float moveSpeed = 10f;
+    [SerializeField, Range(1f, 3f)] private float moveToSprintSpeed = 2f;
     [SerializeField, Range(0f, 100f)] private float sprintSpeedPlus = 3f;
     
     [SerializeField] private LayerMask groundMask;
     private float finalSpeed;
+    private Vector3 currentDirection = Vector3.zero;
     private CharacterController controller;
     private Vector3 velocity;
     private float gravity = -9.81f;
@@ -48,19 +48,34 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         move = controls.Movement.Move.ReadValue<Vector2>();
-        Vector3 movement = (move.y * transform. forward) + (move.x * transform.right);
-        
-        if (controls.Movement.Sprint.inProgress)
+        Vector3 inputDirection = (move.y * transform.forward) + (move.x * transform.right);
+        bool isMoving = move.magnitude != 0f;
+
+        // Smoothly update currentDirection towards input or zero
+        if (isMoving)
         {
-            if(finalSpeed != moveSpeed + sprintSpeedPlus) finalSpeed = Mathf.Lerp(finalSpeed, moveSpeed + sprintSpeedPlus, Time.fixedDeltaTime * 2f);
+            currentDirection = inputDirection.normalized;
+        }
+        else
+        {
+            currentDirection = Vector3.Lerp(currentDirection, Vector3.zero, Time.fixedDeltaTime * moveToSprintSpeed); 
         }
 
-        if (!controls.Movement.Sprint.inProgress)
+        // Sprinting speed logic
+        float targetSpeed = moveSpeed;
+        if (controls.Movement.Sprint.inProgress && isMoving)
         {
-            if(finalSpeed != moveSpeed) finalSpeed = Mathf.Lerp(finalSpeed, moveSpeed, Time.fixedDeltaTime * 2f);
+            targetSpeed += sprintSpeedPlus;
         }
-        
-        controller.Move ( finalSpeed * Time.fixedDeltaTime * movement);
+        else if (!isMoving)
+        {
+            targetSpeed = 0f;
+        }
+
+        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.fixedDeltaTime * moveToSprintSpeed); // smooth speed transition
+
+        Vector3 finalMove = finalSpeed * Time.fixedDeltaTime * currentDirection;
+        controller.Move(finalMove);
     }
     
     private void OnDisable()
