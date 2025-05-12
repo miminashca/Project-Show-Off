@@ -132,6 +132,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Lantern",
+            "id": "cfe564cb-aa5e-460c-a8f3-24f12a279861",
+            "actions": [
+                {
+                    "name": "EquipLantern",
+                    "type": "Button",
+                    "id": "398d070f-9067-420d-9adf-0f41eb582b0c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RaiseLantern",
+                    "type": "Button",
+                    "id": "d27eb767-858a-4ce5-96d2-d8277eaea95e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4b153c27-acb1-4dcb-bf3c-ee77edeab908",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "EquipLantern",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e89cdeab-8a28-4f33-9ed3-d7ac3c9d57cf",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RaiseLantern",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

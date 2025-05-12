@@ -218,6 +218,54 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Lantern"",
+            ""id"": ""cfe564cb-aa5e-460c-a8f3-24f12a279861"",
+            ""actions"": [
+                {
+                    ""name"": ""EquipLantern"",
+                    ""type"": ""Button"",
+                    ""id"": ""398d070f-9067-420d-9adf-0f41eb582b0c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RaiseLantern"",
+                    ""type"": ""Button"",
+                    ""id"": ""d27eb767-858a-4ce5-96d2-d8277eaea95e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4b153c27-acb1-4dcb-bf3c-ee77edeab908"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""EquipLantern"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e89cdeab-8a28-4f33-9ed3-d7ac3c9d57cf"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RaiseLantern"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -228,11 +276,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Movement_Look = m_Movement.FindAction("Look", throwIfNotFound: true);
         m_Movement_Jump = m_Movement.FindAction("Jump", throwIfNotFound: true);
         m_Movement_Sprint = m_Movement.FindAction("Sprint", throwIfNotFound: true);
+        // Lantern
+        m_Lantern = asset.FindActionMap("Lantern", throwIfNotFound: true);
+        m_Lantern_EquipLantern = m_Lantern.FindAction("EquipLantern", throwIfNotFound: true);
+        m_Lantern_RaiseLantern = m_Lantern.FindAction("RaiseLantern", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Movement.enabled, "This will cause a leak and performance issues, PlayerInput.Movement.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Lantern.enabled, "This will cause a leak and performance issues, PlayerInput.Lantern.Disable() has not been called.");
     }
 
     /// <summary>
@@ -433,6 +486,113 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="MovementActions" /> instance referencing this action map.
     /// </summary>
     public MovementActions @Movement => new MovementActions(this);
+
+    // Lantern
+    private readonly InputActionMap m_Lantern;
+    private List<ILanternActions> m_LanternActionsCallbackInterfaces = new List<ILanternActions>();
+    private readonly InputAction m_Lantern_EquipLantern;
+    private readonly InputAction m_Lantern_RaiseLantern;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Lantern".
+    /// </summary>
+    public struct LanternActions
+    {
+        private @PlayerInput m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public LanternActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Lantern/EquipLantern".
+        /// </summary>
+        public InputAction @EquipLantern => m_Wrapper.m_Lantern_EquipLantern;
+        /// <summary>
+        /// Provides access to the underlying input action "Lantern/RaiseLantern".
+        /// </summary>
+        public InputAction @RaiseLantern => m_Wrapper.m_Lantern_RaiseLantern;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Lantern; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="LanternActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(LanternActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="LanternActions" />
+        public void AddCallbacks(ILanternActions instance)
+        {
+            if (instance == null || m_Wrapper.m_LanternActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_LanternActionsCallbackInterfaces.Add(instance);
+            @EquipLantern.started += instance.OnEquipLantern;
+            @EquipLantern.performed += instance.OnEquipLantern;
+            @EquipLantern.canceled += instance.OnEquipLantern;
+            @RaiseLantern.started += instance.OnRaiseLantern;
+            @RaiseLantern.performed += instance.OnRaiseLantern;
+            @RaiseLantern.canceled += instance.OnRaiseLantern;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="LanternActions" />
+        private void UnregisterCallbacks(ILanternActions instance)
+        {
+            @EquipLantern.started -= instance.OnEquipLantern;
+            @EquipLantern.performed -= instance.OnEquipLantern;
+            @EquipLantern.canceled -= instance.OnEquipLantern;
+            @RaiseLantern.started -= instance.OnRaiseLantern;
+            @RaiseLantern.performed -= instance.OnRaiseLantern;
+            @RaiseLantern.canceled -= instance.OnRaiseLantern;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LanternActions.UnregisterCallbacks(ILanternActions)" />.
+        /// </summary>
+        /// <seealso cref="LanternActions.UnregisterCallbacks(ILanternActions)" />
+        public void RemoveCallbacks(ILanternActions instance)
+        {
+            if (m_Wrapper.m_LanternActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="LanternActions.AddCallbacks(ILanternActions)" />
+        /// <seealso cref="LanternActions.RemoveCallbacks(ILanternActions)" />
+        /// <seealso cref="LanternActions.UnregisterCallbacks(ILanternActions)" />
+        public void SetCallbacks(ILanternActions instance)
+        {
+            foreach (var item in m_Wrapper.m_LanternActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_LanternActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="LanternActions" /> instance referencing this action map.
+    /// </summary>
+    public LanternActions @Lantern => new LanternActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
     /// </summary>
@@ -468,5 +628,27 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSprint(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Lantern" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="LanternActions.AddCallbacks(ILanternActions)" />
+    /// <seealso cref="LanternActions.RemoveCallbacks(ILanternActions)" />
+    public interface ILanternActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "EquipLantern" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnEquipLantern(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RaiseLantern" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRaiseLantern(InputAction.CallbackContext context);
     }
 }

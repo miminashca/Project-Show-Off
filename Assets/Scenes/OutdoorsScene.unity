@@ -130,9 +130,10 @@ GameObject:
   - component: {fileID: 156975448}
   - component: {fileID: 156975447}
   - component: {fileID: 156975449}
+  - component: {fileID: 156975450}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -198,6 +199,44 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &156975450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156975446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6884a92649b8a984fbd481b8d546f758, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lanternPrefab: {fileID: 8208356365309527088, guid: c1e222abcb5067a4a822bc471d3d0497, type: 3}
+  lanternLight: {fileID: 0}
+  lanternHoldPosition: {fileID: 2003809842}
+  isEquipped: 0
+  isRaised: 0
+  defaultIntensity: 1.5
+  raisedIntensity: 4
+  defaultRange: 10
+  raisedRange: 15
+  lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  lightFlicker: {fileID: 0}
+  maxFuel: 100
+  currentFuel: 0
+  passiveDrainRate: 0.1
+  activeDrainRate: 1
+  hemannekenRepelRadius: 7
+  nixieAttractRadius: 20
+  hemannekenLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  nixieLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  interactionCheckInterval: 0.25
+  equipKey: 102
+  raiseKey: 324
 --- !u!1 &157207112
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,7 +952,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.69, z: 0.044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2003809842}
   m_Father: {fileID: 156975448}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1823688468
@@ -1069,6 +1109,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalLookClamp: 45
   mouseSensitivity: 1
+--- !u!1 &2003809841
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2003809842}
+  m_Layer: 0
+  m_Name: LanternHoldPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2003809842
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003809841}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.2, y: -0.35, z: 0.45}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1823688467}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
