@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem; // <<< MAKE SURE THIS IS HERE
 
 public class LanternController : MonoBehaviour
 {
     [Header("Lantern Setup")]
     public GameObject lanternPrefab;
     private GameObject currentLanternInstance;
-    public Light lanternLight;
+    public Light lanternLight;             // This will be assigned from the instantiated prefab
     public Transform lanternHoldPosition;
 
     [Header("State")]
@@ -20,53 +21,60 @@ public class LanternController : MonoBehaviour
     public float defaultRange = 10f;
     public float raisedRange = 15f;
     public Color lightColor = Color.yellow;
-    public LightFlicker lightFlicker;
+    public LightFlicker lightFlicker;     // This will be assigned from the instantiated prefab
 
     [Header("Fuel System")]
     public float maxFuel = 100f;
     public float currentFuel;
     [Tooltip("Fuel units consumed per second when lantern is normally equipped.")]
-    public float passiveDrainRate = 0.1f; // 1% per 10 seconds if maxFuel=100
+    public float passiveDrainRate = 0.1f;
     [Tooltip("Additional fuel units consumed per second when lantern is raised.")]
-    public float activeDrainRate = 1.0f; // 1% per second if maxFuel=100
+    public float activeDrainRate = 1.0f;
 
     [Header("Interaction")]
     public float hemannekenRepelRadius = 7f;
-    public float nixieAttractRadius = 20f; // Example radius
+    public float nixieAttractRadius = 20f;
     public LayerMask hemannekenLayer;
     public LayerMask nixieLayer;
-    public float interactionCheckInterval = 0.25f; // How often to check for nearby monsters when raised
+    public float interactionCheckInterval = 0.25f;
 
-    [Header("Input")]
-    public KeyCode equipKey = KeyCode.F;
-    public KeyCode raiseKey = KeyCode.Mouse1; // Right Mouse Button
+    // [Header("Input")] // These are now effectively fallbacks or can be removed
+    // public KeyCode equipKey = KeyCode.F;
+    // public KeyCode raiseKey = KeyCode.Mouse1;
 
     // Internal refs
     private Coroutine interactionCoroutine;
-    private LanternSway lanternSway;
+    private LanternSway lanternSway;      // This will be assigned from the instantiated prefab
 
-    private PlayerInput playerInputActions;
+    private PlayerInput playerInputActions; // This should be your generated class
 
     private void Awake()
     {
-        playerInputActions = new PlayerInput();
+        // Ensure playerInputActions is initialized.
+        // If your .inputactions file is named "PlayerInput.inputactions",
+        // the generated C# class is named "PlayerInput".
+        if (playerInputActions == null)
+        {
+            playerInputActions = new PlayerInput();
+        }
     }
 
     void Start()
     {
-        if (lanternPrefab == null || lanternHoldPosition == null) // New: We get light later
+        if (lanternPrefab == null || lanternHoldPosition == null)
         {
             Debug.LogError("LanternController: Missing Lantern PREFAB or LanternHoldPosition reference!");
             enabled = false;
             return;
         }
-
         currentFuel = maxFuel;
+        // Note: currentLanternInstance, lanternLight, lightFlicker, lanternSway are null here.
+        // They are assigned in ToggleEquip when the lantern is first equipped.
     }
 
     void Update()
     {
-        HandleInput();
+        HandleInput(); // Make sure playerInputActions is not null
 
         if (isEquipped && !outOfFuel)
         {
@@ -74,27 +82,34 @@ public class LanternController : MonoBehaviour
         }
         else if (outOfFuel && isEquipped)
         {
-            if (lanternLight.enabled) SetLightState(false);
+            // Ensure light is off if it was on
+            if (lanternLight != null && lanternLight.enabled) SetLightState(false);
         }
     }
 
     void OnEnable()
     {
-        playerInputActions.Enable();
-        // playerInputActions.YourLanternActionMapName.Enable(); // More specific
+        if (playerInputActions == null) // Defensive check from Awake
+        {
+            playerInputActions = new PlayerInput();
+        }
+        playerInputActions.Lantern.Enable(); // Enable the specific "Lantern" action map
     }
 
     void OnDisable()
     {
-        playerInputActions.Disable();
-        // playerInputActions.YourLanternActionMapName.Disable();
+        if (playerInputActions != null) // Check if it was initialized
+        {
+            playerInputActions.Lantern.Disable(); // Disable the specific "Lantern" action map
+        }
     }
 
     void HandleInput()
     {
+        if (playerInputActions == null) return; // Should not happen if Awake/OnEnable worked
+
         // Equip/Unequip Toggle
-        // Assumes your action map is "Lantern" and action is "EquipLantern"
-        if (playerInputActions.Lantern.EquipLantern.WasPressedThisFrame())
+        if (playerInputActions.Lantern.EquipLantern.WasPressedThisFrame()) // <<< CORRECTED
         {
             ToggleEquip();
         }
@@ -102,19 +117,19 @@ public class LanternController : MonoBehaviour
         // Raise/Lower Logic
         if (isEquipped && !outOfFuel)
         {
-            if (playerInputActions.Lantern.RaiseLantern.WasPressedThisFrame()) // Pressed
+            if (playerInputActions.Lantern.RaiseLantern.WasPressedThisFrame())
             {
                 StartRaising();
             }
-            else if (playerInputActions.Lantern.RaiseLantern.WasReleasedThisFrame()) // Released
+            else if (playerInputActions.Lantern.RaiseLantern.WasReleasedThisFrame())
             {
                 StopRaising();
             }
-            // If you want "hold" behavior (action triggered every frame it's held after initial press)
-            // else if (playerInputActions.Lantern.RaiseLantern.IsPressed()) { /* Might be useful for other things */ }
         }
         else if (isRaised && playerInputActions.Lantern.RaiseLantern.WasReleasedThisFrame())
         {
+            // This handles the case where fuel runs out WHILE raised, or player unequips while raised.
+            // Or if the lantern was unequipped for other reasons.
             StopRaising();
         }
     }
@@ -125,64 +140,70 @@ public class LanternController : MonoBehaviour
 
         if (isEquipped)
         {
-            if (currentLanternInstance == null) // Instantiate if it doesn't exist
+            if (currentLanternInstance == null)
             {
                 currentLanternInstance = Instantiate(lanternPrefab, lanternHoldPosition);
                 currentLanternInstance.transform.localPosition = Vector3.zero;
                 currentLanternInstance.transform.localRotation = Quaternion.identity;
 
-                // Get components from the INSTANTIATED lantern
-                lanternLight = currentLanternInstance.GetComponentInChildren<Light>(); // Get light from children
+                lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
                 if (lanternLight == null) Debug.LogError("No Light component found on instantiated lantern prefab or its children!");
 
-                lightFlicker = currentLanternInstance.GetComponentInChildren<LightFlicker>(); // Get flicker
+                lightFlicker = currentLanternInstance.GetComponentInChildren<LightFlicker>();
                 if (lightFlicker == null) Debug.LogWarning("No LightFlicker component found on instantiated lantern prefab.");
 
                 lanternSway = currentLanternInstance.GetComponent<LanternSway>();
                 if (lanternSway == null) Debug.LogWarning("No LanternSway component found on instantiated lantern prefab.");
                 else
                 {
-                    // Crucial: Set Player Camera Transform for LanternSway on the instance
-                    // Assuming CameraMovement script is on Camera.main.transform or parent of LanternHoldPosition
                     if (lanternHoldPosition != null && lanternHoldPosition.parent != null)
-                        lanternSway.playerCameraTransform = lanternHoldPosition.parent; // This should be the Camera's transform
+                        lanternSway.playerCameraTransform = lanternHoldPosition.parent;
                     else
                         Debug.LogError("LanternSway cannot find player camera through lanternHoldPosition.parent!");
                 }
             }
-            currentLanternInstance.SetActive(true); // Activate the instantiated object
+            currentLanternInstance.SetActive(true);
 
-            // ... rest of ToggleEquip logic for equipping ...
-            // Make sure lanternLight is referenced correctly after instantiation
-            lanternLight.color = lightColor; // Set color here
+            // Reset raised state in case it was unequipped while raised
+            isRaised = false;
             outOfFuel = (currentFuel <= 0);
-            // ...
+
+            if (!outOfFuel && lanternLight != null)
+            {
+                SetLightState(true, defaultIntensity, defaultRange);
+                Debug.Log("Lantern Equipped");
+            }
+            else if (lanternLight != null)
+            { // Still equip, but light stays off if no fuel
+                SetLightState(false);
+                Debug.Log("Lantern Equipped (Out of Fuel or No Light)");
+            }
+
+            if (lanternSway != null) lanternSway.ResetSway();
         }
         else // Unequipping
         {
+            StopRaising(); // Ensure raise state logic is processed (like stopping coroutine)
+            if (lanternLight != null) SetLightState(false); // Turn off light before deactivating
             if (currentLanternInstance != null)
             {
                 currentLanternInstance.SetActive(false);
             }
-            StopRaising();
-            SetLightState(false);
             Debug.Log("Lantern Unequipped");
         }
     }
 
     void StartRaising()
     {
-        if (!isEquipped || isRaised || outOfFuel) return;
+        if (!isEquipped || isRaised || outOfFuel || lanternLight == null) return;
 
         isRaised = true;
         SetLightState(true, raisedIntensity, raisedRange);
         Debug.Log("Lantern Raised");
 
-        // Start checking for monster interactions periodically
         if (interactionCoroutine != null) StopCoroutine(interactionCoroutine);
         interactionCoroutine = StartCoroutine(MonsterInteractionCheck());
 
-        // Optional: Tell sway script intensity changed / maybe trigger animation
         if (lanternSway != null) lanternSway.NotifyRaised(true);
     }
 
@@ -192,15 +213,17 @@ public class LanternController : MonoBehaviour
 
         isRaised = false;
 
-        if (!outOfFuel)
+        if (lanternLight != null) // Only change light state if we have a light
         {
-            SetLightState(true, defaultIntensity, defaultRange);
+            if (!outOfFuel)
+            {
+                SetLightState(true, defaultIntensity, defaultRange);
+            }
+            else
+            {
+                SetLightState(false); // Turn off if out of fuel
+            }
         }
-        else
-        {
-            SetLightState(false);
-        }
-
         Debug.Log("Lantern Lowered");
 
         if (interactionCoroutine != null)
@@ -208,7 +231,6 @@ public class LanternController : MonoBehaviour
             StopCoroutine(interactionCoroutine);
             interactionCoroutine = null;
         }
-        // Optional: Tell sway script intensity changed / maybe trigger animation
         if (lanternSway != null) lanternSway.NotifyRaised(false);
     }
 
@@ -220,9 +242,6 @@ public class LanternController : MonoBehaviour
         currentFuel -= drain * deltaTime;
         currentFuel = Mathf.Clamp(currentFuel, 0f, maxFuel);
 
-        // Update UI Fuel Gauge here (e.g., call a method on a UI Manager)
-        // UIManager.Instance.UpdateFuelGauge(currentFuel / maxFuel);
-
         if (currentFuel <= 0)
         {
             OutOfFuel();
@@ -233,9 +252,24 @@ public class LanternController : MonoBehaviour
     {
         Debug.Log("Lantern Out of Fuel!");
         outOfFuel = true;
-        SetLightState(false);
+        if (lanternLight != null) SetLightState(false);
 
-        if (isRaised) StopRaising();
+        // If it was raised when it ran out of fuel, we should process StopRaising specific logic
+        // (like stopping coroutines, notifying sway script, etc.)
+        // The `isRaised` flag itself will be handled by normal input flow or ToggleEquip.
+        if (isRaised)
+        {
+            // We don't want to call StopRaising() directly here if it might re-enable the light
+            // because SetLightState(false) above already handled it.
+            // Instead, just ensure related processes are stopped.
+            if (interactionCoroutine != null)
+            {
+                StopCoroutine(interactionCoroutine);
+                interactionCoroutine = null;
+            }
+            if (lanternSway != null) lanternSway.NotifyRaised(false); // Indicate it's no longer "raised" visually/mechanically
+            // isRaised = false; // No, let HandleInput manage this. Or if equipping while OOF, ToggleEquip handles it.
+        }
     }
 
     public void RefillFuel()
@@ -244,24 +278,30 @@ public class LanternController : MonoBehaviour
         currentFuel = maxFuel;
         outOfFuel = false;
 
-
-        if (isEquipped)
+        if (isEquipped && lanternLight != null) // If equipped and we have a light component
         {
+            // It's generally safer to revert to default state on refill,
+            // rather than trying to resume a "raised" state that might have been interrupted.
             isRaised = false;
             SetLightState(true, defaultIntensity, defaultRange);
-            // Update UI
-            // UIManager.Instance.UpdateFuelGauge(1f);
+            if (lanternSway != null) lanternSway.NotifyRaised(false); // Ensure sway knows it's not "raised"
         }
-        // Play sound effect for refill
     }
 
     void SetLightState(bool enabled, float intensity = 0, float range = 0)
     {
+        if (lanternLight == null) // Safety check
+        {
+            // Debug.LogWarning("SetLightState called, but lanternLight is null.");
+            return;
+        }
+
         lanternLight.enabled = enabled;
         if (enabled)
         {
             if (lightFlicker != null)
             {
+                lightFlicker.enabled = true; // Ensure flicker script is enabled
                 lightFlicker.SetBaseValues(intensity, range);
             }
             else
@@ -270,19 +310,19 @@ public class LanternController : MonoBehaviour
                 lanternLight.range = range;
             }
         }
-        else if (lightFlicker != null)
+        else // Light is being disabled
         {
-            lightFlicker.enabled = false;
+            if (lightFlicker != null)
+            {
+                lightFlicker.enabled = false; // Disable flicker script when light is off
+            }
+            // The Light component's intensity is effectively 0 when lanternLight.enabled = false,
+            // but setting it explicitly can be good for clarity or if something else might re-enable it.
             lanternLight.intensity = 0;
-        }
-
-        if (enabled && lightFlicker != null && !lightFlicker.enabled)
-        {
-            lightFlicker.enabled = true;
         }
     }
 
-
+    // ... (MonsterInteractionCheck and OnDrawGizmosSelected remain the same) ...
     IEnumerator MonsterInteractionCheck()
     {
         while (isRaised && !outOfFuel) // Keep checking while raised and fueled
@@ -314,7 +354,6 @@ public class LanternController : MonoBehaviour
         interactionCoroutine = null;
     }
 
-    // Optional: Gizmo for visualizing interaction radii in editor
     void OnDrawGizmosSelected()
     {
         if (isRaised)
@@ -326,7 +365,7 @@ public class LanternController : MonoBehaviour
         }
         else if (isEquipped)
         {
-            Gizmos.color = Color.gray;
+            Gizmos.color = Color.gray; // Show potential range even if not raised
             Gizmos.DrawWireSphere(transform.position, hemannekenRepelRadius);
             Gizmos.DrawWireSphere(transform.position, nixieAttractRadius);
         }

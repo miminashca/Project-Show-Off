@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Crouch",
+                    "type": "Button",
+                    "id": "a445c181-d4eb-4ec9-b8e3-8c8c4688c682",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -130,17 +139,28 @@
                     "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44b1f216-ef59-407d-add2-49a3458aa619",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Crouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
         {
             "name": "Lantern",
-            "id": "cfe564cb-aa5e-460c-a8f3-24f12a279861",
+            "id": "d82c6aae-badd-4c27-bcad-2dece83458b7",
             "actions": [
                 {
                     "name": "EquipLantern",
                     "type": "Button",
-                    "id": "398d070f-9067-420d-9adf-0f41eb582b0c",
+                    "id": "c716aada-f8a9-4542-ac6d-fb6350ee0104",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -149,7 +169,7 @@
                 {
                     "name": "RaiseLantern",
                     "type": "Button",
-                    "id": "d27eb767-858a-4ce5-96d2-d8277eaea95e",
+                    "id": "220d87bb-cceb-4789-9a53-9c2a339ee02e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -159,7 +179,7 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "4b153c27-acb1-4dcb-bf3c-ee77edeab908",
+                    "id": "3fef1872-1f20-4945-a994-db36c4ad1019",
                     "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
@@ -170,8 +190,8 @@
                 },
                 {
                     "name": "",
-                    "id": "e89cdeab-8a28-4f33-9ed3-d7ac3c9d57cf",
-                    "path": "<Mouse>/rightButton",
+                    "id": "6a2982f4-f450-4a76-bf87-58a9670d51c0",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
