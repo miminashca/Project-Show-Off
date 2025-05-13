@@ -193,11 +193,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 1.99
-  moveToSprintSpeed: 2
-  sprintSpeedPlus: 47.1
+  directionLerpSpeed: 5
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  sprintSpeedIncrement: 3
+  moveToSprintLerpSpeed: 2
+  crouchSpeed: 4
+  crouchHeight: 1
+  standingHeight: 2
+  crouchLerpSpeed: 8
 --- !u!1 &157207112
 GameObject:
   m_ObjectHideFlags: 0
@@ -722,7 +727,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &701230418
 Transform:
   m_ObjectHideFlags: 0
@@ -835,6 +840,7 @@ GameObject:
   - component: {fileID: 1823688465}
   - component: {fileID: 1823688468}
   - component: {fileID: 1823688469}
+  - component: {fileID: 1823688470}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1070,6 +1076,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalLookClamp: 45
   mouseSensitivity: 1
+  lookLerpSpeed: 10
+--- !u!114 &1823688470
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823688464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c91819f62dd84c599da499f4407d11b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enable: 1
+  amplitude: 0.015
+  frequency: 10
+  resetCamSpeed: 1
 --- !u!1 &2003809841
 GameObject:
   m_ObjectHideFlags: 0

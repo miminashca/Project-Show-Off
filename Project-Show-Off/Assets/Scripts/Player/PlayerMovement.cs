@@ -23,7 +23,8 @@ public class PlayerMovement : MonoBehaviour
     private float groundCheckDistance = 0.4f;
     
     //intermediate
-    private bool isCrouching = false;
+    [NonSerialized] public bool isCrouching = false;
+    [NonSerialized] public bool isSprinting = false;
     [NonSerialized] public bool isGrounded = true;
     private Vector2 move;
     private Vector3 velocity;
@@ -91,12 +92,15 @@ public class PlayerMovement : MonoBehaviour
         float targetSpeed = isCrouching ? moveSpeed : crouchSpeed;
         if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching)
         {
+            isSprinting = true;
             targetSpeed += sprintSpeedIncrement;
         }
         else if (!isMoving)
         {
             targetSpeed = 0f;
         }
+
+        if (!controls.Movement.Sprint.inProgress) isSprinting = false;
 
         finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.fixedDeltaTime * moveToSprintLerpSpeed); // smooth speed transition
 
@@ -121,6 +125,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 camPos = playerCamera.transform.localPosition;
         camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.deltaTime * crouchLerpSpeed);
         playerCamera.transform.localPosition = camPos;
+    }
+
+    public float GetMovementSpeed()
+    {
+        Vector3 v = controller.velocity;
+        v.y = 0f;
+    
+        // magnitude is units per second
+        Debug.Log(v.magnitude);
+        return v.magnitude;
     }
     
     private void OnDisable()
