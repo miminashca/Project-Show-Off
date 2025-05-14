@@ -192,14 +192,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ee7a73d0cddf4af0b261b1a7999b45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 1.99
+  moveSpeed: 4
   directionLerpSpeed: 5
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   sprintSpeedIncrement: 3
   moveToSprintLerpSpeed: 2
-  crouchSpeed: 4
+  crouchSpeed: 2
   crouchHeight: 1
   standingHeight: 2
   crouchLerpSpeed: 8
@@ -1091,7 +1091,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enable: 1
   amplitude: 0.015
-  frequency: 10
+  frequency: 7
   resetCamSpeed: 1
 --- !u!1 &2003809841
 GameObject:

@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
         // Sprinting speed logic
-        float targetSpeed = isCrouching ? moveSpeed : crouchSpeed;
+        float targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
         if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching)
         {
             isSprinting = true;
