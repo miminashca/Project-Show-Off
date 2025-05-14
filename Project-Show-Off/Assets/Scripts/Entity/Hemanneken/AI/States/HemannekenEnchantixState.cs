@@ -1,10 +1,11 @@
 using UnityEngine;
 
-public class HemannekenChasingState : State
+public class HemannekenEnchantixState : State
 {
-    public HemannekenChasingState(StateMachine pSM) : base(pSM)
+    public HemannekenEnchantixState(StateMachine pSM) : base(pSM)
     {
     }
+    private HemannekenStateMachine HSM => (HemannekenStateMachine)SM;
 
     public override void OnEnterState()
     {

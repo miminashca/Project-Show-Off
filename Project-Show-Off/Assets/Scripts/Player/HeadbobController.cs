@@ -12,22 +12,22 @@ public class HeadbobController : MonoBehaviour
     
     //references
     private Transform playerBody;
-    private Camera camera;
+    private Camera playerCamera;
     private PlayerMovement controller; // Reference to the PlayerMovement script
 
     //const
     private float toggleSpeed = 1.0f; // Speed threshold to trigger headbobbing
-    private Vector3 startPos; // Starting position of the camera
+    private Vector3 startPos; // Starting position of the playerCamera
 
     void Awake()
     {
         playerBody = transform.parent;
         controller = playerBody.GetComponent<PlayerMovement>();
-        camera = GetComponent<Camera>();
+        playerCamera = GetComponent<Camera>();
     }
     private void Start()
     {
-        startPos = transform.localPosition; // Store the initial local position of the camera
+        startPos = transform.localPosition; // Store the initial local position of the playerCamera
     }
 
     void Update()
@@ -35,7 +35,7 @@ public class HeadbobController : MonoBehaviour
         if (!enable) return; // If headbobbing is disabled, exit Update
         
         CheckMotion(); // Check if the player's motion should trigger headbobbing
-        ResetPosition(); // Reset the camera position smoothly back to the start position
+        ResetPosition(); // Reset the playerCamera position smoothly back to the start position
     }
 
     // Calculate the headbobbing motion based on footstep-like movement
@@ -63,18 +63,18 @@ public class HeadbobController : MonoBehaviour
         PlayMotion(FootStepMotion()); // Trigger headbobbing based on footstep motion
     }
     
-    // Apply the calculated motion to the camera, relative to player's orientation
+    // Apply the calculated motion to the playerCamera, relative to player's orientation
     private void PlayMotion(Vector3 motion)
     {
-        camera.transform.localPosition += motion; // Apply the motion to the camera's local position
+        playerCamera.transform.localPosition += motion; // Apply the motion to the playerCamera's local position
     }
     
     
-    // Smoothly reset the camera's position back to the starting position
+    // Smoothly reset the playerCamera's position back to the starting position
     private void ResetPosition()
     {
-        if (camera.transform.localPosition == startPos) return; // If camera is already at the start position, do nothing
+        if (playerCamera.transform.localPosition == startPos) return; // If playerCamera is already at the start position, do nothing
 
-        camera.transform.localPosition = Vector3.Lerp(camera.transform.localPosition, startPos, resetCamSpeed * Time.deltaTime); // Smoothly move camera towards the start position
+        playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition, startPos, resetCamSpeed * Time.deltaTime); // Smoothly move playerCamera towards the start position
     }
 }
