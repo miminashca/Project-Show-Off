@@ -87,9 +87,9 @@ public class PlayerMovement : MonoBehaviour
         {
             currentDirection = Vector3.Lerp(currentDirection, Vector3.zero, Time.fixedDeltaTime * moveToSprintLerpSpeed); 
         }
-        
+
         // Sprinting speed logic
-        float targetSpeed = isCrouching ? moveSpeed : crouchSpeed;
+        float targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
         if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching)
         {
             isSprinting = true;
@@ -132,8 +132,6 @@ public class PlayerMovement : MonoBehaviour
         Vector3 v = controller.velocity;
         v.y = 0f;
     
-        // magnitude is units per second
-        Debug.Log(v.magnitude);
         return v.magnitude;
     }
     

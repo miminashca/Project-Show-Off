@@ -1,13 +1,13 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.InputSystem; // <<< MAKE SURE THIS IS HERE
+using UnityEngine.InputSystem;
 
 public class LanternController : MonoBehaviour
 {
     [Header("Lantern Setup")]
     public GameObject lanternPrefab;
     private GameObject currentLanternInstance;
-    public Light lanternLight;             // This will be assigned from the instantiated prefab
+    public Light lanternLight;             
     public Transform lanternHoldPosition;
 
     [Header("State")]
@@ -21,7 +21,7 @@ public class LanternController : MonoBehaviour
     public float defaultRange = 10f;
     public float raisedRange = 15f;
     public Color lightColor = Color.yellow;
-    public LightFlicker lightFlicker;     // This will be assigned from the instantiated prefab
+    public LightFlicker lightFlicker;
 
     [Header("Fuel System")]
     public float maxFuel = 100f;
@@ -44,9 +44,9 @@ public class LanternController : MonoBehaviour
 
     // Internal refs
     private Coroutine interactionCoroutine;
-    private LanternSway lanternSway;      // This will be assigned from the instantiated prefab
+    private LanternSway lanternSway;
 
-    private PlayerInput playerInputActions; // This should be your generated class
+    private PlayerInput playerInputActions;
 
     private void Awake()
     {
