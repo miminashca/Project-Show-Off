@@ -6,15 +6,21 @@ using UnityEngine;
 public abstract class StateMachine : MonoBehaviour
 {
     private State currentState;
+    private State initialState;
+
+    // Subclasses must override this to supply the Initial State
+    protected abstract State InitialState { get; }
+    public void InitStartState() { initialState = InitialState; }
 
     /// <summary>
     /// Called when the object is first enabled. Determines the initial state.
     /// </summary>
-    protected virtual void Start()
+    protected void Start()
     {
-        TransitToState(new IdleState(this));
+        InitStartState();
+        TransitToState(initialState);
     }
-
+    
     /// <summary>
     /// Unity's Update loop calls the current state's Handle method each frame.
     /// </summary>
