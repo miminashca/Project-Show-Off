@@ -21,7 +21,6 @@ public class CameraMovement : MonoBehaviour
     void Awake()
     {
         playerBody = transform.parent;
-        controls = new PlayerInput();
         Cursor.lockState = CursorLockMode.Locked;
         
         targetYaw = smoothYaw = playerBody.eulerAngles.y;
@@ -29,6 +28,7 @@ public class CameraMovement : MonoBehaviour
     }
     private void OnEnable()
     {
+        controls = new PlayerInput();
         controls.Enable();
     }
 

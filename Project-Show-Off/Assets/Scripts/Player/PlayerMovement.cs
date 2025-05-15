@@ -31,7 +31,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private float finalSpeed;
     private Vector3 currentDirection = Vector3.zero;
-    
+    Vector3 lastPos;
+
     //references
     private CharacterController controller;
     private PlayerInput controls;
@@ -39,9 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        lastPos = transform.position;
         headCheckDistance = standingHeight - crouchHeight;
         finalSpeed = moveSpeed;
-        controls = new PlayerInput();
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>();
         controller.height = standingHeight;
@@ -49,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnEnable()
     {
+        controls = new PlayerInput();
         controls.Enable();
     }
     
@@ -108,7 +110,9 @@ public class PlayerMovement : MonoBehaviour
 
         // Sprinting speed logic
         float targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
-        if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching)
+        float signedSpeed = GetSignedMovementSpeed();
+        if (signedSpeed < -0.1f) targetSpeed *= 0.8f;
+        else if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching && signedSpeed > 0.1f)
         {
             isSprinting = true;
             targetSpeed += sprintSpeedIncrement;
@@ -151,8 +155,21 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 v = controller.velocity;
         v.y = 0f;
-    
+        //Debug.Log(v.magnitude);
         return v.magnitude;
+    }
+    /// <summary>
+    /// Returns positive if moving forward, negative if moving backward,
+    /// zero if stationary or purely strafing.
+    /// Magnitude of the return value is the horizontal speed.
+    /// </summary>
+    public float GetSignedMovementSpeed()
+    {
+        Vector3 delta = transform.position - lastPos;
+        float signedSpeed = Vector3.Dot(delta / Time.deltaTime, transform.forward);
+        //Debug.Log("Signed speed: " + signedSpeed);
+        lastPos = transform.position;
+        return signedSpeed;
     }
     
     private void OnDisable()
