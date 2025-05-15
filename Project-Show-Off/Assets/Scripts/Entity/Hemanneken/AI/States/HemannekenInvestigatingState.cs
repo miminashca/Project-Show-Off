@@ -8,7 +8,7 @@ public class HemannekenInvestigatingState : State
 
     public override void OnEnterState()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Entered Investigating State");
     }
 
     public override void Handle()

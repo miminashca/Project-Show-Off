@@ -15,7 +15,7 @@ public abstract class StateMachine : MonoBehaviour
     /// <summary>
     /// Called when the object is first enabled. Determines the initial state.
     /// </summary>
-    protected void Start()
+    protected virtual void Start()
     {
         InitStartState();
         TransitToState(initialState);

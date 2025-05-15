@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class CameraMovement : MonoBehaviour
     }
     private void OnEnable()
     {
+        controls = new PlayerInput();
         controls.Enable();
         // It's good practice to re-sync yaw/pitch on enable if the object could have been rotated while disabled
         targetYaw = smoothYaw = playerBody.eulerAngles.y;
@@ -42,6 +44,7 @@ public class CameraMovement : MonoBehaviour
 
     void Update()
     {
+        ReadValue();
         Look();
     }
 
@@ -57,10 +60,13 @@ public class CameraMovement : MonoBehaviour
         targetPitch -= scaledY;
         targetPitch = Mathf.Clamp(targetPitch, -verticalLookClamp, verticalLookClamp);
 
+        
         // smooth actual angles toward target
-        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.deltaTime * lookLerpSpeed);
-        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.deltaTime * lookLerpSpeed);
-
+        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.smoothDeltaTime * lookLerpSpeed);
+        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.smoothDeltaTime * lookLerpSpeed);
+    }
+    private void Look()
+    {
         // apply
         transform.localRotation = Quaternion.Euler(smoothPitch, 0f, 0f);
         playerBody.rotation = Quaternion.Euler(0f, smoothYaw, 0f);
