@@ -10,7 +10,7 @@ public class SpawnPointsManager : MonoBehaviour
     
     private void Awake()
     {
-        SpawnPoints = FindObjectsByType<SpawnPoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
+        SpawnPoints = GetComponentsInChildren<SpawnPoint>().ToList();
         Debug.Log("Number of spawn points: " + SpawnPoints.Count);
     }
 

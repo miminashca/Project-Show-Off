@@ -8,7 +8,7 @@ public class HemannekenManager : MonoBehaviour
 
     private void Awake()
     {
-        spManager = FindAnyObjectByType<SpawnPointsManager>();
+        spManager = GetComponentInChildren<SpawnPointsManager>();
         if (spManager) spManager.SpawnPointsInitialized += SpawnHemanneken;
     }
 
