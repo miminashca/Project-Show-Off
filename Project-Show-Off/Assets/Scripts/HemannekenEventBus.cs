@@ -1,16 +1,13 @@
+using System;
 using UnityEngine;
 
-public class SpawnPointsEventBus : MonoBehaviour
+public static class HemannekenEventBus
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public static event Action HeyTriggered;
 
-    // Update is called once per frame
-    void Update()
+    public static void TriggerHey()
     {
-        
+        HeyTriggered?.Invoke();
     }
+    
 }

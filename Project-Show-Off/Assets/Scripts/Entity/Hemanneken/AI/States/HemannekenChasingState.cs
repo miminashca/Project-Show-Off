@@ -8,7 +8,7 @@ public class HemannekenChasingState : State
 
     public override void OnEnterState()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Entered Chasing State");
     }
 
     public override void Handle()

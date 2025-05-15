@@ -9,7 +9,7 @@ public class HemannekenEnchantixState : State
 
     public override void OnEnterState()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Entered Enchantix State");
     }
 
     public override void Handle()

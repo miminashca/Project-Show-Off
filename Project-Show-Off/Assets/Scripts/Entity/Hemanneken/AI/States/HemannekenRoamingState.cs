@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class HemannekenRoamingState : State
 {
-    
     public HemannekenRoamingState(StateMachine pSM) : base(pSM)
     {
     }
@@ -12,7 +11,8 @@ public class HemannekenRoamingState : State
 
     public override void OnEnterState()
     {
-        EnableMesh(HSM.IsTrueForm);
+        Debug.Log("Entered Roaming State");
+        HemannekenEventBus.HeyTriggered += TriggerHey;
     }
 
     public override void Handle()
@@ -20,7 +20,6 @@ public class HemannekenRoamingState : State
         if (HSM.IsTrueForm)
         { 
             if (HSM.PlayerIsInTrueChaseDistance()) SM.TransitToState(new HemannekenChasingState(SM));
-            //if(HSM.PlayerIsInInvestigateDistance() && HEY EVENT TRIGGERED in Hemanneken Event Bus) SM.TransitToState(new HemannekenInvestigateState(SM));
         }
         if (!HSM.IsTrueForm) // rabbit form
         { 
@@ -28,16 +27,13 @@ public class HemannekenRoamingState : State
         }
     }
 
-    public override void OnExitState()
+    private void TriggerHey()
     {
+        if(HSM.IsTrueForm && HSM.PlayerIsInInvestigateDistance()) SM.TransitToState(new HemannekenInvestigatingState(SM));
     }
 
-    private void EnableMesh(bool trueFormMesh)
+    public override void OnExitState()
     {
-        if(trueFormMesh){}
-        else
-        {
-            
-        }
+        HemannekenEventBus.HeyTriggered -= TriggerHey;
     }
 }
