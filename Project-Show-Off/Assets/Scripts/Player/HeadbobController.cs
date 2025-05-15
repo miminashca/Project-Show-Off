@@ -3,13 +3,13 @@ using UnityEngine;
 public class HeadbobController : MonoBehaviour
 {
     [Header("Configuration")]
-    
+
     [SerializeField] private bool enable = true; // Toggle to enable/disable headbobbing
 
     [SerializeField, Range(0f, 0.1f)] private float amplitude = 0.015f; // Amplitude of headbobbing motion
     [SerializeField, Range(0f, 20f)] private float frequency = 10.0f; // Frequency of headbobbing motion
     [SerializeField, Range(0f, 5f)] private float resetCamSpeed = 1f; // Frequency of headbobbing motion
-    
+
     //references
     private Transform playerBody;
     private Camera playerCamera;
@@ -33,7 +33,7 @@ public class HeadbobController : MonoBehaviour
     void Update()
     {
         if (!enable) return; // If headbobbing is disabled, exit Update
-        
+
         CheckMotion(); // Check if the player's motion should trigger headbobbing
         ResetPosition(); // Reset the playerCamera position smoothly back to the start position
     }
@@ -42,14 +42,14 @@ public class HeadbobController : MonoBehaviour
     private Vector3 FootStepMotion()
     {
         float finalFrequency = frequency;
-        
+
         if (controller.isCrouching) finalFrequency *= 0.5f;
-        else if(controller.isSprinting) finalFrequency *= 2f;
-        
+        else if (controller.isSprinting) finalFrequency *= 2f;
+
         Vector3 pos = Vector3.zero;
         pos.y += Mathf.Sin(Time.time * finalFrequency) * amplitude; // Vertical motion (bobbing up and down)
         pos.x += Mathf.Cos(Time.time * finalFrequency / 2) * amplitude * 2; // Horizontal motion (swaying side to side)
-        
+
         return pos;
     }
 
@@ -62,14 +62,14 @@ public class HeadbobController : MonoBehaviour
 
         PlayMotion(FootStepMotion()); // Trigger headbobbing based on footstep motion
     }
-    
+
     // Apply the calculated motion to the playerCamera, relative to player's orientation
     private void PlayMotion(Vector3 motion)
     {
         playerCamera.transform.localPosition += motion; // Apply the motion to the playerCamera's local position
     }
-    
-    
+
+
     // Smoothly reset the playerCamera's position back to the starting position
     private void ResetPosition()
     {
