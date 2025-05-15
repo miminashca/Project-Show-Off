@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
@@ -32,11 +33,12 @@ public class CameraMovement : MonoBehaviour
         controls.Enable();
     }
 
-    void FixedUpdate()
+    void Update()
     {
+        ReadValue();
         Look();
     }
-
+    
     // private void Look()
     // {
     //     mouseLook =  (mouseSensitivity / Screen.dpi * 100f) * controls.Movement.Look.ReadValue<Vector2>();
@@ -46,7 +48,8 @@ public class CameraMovement : MonoBehaviour
     //     playerBody.Rotate(Vector3.up * mouseLook.x);
     //     
     // }
-    private void Look()
+
+    private void ReadValue()
     {
         // read raw input
         Vector2 raw = controls.Movement.Look.ReadValue<Vector2>();
@@ -58,10 +61,13 @@ public class CameraMovement : MonoBehaviour
         targetPitch -= scaledY;
         targetPitch = Mathf.Clamp(targetPitch, -verticalLookClamp, verticalLookClamp);
 
+        
         // smooth actual angles toward target
-        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.deltaTime * lookLerpSpeed);
-        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.deltaTime * lookLerpSpeed);
-
+        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.smoothDeltaTime * lookLerpSpeed);
+        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.smoothDeltaTime * lookLerpSpeed);
+    }
+    private void Look()
+    {
         // apply
         transform.localRotation = Quaternion.Euler(smoothPitch, 0f, 0f);
         playerBody.rotation = Quaternion.Euler(0f, smoothYaw, 0f);

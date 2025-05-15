@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
 
         float lerpSpeed = isMoving ? directionLerpSpeed : moveLerpSpeed;
         Vector3 targetDir = isMoving ? desired.normalized : Vector3.zero;
-        currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.fixedDeltaTime * lerpSpeed);
+        currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.smoothDeltaTime * lerpSpeed);
     }
 
     // Determine what the target speed should be
@@ -138,13 +138,13 @@ public class PlayerMovement : MonoBehaviour
     // Smoothly lerp from current speed to targetSpeed
     private void SmoothSpeedTransition()
     {
-        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.fixedDeltaTime * moveLerpSpeed);
+        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.smoothDeltaTime * moveLerpSpeed);
     }
 
     // Finally apply movement to the character controller
     private void ApplyMovement()
     {
-        Vector3 displacement = finalSpeed * Time.fixedDeltaTime * currentDirection;
+        Vector3 displacement = finalSpeed * Time.smoothDeltaTime * currentDirection;
         controller.Move(displacement);
     }
     
@@ -156,7 +156,7 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        velocity.y += gravity * Time.deltaTime; 
+        velocity.y += gravity * Time.smoothDeltaTime; 
         controller.Move(velocity * Time.deltaTime);
     }
     private bool CheckHeadBump()
@@ -192,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
     private void SmoothCameraHeight()
     {
         Vector3 camPos = playerCamera.transform.localPosition;
-        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.deltaTime * crouchLerpSpeed);
+        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.smoothDeltaTime * crouchLerpSpeed);
         playerCamera.transform.localPosition = camPos;
     }
 
