@@ -21,6 +21,7 @@ public class PlayerMovement : MonoBehaviour
     //const
     private float gravity = -9.81f;
     private float groundCheckDistance = 0.4f;
+    private float headCheckDistance = 0.4f;
     
     //intermediate
     [NonSerialized] public bool isCrouching = false;
@@ -38,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        headCheckDistance = standingHeight - crouchHeight;
         finalSpeed = moveSpeed;
         controls = new PlayerInput();
         controller = GetComponent<CharacterController>();
@@ -70,6 +72,22 @@ public class PlayerMovement : MonoBehaviour
 
         velocity.y += gravity * Time.deltaTime; 
         controller.Move(velocity * Time.deltaTime);
+    }
+    private bool CheckHeadBump()
+    {
+        Vector3 checkPoint = transform.position;
+        checkPoint.y += controller.height;
+        
+        int playerLayerMask = 1 << LayerMask.NameToLayer("Player");
+        int maskExcludingPlayer = ~playerLayerMask;
+
+        Vector3 dir = checkPoint;
+        dir.y += headCheckDistance;
+        dir -= checkPoint;
+
+        Ray ray = new Ray(checkPoint, dir);
+        
+        return Physics.Raycast(ray, headCheckDistance, maskExcludingPlayer, QueryTriggerInteraction.Ignore);
     }
 
     private void Move()
@@ -112,6 +130,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (controls.Movement.Crouch.triggered)
         {
+            if(isCrouching && CheckHeadBump()) return; //dont uncrouch if head bumps
+            
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standingHeight;
             Vector3 controllerCenter = controller.center;

@@ -12,7 +12,7 @@ public class HemannekenStateMachine : StateMachine
     private Transform playerTransform;
     protected override State InitialState => new HemannekenRoamingState(this); // this is the initial state for Hemanneken SM
     
-    private void Start()
+    protected override void Start()
     {
         playerTransform = FindFirstObjectByType<PlayerMovement>().transform;
         IsTrueForm = true; //determined by the spawn point
