@@ -6,9 +6,12 @@ public class LanternController : MonoBehaviour
 {
     [Header("Lantern Setup")]
     public GameObject lanternPrefab;
+    public Transform lanternHandAnchor;
+
     private GameObject currentLanternInstance;
-    public Light lanternLight;             
-    public Transform lanternHoldPosition;
+    private PhysicsLanternSway currentPhysicsSwayScript;
+    private Light lanternLight;
+    private LightFlicker lightFlicker;
 
     [Header("State")]
     public bool isEquipped = false;
@@ -21,7 +24,6 @@ public class LanternController : MonoBehaviour
     public float defaultRange = 10f;
     public float raisedRange = 15f;
     public Color lightColor = Color.yellow;
-    public LightFlicker lightFlicker;
 
     [Header("Fuel System")]
     public float maxFuel = 100f;
@@ -38,10 +40,6 @@ public class LanternController : MonoBehaviour
     public LayerMask nixieLayer;
     public float interactionCheckInterval = 0.25f;
 
-    // [Header("Input")] // These are now effectively fallbacks or can be removed
-    // public KeyCode equipKey = KeyCode.F;
-    // public KeyCode raiseKey = KeyCode.Mouse1;
-
     // Internal refs
     private Coroutine interactionCoroutine;
     private LanternSway lanternSway;
@@ -50,9 +48,6 @@ public class LanternController : MonoBehaviour
 
     private void Awake()
     {
-        // Ensure playerInputActions is initialized.
-        // If your .inputactions file is named "PlayerInput.inputactions",
-        // the generated C# class is named "PlayerInput".
         if (playerInputActions == null)
         {
             playerInputActions = new PlayerInput();
@@ -61,20 +56,18 @@ public class LanternController : MonoBehaviour
 
     void Start()
     {
-        if (lanternPrefab == null || lanternHoldPosition == null)
+        if (lanternPrefab == null || lanternHandAnchor == null)
         {
-            Debug.LogError("LanternController: Missing Lantern PREFAB or LanternHoldPosition reference!");
+            Debug.LogError("LanternController: Missing Lantern PREFAB or LanternHandPosition reference!");
             enabled = false;
             return;
         }
         currentFuel = maxFuel;
-        // Note: currentLanternInstance, lanternLight, lightFlicker, lanternSway are null here.
-        // They are assigned in ToggleEquip when the lantern is first equipped.
     }
 
     void Update()
     {
-        HandleInput(); // Make sure playerInputActions is not null
+        HandleInput();
 
         if (isEquipped && !outOfFuel)
         {
@@ -106,15 +99,13 @@ public class LanternController : MonoBehaviour
 
     void HandleInput()
     {
-        if (playerInputActions == null) return; // Should not happen if Awake/OnEnable worked
+        if (playerInputActions == null) return;
 
-        // Equip/Unequip Toggle
-        if (playerInputActions.Lantern.EquipLantern.WasPressedThisFrame()) // <<< CORRECTED
+        if (playerInputActions.Lantern.EquipLantern.WasPressedThisFrame())
         {
             ToggleEquip();
         }
 
-        // Raise/Lower Logic
         if (isEquipped && !outOfFuel)
         {
             if (playerInputActions.Lantern.RaiseLantern.WasPressedThisFrame())
@@ -128,8 +119,6 @@ public class LanternController : MonoBehaviour
         }
         else if (isRaised && playerInputActions.Lantern.RaiseLantern.WasReleasedThisFrame())
         {
-            // This handles the case where fuel runs out WHILE raised, or player unequips while raised.
-            // Or if the lantern was unequipped for other reasons.
             StopRaising();
         }
     }
@@ -142,26 +131,38 @@ public class LanternController : MonoBehaviour
         {
             if (currentLanternInstance == null)
             {
-                currentLanternInstance = Instantiate(lanternPrefab, lanternHoldPosition);
-                currentLanternInstance.transform.localPosition = Vector3.zero;
-                currentLanternInstance.transform.localRotation = Quaternion.identity;
+                currentLanternInstance = Instantiate(lanternPrefab, lanternHandAnchor);
+
+                currentPhysicsSwayScript = currentLanternInstance.GetComponent<PhysicsLanternSway>();
+                if (currentPhysicsSwayScript != null)
+                {
+                    Camera mainCam = Camera.main;
+                    if (mainCam != null)
+                    {
+                        currentPhysicsSwayScript.playerCameraTransform = mainCam.transform;
+                    }
+                    else
+                    {
+                        Camera playerCamInHierarchy = GetComponentInChildren<Camera>();
+                        if (playerCamInHierarchy != null) currentPhysicsSwayScript.playerCameraTransform = playerCamInHierarchy.transform;
+                        else Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
+                    }
+
+                    currentPhysicsSwayScript.lanternHoldTarget = lanternHandAnchor;
+                    currentPhysicsSwayScript.ResetSway();
+                }
+                else
+                {
+                    Debug.LogError("No PhysicsLanternSway script found on instantiated lantern prefab!");
+                }
 
                 lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
                 if (lanternLight == null) Debug.LogError("No Light component found on instantiated lantern prefab or its children!");
 
                 lightFlicker = currentLanternInstance.GetComponentInChildren<LightFlicker>();
                 if (lightFlicker == null) Debug.LogWarning("No LightFlicker component found on instantiated lantern prefab.");
-
-                lanternSway = currentLanternInstance.GetComponent<LanternSway>();
-                if (lanternSway == null) Debug.LogWarning("No LanternSway component found on instantiated lantern prefab.");
-                else
-                {
-                    if (lanternHoldPosition != null && lanternHoldPosition.parent != null)
-                        lanternSway.playerCameraTransform = lanternHoldPosition.parent;
-                    else
-                        Debug.LogError("LanternSway cannot find player camera through lanternHoldPosition.parent!");
-                }
             }
+
             currentLanternInstance.SetActive(true);
 
             // Reset raised state in case it was unequipped while raised
@@ -178,10 +179,8 @@ public class LanternController : MonoBehaviour
                 SetLightState(false);
                 Debug.Log("Lantern Equipped (Out of Fuel or No Light)");
             }
-
-            if (lanternSway != null) lanternSway.ResetSway();
         }
-        else // Unequipping
+        else
         {
             StopRaising(); // Ensure raise state logic is processed (like stopping coroutine)
             if (lanternLight != null) SetLightState(false); // Turn off light before deactivating
@@ -322,7 +321,6 @@ public class LanternController : MonoBehaviour
         }
     }
 
-    // ... (MonsterInteractionCheck and OnDrawGizmosSelected remain the same) ...
     IEnumerator MonsterInteractionCheck()
     {
         while (isRaised && !outOfFuel) // Keep checking while raised and fueled

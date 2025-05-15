@@ -7,21 +7,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(0f, 20f)] private float moveSpeed = 10f;
     [SerializeField, Range(1f, 10f)] private float directionLerpSpeed = 5f;
     [SerializeField] private LayerMask groundMask;
-    
+
     [Header("Sprint Settings")]
     [SerializeField, Range(0f, 20f)] private float sprintSpeedIncrement = 3f;
     [SerializeField, Range(1f, 10f)] private float moveToSprintLerpSpeed = 2f;
-    
+
     [Header("Crouch Settings")]
     [SerializeField, Range(1f, 10f)] private float crouchSpeed = 4f;
     [SerializeField, Range(1f, 2f)] private float crouchHeight = 1f;
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
-    
+
     //const
     private float gravity = -9.81f;
     private float groundCheckDistance = 0.4f;
-    
+
     //intermediate
     [NonSerialized] public bool isCrouching = false;
     [NonSerialized] public bool isSprinting = false;
@@ -30,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private float finalSpeed;
     private Vector3 currentDirection = Vector3.zero;
-    
+
     //references
     private CharacterController controller;
     private PlayerInput controls;
@@ -49,17 +49,14 @@ public class PlayerMovement : MonoBehaviour
     {
         controls.Enable();
     }
-    
+
     private void Update()
     {
         Crouch();
+        Gravity();
+        Move();
     }
-    private void FixedUpdate()
-    {
-       Gravity();
-       Move();
-    }
-    
+
     private void Gravity()
     {
         isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundMask);
@@ -68,7 +65,7 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        velocity.y += gravity * Time.deltaTime; 
+        velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
 
@@ -77,15 +74,15 @@ public class PlayerMovement : MonoBehaviour
         move = controls.Movement.Move.ReadValue<Vector2>();
         Vector3 inputDirection = (move.y * transform.forward) + (move.x * transform.right);
         bool isMoving = move.magnitude > 0.01f;
-        
+
         // Smoothly update currentDirection towards input or zero
         if (isMoving)
         {
-            currentDirection = Vector3.Lerp(currentDirection, inputDirection.normalized, Time.fixedDeltaTime * directionLerpSpeed);
+            currentDirection = Vector3.Lerp(currentDirection, inputDirection.normalized, Time.deltaTime * directionLerpSpeed);
         }
         else
         {
-            currentDirection = Vector3.Lerp(currentDirection, Vector3.zero, Time.fixedDeltaTime * moveToSprintLerpSpeed); 
+            currentDirection = Vector3.Lerp(currentDirection, Vector3.zero, Time.deltaTime * moveToSprintLerpSpeed);
         }
 
         // Sprinting speed logic
@@ -102,9 +99,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (!controls.Movement.Sprint.inProgress) isSprinting = false;
 
-        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.fixedDeltaTime * moveToSprintLerpSpeed); // smooth speed transition
+        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveToSprintLerpSpeed); // smooth speed transition
 
-        Vector3 finalMove = finalSpeed * Time.fixedDeltaTime * currentDirection;
+        Vector3 finalMove = finalSpeed * Time.deltaTime * currentDirection;
         controller.Move(finalMove);
     }
 
@@ -131,10 +128,10 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 v = controller.velocity;
         v.y = 0f;
-    
+
         return v.magnitude;
     }
-    
+
     private void OnDisable()
     {
         controls.Disable();

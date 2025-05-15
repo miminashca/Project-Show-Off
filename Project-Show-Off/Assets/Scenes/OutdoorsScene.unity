@@ -216,9 +216,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6884a92649b8a984fbd481b8d546f758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lanternPrefab: {fileID: 5285291105193131780, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
-  lanternLight: {fileID: 5283878510407324827, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
-  lanternHoldPosition: {fileID: 2003809842}
+  lanternPrefab: {fileID: 4722296896312563861, guid: 7b8937b3aafb53845a60dc2c4958f45a, type: 3}
+  lanternHandAnchor: {fileID: 2003809842}
   isEquipped: 0
   isRaised: 0
   defaultIntensity: 5
@@ -226,7 +225,6 @@ MonoBehaviour:
   defaultRange: 10
   raisedRange: 15
   lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  lightFlicker: {fileID: 1334594385190227026, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
   maxFuel: 100
   currentFuel: 0
   passiveDrainRate: 0.1
@@ -331,13 +329,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 157207112}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.9914449, y: 0, z: 0, w: 0.13052626}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 165, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &157207115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1336,7 +1334,7 @@ GameObject:
   - component: {fileID: 701230420}
   - component: {fileID: 701230419}
   m_Layer: 0
-  m_Name: Model
+  m_Name: Player Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2056,12 +2054,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823688464}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c91819f62dd84c599da499f4407d11b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enable: 1
+  enable: 0
   amplitude: 0.015
   frequency: 7
   resetCamSpeed: 1
@@ -2075,7 +2073,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2003809842}
   m_Layer: 0
-  m_Name: LanternHoldPosition
+  m_Name: LanternHandAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

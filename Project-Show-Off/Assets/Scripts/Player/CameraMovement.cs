@@ -21,31 +21,30 @@ public class CameraMovement : MonoBehaviour
     void Awake()
     {
         playerBody = transform.parent;
-        controls = new PlayerInput();
+        controls = new PlayerInput(); // Assuming PlayerInput is set up correctly
         Cursor.lockState = CursorLockMode.Locked;
-        
+
         targetYaw = smoothYaw = playerBody.eulerAngles.y;
-        targetPitch = smoothPitch = transform.localEulerAngles.x;
+        // Ensure pitch initialization handles negative angles correctly from Euler
+        float initialPitch = transform.localEulerAngles.x;
+        if (initialPitch > 180) initialPitch -= 360;
+        targetPitch = smoothPitch = initialPitch;
     }
     private void OnEnable()
     {
         controls.Enable();
+        // It's good practice to re-sync yaw/pitch on enable if the object could have been rotated while disabled
+        targetYaw = smoothYaw = playerBody.eulerAngles.y;
+        float initialPitch = transform.localEulerAngles.x;
+        if (initialPitch > 180) initialPitch -= 360;
+        targetPitch = smoothPitch = initialPitch;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         Look();
     }
 
-    // private void Look()
-    // {
-    //     mouseLook =  (mouseSensitivity / Screen.dpi * 100f) * controls.Movement.Look.ReadValue<Vector2>();
-    //     xRotation = Mathf.Clamp(xRotation-mouseLook.y, -verticalLookClamp, verticalLookClamp);
-    //     
-    //     transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-    //     playerBody.Rotate(Vector3.up * mouseLook.x);
-    //     
-    // }
     private void Look()
     {
         // read raw input
