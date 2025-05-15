@@ -1,6 +1,7 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Serialization;
 
 public class HemannekenStateMachine : StateMachine
@@ -10,13 +11,17 @@ public class HemannekenStateMachine : StateMachine
     [SerializeField, Range(0f, 100f)] private float investigateDistance = 50f;
     [SerializeField] private GameObject hemannekenTrueModel;
     [SerializeField] private GameObject hemannekenRabbitModel;
-
+   
+    [NonSerialized] public NavMeshAgent navAgent;
+    [NonSerialized] public SpawnPointsManager spManager;
     [NonSerialized] public bool IsTrueForm;
     private Transform playerTransform;
     protected override State InitialState => new HemannekenRoamingState(this); // this is the initial state for Hemanneken SM
     
     protected override void Start()
     {
+        navAgent = GetComponent<NavMeshAgent>();
+        spManager = GetComponentInChildren<SpawnPointsManager>();
         playerTransform = FindFirstObjectByType<PlayerMovement>().transform;
         if(IsTrueForm)EnableTrueFormMesh();
         else EnableRabbitFormMesh();
