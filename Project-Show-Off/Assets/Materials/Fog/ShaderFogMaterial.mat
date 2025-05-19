@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Test
+  m_Name: ShaderFogMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 34ad9f7d34dc239409ea8ab3d8a56ec1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -87,11 +87,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_67dd8bfe31bd45fb8c7b1aa853938de7_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 211f56e78ddee3346812448c14be94b4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7f51af3507cac29459d7c6c1bc4b8bb7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_6a94ef1bfafa497aae5f5d08fd3aedde_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 211f56e78ddee3346812448c14be94b4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 7f51af3507cac29459d7c6c1bc4b8bb7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_6c4be2250f9f44ef80282123fe95bfe3_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 7f51af3507cac29459d7c6c1bc4b8bb7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_7c9e16f673ef4157adacb6a1ca799545_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 7f51af3507cac29459d7c6c1bc4b8bb7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_aad9bd5d50124fcb9c48bffef56c14ce_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 7f51af3507cac29459d7c6c1bc4b8bb7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecularColorMap:
@@ -178,12 +190,12 @@ Material:
     - _EnableFogOnTransparent: 1
     - _EnableGeometricSpecularAA: 0
     - _EnergyConservingSpecularColor: 1
-    - _FogVolumeAlphaBlendOp: 0
-    - _FogVolumeBlendMode: 1
-    - _FogVolumeColorBlendOp: 0
+    - _FogVolumeAlphaBlendOp: 4
+    - _FogVolumeBlendMode: 4
+    - _FogVolumeColorBlendOp: 4
     - _FogVolumeDstAlphaBlend: 1
     - _FogVolumeDstColorBlend: 1
-    - _FogVolumeFogDistanceProperty: 10
+    - _FogVolumeFogDistanceProperty: 1
     - _FogVolumeSrcAlphaBlend: 1
     - _FogVolumeSrcColorBlend: 1
     - _HeightAmplitude: 0.02
@@ -225,6 +237,8 @@ Material:
     - _SpecularAAScreenSpaceVariance: 0.1
     - _SpecularAAThreshold: 0.2
     - _SpecularOcclusionMode: 1
+    - _Speed: 0.25
+    - _Speed2: 0.02
     - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 8
@@ -240,6 +254,8 @@ Material:
     - _TexWorldScale: 1
     - _TexWorldScaleEmissive: 1
     - _Thickness: 1
+    - _Tilling: 5
+    - _Tilling2: -0.1
     - _TransmissionEnable: 1
     - _TransmissionMask: 1
     - _TransparentBackfaceEnable: 0
@@ -260,13 +276,14 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BottomColor: {r: 0.7470029, g: 0.74133843, b: 0.78113204, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissiveColor: {r: 0, g: 0, b: 0, a: 1}
     - _EmissiveColorLDR: {r: 0, g: 0, b: 0, a: 1}
-    - _FogVolumeSingleScatteringAlbedo: {r: 1, g: 1, b: 1, a: 1}
+    - _FogVolumeSingleScatteringAlbedo: {r: 0.90943396, g: 0.90943396, b: 0.90943396, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
@@ -275,6 +292,7 @@ Material:
     - _UVDetailsMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMask: {r: 1, g: 0, b: 0, a: 0}
     - _UVMappingMaskEmissive: {r: 1, g: 0, b: 0, a: 0}
+    - _UpperColor: {r: 0.87169814, g: 0.85360634, b: 0.85360634, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &482542075613097893
