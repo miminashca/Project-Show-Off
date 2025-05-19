@@ -1,38 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3764152496853283327
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5163946917986330379}
-  m_Layer: 0
-  m_Name: 'LanternSwingingPivot '
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5163946917986330379
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3764152496853283327}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.042365924, y: -0, z: -0, w: 0.9991022}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1603094635322555715}
-  - {fileID: 6990628800717464783}
-  m_Father: {fileID: 5124092622439185106}
-  m_LocalEulerAnglesHint: {x: 4.856, y: 0, z: 0}
 --- !u!1 &4722296896312563861
 GameObject:
   m_ObjectHideFlags: 0
@@ -44,7 +11,7 @@ GameObject:
   - component: {fileID: 5124092622439185106}
   - component: {fileID: 7665495684148905247}
   m_Layer: 0
-  m_Name: LanternObject
+  m_Name: LanternJointed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -63,7 +30,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5163946917986330379}
+  - {fileID: 1603094635322555715}
+  - {fileID: 6990628800717464783}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &7665495684148905247
@@ -80,18 +48,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCameraTransform: {fileID: 0}
   lanternHoldTarget: {fileID: 0}
-  handleRigidbody: {fileID: 0}
-  swingingLanternBodyRB: {fileID: 0}
-  positionSmoothTime: 0.05
-  maxPositionalSwayDistance: 1.5
-  positionSwayMultiplier: {x: 1, y: 0.5, z: 1}
+  handleRigidbody: {fileID: 6308565584742078529}
+  swingingLanternBodyRB: {fileID: 7538896301535132852}
+  positionSmoothTime: 0.1
+  maxBasePositionalSway: 0.1
+  lookPositionSwayAmount: 0.005
+  movePositionSwayAmount: 0.01
   rotationSmoothTime: 0.15
-  maxRotationalSwayAngle: 15
-  rotationSwayMultiplier: {x: 1, y: 1, z: 0.5}
-  movementPositionSwayAmount: 0.02
-  movementRotationSwayAmount: 2
-  mouseInputDeadzone: 0.001
-  movementInputDeadzone: 0.01
+  maxBaseRotationalSway: 10
+  lookRotationSwayAmount: 0.5
+  moveRotationSwayAmount: 1
+  accelerationPositionFactor: 0.03
+  maxAccelerationPositionOffset: 0.1
+  accelerationRotationFactor: 2
+  maxAccelerationRotationOffset: 15
+  velocityPositionDragFactor: 0.001
+  maxVelocityPositionDragOffset: 0.05
+  lookAngularVelocityRotationFactor: 0.25
+  maxLookAngularVelocityRotationOffset: 8
+  overallGravityInfluence: 0
+  overallSettlingSpeed: 4
 --- !u!1 &7309653336368244967
 GameObject:
   m_ObjectHideFlags: 0
@@ -103,6 +79,7 @@ GameObject:
   - component: {fileID: 1603094635322555715}
   - component: {fileID: 3059986546886719860}
   - component: {fileID: 2651337860098758211}
+  - component: {fileID: 6308565584742078529}
   m_Layer: 0
   m_Name: Lantern Handle
   m_TagString: Untagged
@@ -119,11 +96,11 @@ Transform:
   m_GameObject: {fileID: 7309653336368244967}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.325, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5163946917986330379}
+  m_Father: {fileID: 5124092622439185106}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!33 &3059986546886719860
 MeshFilter:
@@ -178,6 +155,33 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!54 &6308565584742078529
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7309653336368244967}
+  serializedVersion: 4
+  m_Mass: 0.2
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7369331064143926192
 GameObject:
   m_ObjectHideFlags: 0
@@ -192,6 +196,8 @@ GameObject:
   - component: {fileID: 8725430443909294339}
   - component: {fileID: 1582543035949865900}
   - component: {fileID: 6458694561860985630}
+  - component: {fileID: 7538896301535132852}
+  - component: {fileID: 7904490314033236804}
   m_Layer: 0
   m_Name: Lantern Body
   m_TagString: Untagged
@@ -208,11 +214,11 @@ Transform:
   m_GameObject: {fileID: 7369331064143926192}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -0.188, z: -0}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5163946917986330379}
+  m_Father: {fileID: 5124092622439185106}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &4788896590385974627
 MonoBehaviour:
@@ -491,3 +497,69 @@ MonoBehaviour:
   m_ObsoleteUseShadowQualitySettings: 0
   m_ObsoleteCustomShadowResolution: 512
   m_ObsoleteContactShadows: 0
+--- !u!54 &7538896301535132852
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7369331064143926192}
+  serializedVersion: 4
+  m_Mass: 2
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!59 &7904490314033236804
+HingeJoint:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7369331064143926192}
+  serializedVersion: 3
+  m_ConnectedBody: {fileID: 6308565584742078529}
+  m_ConnectedArticulationBody: {fileID: 0}
+  m_Anchor: {x: 0, y: 26.5, z: 0}
+  m_Axis: {x: 0, y: 0, z: 1}
+  m_AutoConfigureConnectedAnchor: 0
+  m_ConnectedAnchor: {x: 0, y: -26, z: 0}
+  m_UseSpring: 1
+  m_Spring:
+    spring: 4
+    damper: 1
+    targetPosition: 0
+  m_UseMotor: 0
+  m_Motor:
+    targetVelocity: 0
+    force: 0
+    freeSpin: 0
+  m_UseLimits: 1
+  m_ExtendedLimits: 0
+  m_UseAcceleration: 0
+  m_Limits:
+    min: -90
+    max: 90
+    bounciness: 0
+    bounceMinVelocity: 0.2
+    contactDistance: 0
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_EnableCollision: 0
+  m_EnablePreprocessing: 1
+  m_MassScale: 1
+  m_ConnectedMassScale: 1

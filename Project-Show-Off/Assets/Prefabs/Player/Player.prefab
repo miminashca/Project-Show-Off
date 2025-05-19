@@ -168,7 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   verticalLookClamp: 45
   mouseSensitivity: 1
-  lookLerpSpeed: 10
+  lookLerpSpeed: 19.4
 --- !u!114 &8447245095627851967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,7 +182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enable: 1
-  amplitude: 0.015
+  amplitude: 0.0075
   frequency: 7
   resetCamSpeed: 1
 --- !u!20 &5603431912760654469
@@ -458,11 +458,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   directionLerpSpeed: 5
-  moveLerpSpeed: 2
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   sprintSpeedIncrement: 3
+  moveToSprintLerpSpeed: 2
   crouchSpeed: 2
   crouchHeight: 1
   standingHeight: 2
@@ -480,8 +480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lanternPrefab: {fileID: 5285291105193131780, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
-  lanternLight: {fileID: 5283878510407324827, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
-  lanternHoldPosition: {fileID: 2214964552251006022}
+  lanternHandAnchor: {fileID: 0}
   isEquipped: 0
   isRaised: 0
   defaultIntensity: 5
@@ -489,7 +488,6 @@ MonoBehaviour:
   defaultRange: 10
   raisedRange: 15
   lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  lightFlicker: {fileID: 1334594385190227026, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
   maxFuel: 100
   currentFuel: 0
   passiveDrainRate: 0.1

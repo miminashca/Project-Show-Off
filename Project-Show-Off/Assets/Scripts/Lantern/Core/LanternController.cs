@@ -132,28 +132,66 @@ public class LanternController : MonoBehaviour
             if (currentLanternInstance == null)
             {
                 currentLanternInstance = Instantiate(lanternPrefab, lanternHandAnchor);
+                currentLanternInstance.transform.localPosition = Vector3.zero; // Ensure it's at the anchor's origin
+                currentLanternInstance.transform.localRotation = Quaternion.identity; // Ensure it's aligned with anchor
 
+                // Try to get PhysicsLanternSway from the root of the instantiated prefab
                 currentPhysicsSwayScript = currentLanternInstance.GetComponent<PhysicsLanternSway>();
+                if (currentPhysicsSwayScript == null)
+                {
+                    // Fallback: try to find it on a child named "LanternBody" or similar if your structure differs
+                    currentPhysicsSwayScript = currentLanternInstance.GetComponentInChildren<PhysicsLanternSway>();
+                }
+
                 if (currentPhysicsSwayScript != null)
                 {
-                    Camera mainCam = Camera.main;
+                    Camera mainCam = Camera.main; // Prefer Camera.main
                     if (mainCam != null)
                     {
                         currentPhysicsSwayScript.playerCameraTransform = mainCam.transform;
                     }
-                    else
+                    else // Fallback to camera on this player object hierarchy
                     {
-                        Camera playerCamInHierarchy = GetComponentInChildren<Camera>();
+                        Camera playerCamInHierarchy = GetComponentInParent<Camera>(); // Search on parent first
+                        if (playerCamInHierarchy == null) playerCamInHierarchy = GetComponentInChildren<Camera>(); // Then children
+
                         if (playerCamInHierarchy != null) currentPhysicsSwayScript.playerCameraTransform = playerCamInHierarchy.transform;
                         else Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
                     }
 
                     currentPhysicsSwayScript.lanternHoldTarget = lanternHandAnchor;
+
+                    // *** NEW: Assign Rigidbodies for physics-based sway ***
+                    Transform handleTransform = currentLanternInstance.transform.Find("Lantern Handle"); // Assuming this name
+                    if (handleTransform != null)
+                    {
+                        currentPhysicsSwayScript.handleRigidbody = handleTransform.GetComponent<Rigidbody>();
+                        if (currentPhysicsSwayScript.handleRigidbody == null)
+                            Debug.LogError("PhysicsLanternSway: 'LanternHandle' child is missing a Rigidbody component!");
+                        else
+                            currentPhysicsSwayScript.handleRigidbody.isKinematic = true; // Ensure it's kinematic
+                    }
+                    else Debug.LogError("PhysicsLanternSway: Could not find 'Lantern Handle' child in prefab.");
+
+                    // Assuming the Hinge Joint is on "LanternBody" and its Rigidbody is the one that swings
+                    Transform lanternBodyPartTransform = currentLanternInstance.transform.Find("Lantern Body"); // Assuming this name
+                    if (lanternBodyPartTransform != null)
+                    {
+                        currentPhysicsSwayScript.swingingLanternBodyRB = lanternBodyPartTransform.GetComponent<Rigidbody>();
+                        if (currentPhysicsSwayScript.swingingLanternBodyRB == null)
+                            Debug.LogError("PhysicsLanternSway: 'Lantern Body' child is missing its Rigidbody component for swinging!");
+
+                        // The HingeJoint on swingingLanternBodyRB should already have its 'Connected Body'
+                        // set to 'handleRigidbody' in the prefab.
+                    }
+                    else Debug.LogError("PhysicsLanternSway: Could not find 'LanternBody' child in prefab for swinging RB.");
+                    // *******************************************************
+
                     currentPhysicsSwayScript.ResetSway();
                 }
                 else
                 {
-                    Debug.LogError("No PhysicsLanternSway script found on instantiated lantern prefab!");
+                    Debug.LogError("No PhysicsLanternSway script found on instantiated lantern prefab or its children!");
                 }
 
                 lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
