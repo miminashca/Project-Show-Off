@@ -16,7 +16,7 @@ public class HeadbobController : MonoBehaviour
     private PlayerMovement controller; // Reference to the PlayerMovement script
 
     //const
-    private float toggleSpeed = 1.0f; // Speed threshold to trigger headbobbing
+    private float toggleSpeed = 0.3f; // Speed threshold to trigger headbobbing
     private Vector3 startPos; // Starting position of the playerCamera
 
     void Awake()

@@ -1728,7 +1728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21db0eca49cc54c1bb42730035bf427b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hemannekenPrefab: {fileID: 0}
+  hemannekenPrefab: {fileID: 4459889473469353627, guid: 58c409d09b7124a7eba6bec18a1de288, type: 3}
 --- !u!1 &2003809841
 GameObject:
   m_ObjectHideFlags: 0
@@ -1757,7 +1757,8 @@ Transform:
   m_LocalPosition: {x: 3.258145, y: 0.7809363, z: -3.0035472}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1459227312}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2003809843
@@ -1894,23 +1895,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 2003809842}
     m_Modifications:
     - target: {fileID: 1237719431754309149, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
       propertyPath: m_Name
       value: SpawnPointsManager
       objectReference: {fileID: 0}
+    - target: {fileID: 1237719431754309149, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6410944053581765908, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.258145
+      value: -6.51629
       objectReference: {fileID: 0}
     - target: {fileID: 6410944053581765908, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.7809363
+      value: -1.5618726
       objectReference: {fileID: 0}
     - target: {fileID: 6410944053581765908, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.0035472
+      value: 6.0070944
       objectReference: {fileID: 0}
     - target: {fileID: 6410944053581765908, guid: 080620d18fcfd469ea430e7b884ddc19, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2070,6 +2075,5 @@ SceneRoots:
   - {fileID: 1637349168}
   - {fileID: 228703856}
   - {fileID: 277278821}
-  - {fileID: 2023842926502732076}
   - {fileID: 2003809842}
   - {fileID: 2020496985}

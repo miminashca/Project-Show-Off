@@ -1,28 +1,31 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Move Settings")]
     [SerializeField, Range(0f, 20f)] private float moveSpeed = 10f;
     [SerializeField, Range(1f, 10f)] private float directionLerpSpeed = 5f;
+    [SerializeField, Range(1f, 10f)] private float moveLerpSpeed = 2f;
     [SerializeField] private LayerMask groundMask;
-
+    
     [Header("Sprint Settings")]
     [SerializeField, Range(0f, 20f)] private float sprintSpeedIncrement = 3f;
-    [SerializeField, Range(1f, 10f)] private float moveToSprintLerpSpeed = 2f;
-
+    
     [Header("Crouch Settings")]
     [SerializeField, Range(1f, 10f)] private float crouchSpeed = 4f;
     [SerializeField, Range(1f, 2f)] private float crouchHeight = 1f;
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
-
+    
     //const
     private float gravity = -9.81f;
     private float groundCheckDistance = 0.4f;
-
+    private float headCheckDistance = 0.4f;
+    
     //intermediate
+    [NonSerialized] public bool isMoving = false;
     [NonSerialized] public bool isCrouching = false;
     [NonSerialized] public bool isSprinting = false;
     [NonSerialized] public bool isGrounded = true;
@@ -30,33 +33,121 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
     private float finalSpeed;
     private Vector3 currentDirection = Vector3.zero;
+    Vector3 lastPos;
+    private Vector2 rawInput;
+    private Vector3 inputDirection;
+    private float targetSpeed;
+    private float signedSpeed;
 
     //references
     private CharacterController controller;
     private PlayerInput controls;
-    private Camera playerCamera;
+    private Transform playerCamera;
 
     private void Awake()
     {
+        lastPos = transform.position;
+        headCheckDistance = standingHeight - crouchHeight;
         finalSpeed = moveSpeed;
-        controls = new PlayerInput();
         controller = GetComponent<CharacterController>();
-        playerCamera = GetComponentInChildren<Camera>();
+        playerCamera = GetComponentInChildren<Camera>().transform;
         controller.height = standingHeight;
-        playerCamera.transform.position = new Vector3(playerCamera.transform.position.x, standingHeight, playerCamera.transform.position.z);
+        playerCamera.position = new Vector3(playerCamera.transform.position.x, standingHeight, playerCamera.position.z);
     }
     private void OnEnable()
     {
+        controls = new PlayerInput();
         controls.Enable();
     }
-
+    private void OnDisable()
+    {
+        controls.Disable();
+    }
     private void Update()
     {
         Crouch();
+    }
+    private void FixedUpdate()
+    { 
         Gravity();
         Move();
     }
+    private void Move()
+    {
+        ReadInput();
+        UpdateDirection();
+        CalculateTargetSpeed();
+        SmoothSpeedTransition();
+        ApplyMovement();
+    }
 
+    // Read the raw Vector2 input and derive movement state
+    private void ReadInput()
+    {
+        rawInput = controls.Movement.Move.ReadValue<Vector2>();
+        isMoving = rawInput.magnitude > 0.01f;
+    }
+
+    // Compute the desired direction vector (normalized)
+    private void UpdateDirection()
+    {
+        Vector3 forwardComponent = rawInput.y * transform.forward;
+        Vector3 rightComponent   = rawInput.x * transform.right;
+        Vector3 desired          = forwardComponent + rightComponent;
+
+        float lerpSpeed = isMoving ? directionLerpSpeed : moveLerpSpeed;
+        Vector3 targetDir = isMoving ? desired.normalized : Vector3.zero;
+        currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.smoothDeltaTime * lerpSpeed);
+    }
+
+    // Determine what the target speed should be
+    private void CalculateTargetSpeed()
+    {
+        // Base walk/crouch speed
+        targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
+        signedSpeed = GetSignedMovementSpeed();
+
+        if (signedSpeed < -0.1f)
+        {
+            // Backwards
+            targetSpeed *= 0.5f;
+            isSprinting = false;
+        }
+        else if (ShouldStartSprinting())
+        {
+            targetSpeed += sprintSpeedIncrement;
+            isSprinting = true;
+        }
+        else if (!isMoving)
+        {
+            // No movement input → no speed
+            targetSpeed = 0f;
+            isSprinting = false;
+        }
+    }
+
+    // Helper to decide sprint conditions
+    private bool ShouldStartSprinting()
+    {
+        return controls.Movement.Sprint.inProgress
+            && isMoving
+            && !isCrouching
+            && signedSpeed > 0.1f;
+    }
+
+    // Smoothly lerp from current speed to targetSpeed
+    private void SmoothSpeedTransition()
+    {
+        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.smoothDeltaTime * moveLerpSpeed);
+    }
+
+    // Finally apply movement to the character controller
+    private void ApplyMovement()
+    {
+        Vector3 displacement = finalSpeed * Time.smoothDeltaTime * currentDirection;
+        controller.Move(displacement);
+    }
+    
     private void Gravity()
     {
         isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundMask);
@@ -65,50 +156,31 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        velocity.y += gravity * Time.smoothDeltaTime; 
         controller.Move(velocity * Time.deltaTime);
     }
-
-    private void Move()
+    private bool CheckHeadBump()
     {
-        move = controls.Player.Move.ReadValue<Vector2>();
-        Vector3 inputDirection = (move.y * transform.forward) + (move.x * transform.right);
-        bool isMoving = move.magnitude > 0.01f;
+        Vector3 checkPoint = transform.position;
+        checkPoint.y += controller.height;
+        
+        int playerLayerMask = 1 << LayerMask.NameToLayer("Player");
+        int maskExcludingPlayer = ~playerLayerMask;
 
-        // Smoothly update currentDirection towards input or zero
-        if (isMoving)
-        {
-            currentDirection = Vector3.Lerp(currentDirection, inputDirection.normalized, Time.deltaTime * directionLerpSpeed);
-        }
-        else
-        {
-            currentDirection = Vector3.Lerp(currentDirection, Vector3.zero, Time.deltaTime * moveToSprintLerpSpeed);
-        }
+        Vector3 dir = checkPoint;
+        dir.y += headCheckDistance;
+        dir -= checkPoint;
 
-        // Sprinting speed logic
-        float targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
-        if (controls.Player.Sprint.inProgress && isMoving && !isCrouching)
-        {
-            isSprinting = true;
-            targetSpeed += sprintSpeedIncrement;
-        }
-        else if (!isMoving)
-        {
-            targetSpeed = 0f;
-        }
-
-        if (!controls.Player.Sprint.inProgress) isSprinting = false;
-
-        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveToSprintLerpSpeed); // smooth speed transition
-
-        Vector3 finalMove = finalSpeed * Time.deltaTime * currentDirection;
-        controller.Move(finalMove);
+        Ray ray = new Ray(checkPoint, dir);
+        
+        return Physics.Raycast(ray, headCheckDistance, maskExcludingPlayer, QueryTriggerInteraction.Ignore);
     }
-
     private void Crouch()
     {
         if (controls.Player.Crouch.triggered)
         {
+            if(isCrouching && CheckHeadBump()) return; //dont uncrouch if head bumps
+            
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standingHeight;
             Vector3 controllerCenter = controller.center;
@@ -120,7 +192,7 @@ public class PlayerMovement : MonoBehaviour
     private void SmoothCameraHeight()
     {
         Vector3 camPos = playerCamera.transform.localPosition;
-        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.deltaTime * crouchLerpSpeed);
+        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.smoothDeltaTime * crouchLerpSpeed);
         playerCamera.transform.localPosition = camPos;
     }
 
@@ -128,12 +200,20 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector3 v = controller.velocity;
         v.y = 0f;
-
+        //Debug.Log(v.magnitude);
         return v.magnitude;
     }
-
-    private void OnDisable()
+    /// <summary>
+    /// Returns positive if moving forward, negative if moving backward,
+    /// zero if stationary or purely strafing.
+    /// Magnitude of the return value is the horizontal speed.
+    /// </summary>
+    public float GetSignedMovementSpeed()
     {
-        controls.Disable();
+        Vector3 delta = transform.position - lastPos;
+        float signedSpeed = Vector3.Dot(delta / Time.deltaTime, transform.forward);
+        //Debug.Log("Signed speed: " + signedSpeed);
+        lastPos = transform.position;
+        return signedSpeed;
     }
 }

@@ -11,7 +11,7 @@ public class SpawnPointsManager : MonoBehaviour
     private void Awake()
     {
         SpawnPoints = GetComponentsInChildren<SpawnPoint>().ToList();
-        Debug.Log("Number of spawn points: " + SpawnPoints.Count);
+        //Debug.Log("Number of spawn points: " + SpawnPoints.Count);
     }
 
     private void Start()
