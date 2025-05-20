@@ -1,4 +1,3 @@
-// PhysicsLanternSway.cs
 using UnityEngine;
 
 public class PhysicsLanternSway : MonoBehaviour

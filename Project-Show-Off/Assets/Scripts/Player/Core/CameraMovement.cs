@@ -15,9 +15,6 @@ public class CameraMovement : MonoBehaviour
     //references
     private PlayerInput controls;
     private Transform playerBody;
-    
-    //intermediate
-    private Vector2 mouseLook;
 
     void Awake()
     {
@@ -38,16 +35,6 @@ public class CameraMovement : MonoBehaviour
         ReadValue();
         Look();
     }
-    
-    // private void Look()
-    // {
-    //     mouseLook =  (mouseSensitivity / Screen.dpi * 100f) * controls.Movement.Look.ReadValue<Vector2>();
-    //     xRotation = Mathf.Clamp(xRotation-mouseLook.y, -verticalLookClamp, verticalLookClamp);
-    //     
-    //     transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-    //     playerBody.Rotate(Vector3.up * mouseLook.x);
-    //     
-    // }
 
     private void ReadValue()
     {
@@ -63,8 +50,8 @@ public class CameraMovement : MonoBehaviour
 
         
         // smooth actual angles toward target
-        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.smoothDeltaTime * lookLerpSpeed);
-        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.smoothDeltaTime * lookLerpSpeed);
+        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.deltaTime * lookLerpSpeed);
+        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.deltaTime * lookLerpSpeed);
     }
     private void Look()
     {

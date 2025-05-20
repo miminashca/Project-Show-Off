@@ -1,14 +1,13 @@
+// HeadbobController.cs
 using UnityEngine;
 
 public class HeadbobController : MonoBehaviour
 {
     [Header("Configuration")]
-
     [SerializeField] private bool enable = true; // Toggle to enable/disable headbobbing
-
     [SerializeField, Range(0f, 0.1f)] private float amplitude = 0.015f; // Amplitude of headbobbing motion
     [SerializeField, Range(0f, 20f)] private float frequency = 10.0f; // Frequency of headbobbing motion
-    [SerializeField, Range(0f, 5f)] private float resetCamSpeed = 1f; // Frequency of headbobbing motion
+    [SerializeField, Range(0f, 20f)] private float bobLerpSpeed = 10f; // Speed to interpolate headbob effect
 
     //references
     private Transform playerBody;
@@ -17,64 +16,96 @@ public class HeadbobController : MonoBehaviour
 
     //const
     private float toggleSpeed = 0.3f; // Speed threshold to trigger headbobbing
-    private Vector3 startPos; // Starting position of the playerCamera
+    private Vector3 startPos; // Starting local position of the playerCamera (captures initial X, Y, Z)
+    private Vector3 currentBobOffset = Vector3.zero; // The current offset applied by headbob
 
     void Awake()
     {
         playerBody = transform.parent;
+        if (playerBody == null)
+        {
+            Debug.LogError("HeadbobController: PlayerBody (parent) not found!", this);
+            enable = false;
+            return;
+        }
         controller = playerBody.GetComponent<PlayerMovement>();
+        if (controller == null)
+        {
+            Debug.LogError("HeadbobController: PlayerMovement script not found on PlayerBody!", this);
+            enable = false;
+            return;
+        }
         playerCamera = GetComponent<Camera>();
+        if (playerCamera == null)
+        {
+            Debug.LogError("HeadbobController: Camera component not found on this GameObject!", this);
+            enable = false;
+            return;
+        }
     }
+
     private void Start()
     {
-        startPos = transform.localPosition; // Store the initial local position of the playerCamera
+        if (!enable) return;
+        startPos = playerCamera.transform.localPosition;
     }
 
-    void Update()
+    void LateUpdate()
     {
-        if (!enable) return; // If headbobbing is disabled, exit Update
+        if (!enable)
+        {
+            currentBobOffset = Vector3.Lerp(currentBobOffset, Vector3.zero, bobLerpSpeed * Time.deltaTime);
+            ApplyBobOffset();
+            return;
+        }
 
-        CheckMotion(); // Check if the player's motion should trigger headbobbing
-        ResetPosition(); // Reset the playerCamera position smoothly back to the start position
+        Vector3 targetBobOffset = Vector3.zero;
+        float speed = controller.GetMovementSpeed();
+
+        if (speed >= toggleSpeed && controller.isGrounded)
+        {
+            targetBobOffset = CalculateFootStepMotion();
+        }
+
+        currentBobOffset = Vector3.Lerp(currentBobOffset, targetBobOffset, bobLerpSpeed * Time.deltaTime);
+
+        ApplyBobOffset();
     }
 
-    // Calculate the headbobbing motion based on footstep-like movement
-    private Vector3 FootStepMotion()
+    // Calculate the headbobbing motion offset
+    private Vector3 CalculateFootStepMotion()
     {
         float finalFrequency = frequency;
+        float finalAmplitude = amplitude;
 
-        if (controller.isCrouching) finalFrequency *= 0.5f;
-        else if (controller.isSprinting) finalFrequency *= 2f;
+        if (controller.isCrouching)
+        {
+            finalFrequency *= 0.75f;
+            finalAmplitude *= 0.75f;
+        }
+        else if (controller.isSprinting)
+        {
+            finalFrequency *= 1.5f;
+            finalAmplitude *= 1.25f;
+        }
 
-        Vector3 pos = Vector3.zero;
-        pos.y += Mathf.Sin(Time.time * finalFrequency) * amplitude; // Vertical motion (bobbing up and down)
-        pos.x += Mathf.Cos(Time.time * finalFrequency / 2) * amplitude * 2; // Horizontal motion (swaying side to side)
+        Vector3 bobOffset = Vector3.zero;
+        bobOffset.y = Mathf.Sin(Time.time * finalFrequency) * finalAmplitude;
+        bobOffset.x = Mathf.Cos(Time.time * finalFrequency / 2f) * finalAmplitude * 2f;
 
-        return pos;
+        return bobOffset;
     }
 
-    // Check if player's motion is sufficient to trigger headbobbing
-    private void CheckMotion()
+    private void ApplyBobOffset()
     {
-        float speed = controller.GetMovementSpeed(); // Get player's movement speed directly
-        if (speed < toggleSpeed) return; // If speed is below threshold, do not trigger headbobbing
-        if (!controller.isGrounded) return; // If player is not grounded, do not trigger headbobbing
+        if (playerCamera == null) return;
 
-        PlayMotion(FootStepMotion()); // Trigger headbobbing based on footstep motion
-    }
+        Vector3 currentBaseLocalPosition = playerCamera.transform.localPosition;
 
-    // Apply the calculated motion to the playerCamera, relative to player's orientation
-    private void PlayMotion(Vector3 motion)
-    {
-        playerCamera.transform.localPosition += motion; // Apply the motion to the playerCamera's local position
-    }
-
-
-    // Smoothly reset the playerCamera's position back to the starting position
-    private void ResetPosition()
-    {
-        if (playerCamera.transform.localPosition == startPos) return; // If playerCamera is already at the start position, do nothing
-
-        playerCamera.transform.localPosition = Vector3.Lerp(playerCamera.transform.localPosition, startPos, resetCamSpeed * Time.deltaTime); // Smoothly move playerCamera towards the start position
+        playerCamera.transform.localPosition = new Vector3(
+            startPos.x + currentBobOffset.x,
+            currentBaseLocalPosition.y + currentBobOffset.y,
+            startPos.z
+        );
     }
 }

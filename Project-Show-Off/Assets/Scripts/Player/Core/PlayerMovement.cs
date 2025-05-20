@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -9,21 +8,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(1f, 10f)] private float directionLerpSpeed = 5f;
     [SerializeField, Range(1f, 10f)] private float moveLerpSpeed = 2f;
     [SerializeField] private LayerMask groundMask;
-    
+
     [Header("Sprint Settings")]
     [SerializeField, Range(0f, 20f)] private float sprintSpeedIncrement = 3f;
-    
+
     [Header("Crouch Settings")]
     [SerializeField, Range(1f, 10f)] private float crouchSpeed = 4f;
     [SerializeField, Range(1f, 2f)] private float crouchHeight = 1f;
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
-    
+
     //const
     private float gravity = -9.81f;
     private float groundCheckDistance = 0.4f;
     private float headCheckDistance = 0.4f;
-    
+
     //intermediate
     [NonSerialized] public bool isMoving = false;
     [NonSerialized] public bool isCrouching = false;
@@ -66,12 +65,10 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         Crouch();
-    }
-    private void FixedUpdate()
-    { 
         Gravity();
         Move();
     }
+
     private void Move()
     {
         ReadInput();
@@ -84,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
     // Read the raw Vector2 input and derive movement state
     private void ReadInput()
     {
-        rawInput = controls.Movement.Move.ReadValue<Vector2>();
+        rawInput = controls.Player.Move.ReadValue<Vector2>();
         isMoving = rawInput.magnitude > 0.01f;
     }
 
@@ -92,12 +89,12 @@ public class PlayerMovement : MonoBehaviour
     private void UpdateDirection()
     {
         Vector3 forwardComponent = rawInput.y * transform.forward;
-        Vector3 rightComponent   = rawInput.x * transform.right;
-        Vector3 desired          = forwardComponent + rightComponent;
+        Vector3 rightComponent = rawInput.x * transform.right;
+        Vector3 desired = forwardComponent + rightComponent;
 
         float lerpSpeed = isMoving ? directionLerpSpeed : moveLerpSpeed;
         Vector3 targetDir = isMoving ? desired.normalized : Vector3.zero;
-        currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.smoothDeltaTime * lerpSpeed);
+        currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.deltaTime * lerpSpeed);
     }
 
     // Determine what the target speed should be
@@ -129,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
     // Helper to decide sprint conditions
     private bool ShouldStartSprinting()
     {
-        return controls.Movement.Sprint.inProgress
+        return controls.Player.Sprint.inProgress
             && isMoving
             && !isCrouching
             && signedSpeed > 0.1f;
@@ -138,16 +135,16 @@ public class PlayerMovement : MonoBehaviour
     // Smoothly lerp from current speed to targetSpeed
     private void SmoothSpeedTransition()
     {
-        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.smoothDeltaTime * moveLerpSpeed);
+        finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveLerpSpeed);
     }
 
     // Finally apply movement to the character controller
     private void ApplyMovement()
     {
-        Vector3 displacement = finalSpeed * Time.smoothDeltaTime * currentDirection;
+        Vector3 displacement = finalSpeed * Time.deltaTime * currentDirection;
         controller.Move(displacement);
     }
-    
+
     private void Gravity()
     {
         isGrounded = Physics.CheckSphere(transform.position, groundCheckDistance, groundMask);
@@ -156,14 +153,14 @@ public class PlayerMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        velocity.y += gravity * Time.smoothDeltaTime; 
+        velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
     private bool CheckHeadBump()
     {
         Vector3 checkPoint = transform.position;
         checkPoint.y += controller.height;
-        
+
         int playerLayerMask = 1 << LayerMask.NameToLayer("Player");
         int maskExcludingPlayer = ~playerLayerMask;
 
@@ -172,15 +169,15 @@ public class PlayerMovement : MonoBehaviour
         dir -= checkPoint;
 
         Ray ray = new Ray(checkPoint, dir);
-        
+
         return Physics.Raycast(ray, headCheckDistance, maskExcludingPlayer, QueryTriggerInteraction.Ignore);
     }
     private void Crouch()
     {
         if (controls.Player.Crouch.triggered)
         {
-            if(isCrouching && CheckHeadBump()) return; //dont uncrouch if head bumps
-            
+            if (isCrouching && CheckHeadBump()) return; //dont uncrouch if head bumps
+
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standingHeight;
             Vector3 controllerCenter = controller.center;
@@ -192,7 +189,7 @@ public class PlayerMovement : MonoBehaviour
     private void SmoothCameraHeight()
     {
         Vector3 camPos = playerCamera.transform.localPosition;
-        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.smoothDeltaTime * crouchLerpSpeed);
+        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.deltaTime * crouchLerpSpeed);
         playerCamera.transform.localPosition = camPos;
     }
 
@@ -203,16 +200,11 @@ public class PlayerMovement : MonoBehaviour
         //Debug.Log(v.magnitude);
         return v.magnitude;
     }
-    /// <summary>
-    /// Returns positive if moving forward, negative if moving backward,
-    /// zero if stationary or purely strafing.
-    /// Magnitude of the return value is the horizontal speed.
-    /// </summary>
+
     public float GetSignedMovementSpeed()
     {
         Vector3 delta = transform.position - lastPos;
         float signedSpeed = Vector3.Dot(delta / Time.deltaTime, transform.forward);
-        //Debug.Log("Signed speed: " + signedSpeed);
         lastPos = transform.position;
         return signedSpeed;
     }
