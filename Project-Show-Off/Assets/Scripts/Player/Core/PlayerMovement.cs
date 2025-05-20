@@ -71,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        move = controls.Movement.Move.ReadValue<Vector2>();
+        move = controls.Player.Move.ReadValue<Vector2>();
         Vector3 inputDirection = (move.y * transform.forward) + (move.x * transform.right);
         bool isMoving = move.magnitude > 0.01f;
 
@@ -87,7 +87,7 @@ public class PlayerMovement : MonoBehaviour
 
         // Sprinting speed logic
         float targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
-        if (controls.Movement.Sprint.inProgress && isMoving && !isCrouching)
+        if (controls.Player.Sprint.inProgress && isMoving && !isCrouching)
         {
             isSprinting = true;
             targetSpeed += sprintSpeedIncrement;
@@ -97,7 +97,7 @@ public class PlayerMovement : MonoBehaviour
             targetSpeed = 0f;
         }
 
-        if (!controls.Movement.Sprint.inProgress) isSprinting = false;
+        if (!controls.Player.Sprint.inProgress) isSprinting = false;
 
         finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveToSprintLerpSpeed); // smooth speed transition
 
@@ -107,7 +107,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Crouch()
     {
-        if (controls.Movement.Crouch.triggered)
+        if (controls.Player.Crouch.triggered)
         {
             isCrouching = !isCrouching;
             controller.height = isCrouching ? crouchHeight : standingHeight;

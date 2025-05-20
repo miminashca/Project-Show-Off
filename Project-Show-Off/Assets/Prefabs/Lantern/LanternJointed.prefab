@@ -51,22 +51,14 @@ MonoBehaviour:
   handleRigidbody: {fileID: 6308565584742078529}
   swingingLanternBodyRB: {fileID: 7538896301535132852}
   positionSmoothTime: 0.1
-  maxBasePositionalSway: 0.1
+  maxPositionalSway: 1
   lookPositionSwayAmount: 0.005
   movePositionSwayAmount: 0.01
   rotationSmoothTime: 0.15
-  maxBaseRotationalSway: 10
+  maxRotationalSway: 10
   lookRotationSwayAmount: 0.5
   moveRotationSwayAmount: 1
-  accelerationPositionFactor: 0.03
-  maxAccelerationPositionOffset: 0.1
-  accelerationRotationFactor: 2
-  maxAccelerationRotationOffset: 15
-  velocityPositionDragFactor: 0.001
-  maxVelocityPositionDragOffset: 0.05
-  lookAngularVelocityRotationFactor: 0.25
-  maxLookAngularVelocityRotationOffset: 8
-  overallGravityInfluence: 0
+  overallGravityInfluence: 5
   overallSettlingSpeed: 4
 --- !u!1 &7309653336368244967
 GameObject:

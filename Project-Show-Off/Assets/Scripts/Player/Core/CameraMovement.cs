@@ -48,7 +48,7 @@ public class CameraMovement : MonoBehaviour
     private void Look()
     {
         // read raw input
-        Vector2 raw = controls.Movement.Look.ReadValue<Vector2>();
+        Vector2 raw = controls.Player.Look.ReadValue<Vector2>();
         float scaledX = raw.x * (mouseSensitivity / Screen.dpi * 100f);
         float scaledY = raw.y * (mouseSensitivity / Screen.dpi * 100f);
 
