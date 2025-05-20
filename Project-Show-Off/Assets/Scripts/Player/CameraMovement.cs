@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 public class CameraMovement : MonoBehaviour
 {
@@ -10,42 +11,45 @@ public class CameraMovement : MonoBehaviour
     private float targetPitch;
     private float smoothYaw;
     private float smoothPitch;
-
+    
     //references
     private PlayerInput controls;
     private Transform playerBody;
-
+    
     //intermediate
     private Vector2 mouseLook;
 
     void Awake()
     {
         playerBody = transform.parent;
-        controls = new PlayerInput(); // Assuming PlayerInput is set up correctly
         Cursor.lockState = CursorLockMode.Locked;
-
+        
         targetYaw = smoothYaw = playerBody.eulerAngles.y;
-        // Ensure pitch initialization handles negative angles correctly from Euler
-        float initialPitch = transform.localEulerAngles.x;
-        if (initialPitch > 180) initialPitch -= 360;
-        targetPitch = smoothPitch = initialPitch;
+        targetPitch = smoothPitch = transform.localEulerAngles.x;
     }
     private void OnEnable()
     {
+        controls = new PlayerInput();
         controls.Enable();
-        // It's good practice to re-sync yaw/pitch on enable if the object could have been rotated while disabled
-        targetYaw = smoothYaw = playerBody.eulerAngles.y;
-        float initialPitch = transform.localEulerAngles.x;
-        if (initialPitch > 180) initialPitch -= 360;
-        targetPitch = smoothPitch = initialPitch;
     }
 
     void Update()
     {
+        ReadValue();
         Look();
     }
+    
+    // private void Look()
+    // {
+    //     mouseLook =  (mouseSensitivity / Screen.dpi * 100f) * controls.Movement.Look.ReadValue<Vector2>();
+    //     xRotation = Mathf.Clamp(xRotation-mouseLook.y, -verticalLookClamp, verticalLookClamp);
+    //     
+    //     transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
+    //     playerBody.Rotate(Vector3.up * mouseLook.x);
+    //     
+    // }
 
-    private void Look()
+    private void ReadValue()
     {
         // read raw input
         Vector2 raw = controls.Movement.Look.ReadValue<Vector2>();
@@ -57,15 +61,18 @@ public class CameraMovement : MonoBehaviour
         targetPitch -= scaledY;
         targetPitch = Mathf.Clamp(targetPitch, -verticalLookClamp, verticalLookClamp);
 
+        
         // smooth actual angles toward target
-        smoothYaw = Mathf.LerpAngle(smoothYaw, targetYaw, Time.deltaTime * lookLerpSpeed);
-        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.deltaTime * lookLerpSpeed);
-
+        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.smoothDeltaTime * lookLerpSpeed);
+        smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.smoothDeltaTime * lookLerpSpeed);
+    }
+    private void Look()
+    {
         // apply
         transform.localRotation = Quaternion.Euler(smoothPitch, 0f, 0f);
         playerBody.rotation = Quaternion.Euler(0f, smoothYaw, 0f);
     }
-
+    
     private void OnDisable()
     {
         controls.Disable();
