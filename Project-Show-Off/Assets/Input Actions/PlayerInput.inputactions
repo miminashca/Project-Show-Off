@@ -76,24 +76,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "RotateObject",
-                    "type": "Button",
-                    "id": "1d01ab4f-1f26-4143-a5e0-6862a3a1f7e8",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Cancel",
-                    "type": "Button",
-                    "id": "173e7e02-0ae2-448d-9bf1-69b31a95a3df",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -228,10 +210,45 @@
                     "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Inspection",
+            "id": "a72b49e3-5a5f-4abd-b425-47ab232b155c",
+            "actions": [
+                {
+                    "name": "RotateObject",
+                    "type": "Button",
+                    "id": "4f14ac43-148a-4cec-a8af-b1ad92bc87e2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
+                    "name": "ConfirmInspection",
+                    "type": "Button",
+                    "id": "864a86cc-ae35-4a14-9c65-1e75436674ba",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CancelInspection",
+                    "type": "Button",
+                    "id": "42d0be8c-c675-436a-82cd-56ad63dc0bc9",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
                     "name": "",
-                    "id": "41641543-9732-4fc7-8639-1662dba5c0af",
+                    "id": "8b5388c1-8e55-4d25-8b6b-8db881136d60",
                     "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
@@ -242,40 +259,23 @@
                 },
                 {
                     "name": "",
-                    "id": "e72bfa75-b887-4ddc-b3f5-e8b97dfbca6c",
-                    "path": "<Keyboard>/escape",
+                    "id": "d27d3618-b520-4280-8442-8709968e051a",
+                    "path": "<Keyboard>/e",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Cancel",
+                    "action": "ConfirmInspection",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "UI",
-            "id": "0c134d0e-264f-4c61-a057-03d35b5735ee",
-            "actions": [
-                {
-                    "name": "Cancel",
-                    "type": "Button",
-                    "id": "a2835d4a-43d2-4fb5-b7ab-322c7fbad010",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
+                },
                 {
                     "name": "",
-                    "id": "4b120afe-4539-48f3-8a87-44470593253a",
+                    "id": "b7c160c8-688b-4d18-ab0a-cf4a7bbb973c",
                     "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Cancel",
+                    "action": "CancelInspection",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
