@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 4879007052674551906}
   - component: {fileID: 4151420314820729418}
   - component: {fileID: 1466483712587850755}
-  - component: {fileID: 7639493121964806404}
   m_Layer: 20
   m_Name: Hemanneken Outer
   m_TagString: Untagged
@@ -109,23 +108,6 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7639493121964806404
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600446685344609328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ecb76c5b5f5c4e7b9163eaa86638c10, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chaseDistanceRabbit: 3
-  chaseDistanceTrue: 10
-  investigateDistance: 50
-  hemannekenTrueModel: {fileID: 0}
-  hemannekenRabbitModel: {fileID: 0}
 --- !u!1 &5591957516352670297
 GameObject:
   m_ObjectHideFlags: 0
@@ -139,7 +121,7 @@ GameObject:
   - component: {fileID: 8863863000776973305}
   m_Layer: 20
   m_Name: HemannekenNotTrue
-  m_TagString: Untagged
+  m_TagString: HemannekenMesh
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

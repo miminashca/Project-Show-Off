@@ -3,11 +3,21 @@ using UnityEngine;
 
 public static class HemannekenEventBus
 {
-    public static event Action HeyTriggered;
+    public static event Action OnHeyTriggered;
+    public static event Action OnHemannekenAttached;
+    public static event Action OnHemannekenDetached;
 
     public static void TriggerHey()
     {
-        HeyTriggered?.Invoke();
+        OnHeyTriggered?.Invoke();
+    }
+    public static void AttachHemanneken()
+    {
+        OnHemannekenAttached?.Invoke();
+    }
+    public static void DetachHemanneken()
+    {
+        OnHemannekenDetached?.Invoke();
     }
     
 }

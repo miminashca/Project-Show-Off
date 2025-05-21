@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &328231174205829866
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2320310762055274204}
+  m_Layer: 7
+  m_Name: InspectionPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2320310762055274204
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 328231174205829866}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4258081052341108069}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &994416563900317527
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2214964552251006022}
   m_Layer: 7
-  m_Name: LanternHoldPosition
+  m_Name: LanternHandAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 994416563900317527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.66, y: -0.12, z: 1}
+  m_LocalPosition: {x: 0.66, y: 0.372, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -43,7 +74,7 @@ GameObject:
   - component: {fileID: 5349218037487777877}
   - component: {fileID: 5259152407956979309}
   m_Layer: 7
-  m_Name: Model
+  m_Name: Player Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -152,6 +183,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2214964552251006022}
+  - {fileID: 2320310762055274204}
   m_Father: {fileID: 7633588495463696774}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &373784644868026885
@@ -166,9 +198,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9336957ad10141c380ce2a56931bece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  verticalLookClamp: 45
+  verticalLookClamp: 90
   mouseSensitivity: 1
-  lookLerpSpeed: 19.4
+  lookLerpSpeed: 20
 --- !u!114 &8447245095627851967
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184,7 +216,7 @@ MonoBehaviour:
   enable: 1
   amplitude: 0.0075
   frequency: 7
-  resetCamSpeed: 1
+  bobLerpSpeed: 10
 --- !u!20 &5603431912760654469
 Camera:
   m_ObjectHideFlags: 0
@@ -458,14 +490,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 4
   directionLerpSpeed: 5
+  moveLerpSpeed: 2
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   sprintSpeedIncrement: 3
-  moveToSprintLerpSpeed: 2
-  crouchSpeed: 2
-  crouchHeight: 1
-  standingHeight: 2
+  crouchSpeed: 10
+  crouchHeight: 1.5
+  standingHeight: 2.5
   crouchLerpSpeed: 8
 --- !u!114 &818863107724947822
 MonoBehaviour:
@@ -479,19 +511,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6884a92649b8a984fbd481b8d546f758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lanternPrefab: {fileID: 5285291105193131780, guid: f01a17b07dd5c3b44b2ffd917b301053, type: 3}
-  lanternHandAnchor: {fileID: 0}
+  lanternPrefab: {fileID: 4722296896312563861, guid: 7671dde4bee52ce4bb5772bec05d2334, type: 3}
+  lanternHandAnchor: {fileID: 2214964552251006022}
   isEquipped: 0
   isRaised: 0
   defaultIntensity: 5
   raisedIntensity: 20
   defaultRange: 10
-  raisedRange: 15
+  raisedRange: 20
   lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   maxFuel: 100
   currentFuel: 0
   passiveDrainRate: 0.1
-  activeDrainRate: 1
+  activeDrainRate: 3
   hemannekenRepelRadius: 7
   nixieAttractRadius: 20
   hemannekenLayer:
