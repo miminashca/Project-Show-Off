@@ -9,7 +9,7 @@ public class InspectionManager : MonoBehaviour
 
     [Header("Inspection Settings")]
     [SerializeField] private Transform inspectionPoint;
-    [SerializeField] private float rotationSpeed = 150f;
+    [SerializeField] private float rotationSpeed = 100f;
     [SerializeField] private float inspectionObjectBaseScale = 1f;
     [SerializeField] private float objectLerpSpeed = 10f;
 
@@ -68,57 +68,21 @@ public class InspectionManager : MonoBehaviour
         playerInputActions.Enable(); // Enable all action maps
 
         // Player Action Map
-        playerInputActions.Player.Interact.performed += OnInteractPerformed;
-        playerInputActions.Player.RotateObject.started += OnRotateObjectStarted;
-        playerInputActions.Player.RotateObject.canceled += OnRotateObjectCanceled;
-
-        // Check if you want the Player map's Cancel or UI map's Cancel.
-        // Let's assume for inspection, the UI mode's cancel is primary.
-        // If you only want to use one, remove the other from your input actions asset.
-
-        // UI Action Map
-        if (playerInputActions.UI.Cancel != null) // This check is more for safety if the action might not be there
-        {
-            playerInputActions.UI.Cancel.performed += OnCancelPerformed;
-        }
-        else
-        {
-            Debug.LogWarning("InspectionManager: 'Cancel' action not found in 'UI' action map. Escape to cancel inspection might not work from UI map.");
-        }
-
-        // If you also want the Player map's Cancel to work for inspection:
-        // (This might be redundant if UI map is active during inspection)
-        // if (playerInputActions.Player.Cancel != null)
-        // {
-        //    playerInputActions.Player.Cancel.performed += OnCancelPerformed;
-        // }
-
-
-        // IMPORTANT: Enabling/Disabling Specific Action Maps
-        // When inspection starts, you'll likely want to disable the 'Player' action map
-        // and enable the 'UI' action map (or a dedicated 'Inspection' action map).
-        // And reverse this when inspection ends.
+        playerInputActions.Inspection.RotateObject.started += OnRotateObjectStarted;
+        playerInputActions.Inspection.RotateObject.canceled += OnRotateObjectCanceled;
+        playerInputActions.Inspection.ConfirmInspection.performed += OnInteractPerformed;
+        playerInputActions.Inspection.CancelInspection.performed += OnCancelPerformed;
     }
 
     private void OnDisable()
     {
-        // Player Action Map
-        playerInputActions.Player.Interact.performed -= OnInteractPerformed;
-        playerInputActions.Player.RotateObject.started -= OnRotateObjectStarted;
-        playerInputActions.Player.RotateObject.canceled -= OnRotateObjectCanceled;
-
-        // UI Action Map
-        if (playerInputActions.UI.Cancel != null)
+        if (playerInputActions != null)
         {
-            playerInputActions.UI.Cancel.performed -= OnCancelPerformed;
+            playerInputActions.Inspection.RotateObject.started -= OnRotateObjectStarted;
+            playerInputActions.Inspection.RotateObject.canceled -= OnRotateObjectCanceled;
+            playerInputActions.Inspection.ConfirmInspection.performed -= OnInteractPerformed;
+            playerInputActions.Inspection.CancelInspection.performed -= OnCancelPerformed;
         }
-
-        // if (playerInputActions.Player.Cancel != null)
-        // {
-        //     playerInputActions.Player.Cancel.performed -= OnCancelPerformed;
-        // }
-
-        playerInputActions.Disable(); // Disable all action maps
     }
 
     void Update()
@@ -191,9 +155,8 @@ public class InspectionManager : MonoBehaviour
         originalObjectScale = currentInspectedObject.transform.localScale;
         originalObjectParent = currentInspectedObject.transform.parent;
 
-        // --- Action Map Switching ---
-        playerInputActions.Player.Disable(); // Disable player movement/look
-        playerInputActions.UI.Enable();      // Enable UI controls like Cancel
+        playerInputActions.Player.Disable();
+        playerInputActions.Inspection.Enable();
 
         if (playerMovement != null) playerMovement.enabled = false; // Still good to explicitly disable scripts
         if (cameraMovement != null) cameraMovement.enabled = false;
@@ -229,8 +192,8 @@ public class InspectionManager : MonoBehaviour
         isRotatingObject = false;
 
         // --- Action Map Switching ---
-        playerInputActions.UI.Disable();    // Disable UI controls
-        playerInputActions.Player.Enable(); // Re-enable player movement/look
+        playerInputActions.Inspection.Disable(); // << DISABLE THE INSPECTION MAP
+        playerInputActions.Player.Enable();
 
 
         if (playerMovement != null) playerMovement.enabled = true; // Still good to explicitly disable scripts
