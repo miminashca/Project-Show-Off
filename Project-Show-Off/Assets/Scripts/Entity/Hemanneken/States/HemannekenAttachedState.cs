@@ -23,6 +23,8 @@ public class HemannekenAttachedState : State
         {
             if (mR.gameObject.tag == "HemannekenMesh") mR.gameObject.SetActive(false);
         }
+
+        HemannekenEventBus.OnWaterTouch += Die;
     }
 
     public override void Handle()
@@ -38,5 +40,13 @@ public class HemannekenAttachedState : State
             if (mR.gameObject.tag == "HemannekenMesh") mR.gameObject.SetActive(true);
         }
         HSM.LockNavMeshAgent(false);
+        HemannekenEventBus.OnWaterTouch -= Die;
+
+    }
+
+    private void Die()
+    {
+        HSM.TransitToState(new HemannekenDeathState(SM));
     }
 }
+

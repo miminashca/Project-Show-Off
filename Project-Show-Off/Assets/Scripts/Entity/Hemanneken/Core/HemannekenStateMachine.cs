@@ -6,7 +6,9 @@ using UnityEngine.Serialization;
 public class HemannekenStateMachine : StateMachine
 {
     [SerializeField, Range(0f, 10f)] private float chaseDistanceRabbit = 3f;
-    [SerializeField, Range(0f, 20f)] private float chaseDistanceTrue = 10f;
+    [SerializeField, Range(0f, 15f)] private float chaseDistanceTrue = 15f;
+    [SerializeField, Range(0f, 20f)] private float endChaseDistance = 20f;
+    [SerializeField, Range(0f, 10f)] private float stunDistance = 10f;
     [SerializeField, Range(0f, 100f)] private float investigateDistance = 50f;
     [SerializeField, Range(0f, 100f)] private float attachDistance = 1f;
     [SerializeField] private GameObject hemannekenTrueModel;
@@ -16,7 +18,7 @@ public class HemannekenStateMachine : StateMachine
     // Timers and durations needed by states
     [Header("State Durations & Settings")]
     public float stunTimerDuration = 5f;
-    public float transformationDuration = 1.5f; // Example duration for transformation
+    public float transformationDuration = 1f; // Example duration for transformation
     public float deathEffectDuration = 2f; // Example duration for death effects
 
     [NonSerialized] public AiNavigation aiNav;
@@ -26,12 +28,17 @@ public class HemannekenStateMachine : StateMachine
     private Transform playerTransform;
     private Vector3 playerLastKnownPosition; // To store the last known position
 
+    private GameObject currentModel;
+    [NonSerialized] public InteractWithHemanneken interactor;
+
     protected override State InitialState => new HemannekenRoamingState(this);
 
     public event Action OnPlayerDetected;
 
     protected override void Start()
     {
+        interactor = FindFirstObjectByType<InteractWithHemanneken>();
+        
         aiNav = GetComponent<AiNavigation>();
         nav = GetComponent<Navigation>();
         
@@ -53,8 +60,7 @@ public class HemannekenStateMachine : StateMachine
             // Determine initial form based on spawn condition (e.g., over water or land)
             // For now, assuming IsTrueForm is set externally or defaults. Example:
             // IsTrueForm = CheckSpawnCondition(); // Implement this method
-            if (IsTrueForm) EnableTrueFormMesh();
-            else EnableRabbitFormMesh();
+            SetForm(IsTrueForm);
         }
 
         HemannekenEventBus.OnHeyTriggered += RecordPlayerLastKnownPosition;
@@ -118,6 +124,11 @@ public class HemannekenStateMachine : StateMachine
         return GetDistanceToPlayer() <= chaseDistanceRabbit;
     }
 
+    public bool PlayerIsInEndChaseDistance()
+    {
+        return GetDistanceToPlayer() >= endChaseDistance;
+    }
+
     public bool PlayerIsInTrueChaseDistance()
     {
         return GetDistanceToPlayer() <= chaseDistanceTrue;
@@ -132,47 +143,36 @@ public class HemannekenStateMachine : StateMachine
     {
         return GetDistanceToPlayer() <= attachDistance;
     }
-
-    public void EnableTrueFormMesh()
+    public bool PlayerIsInStunDistance()
     {
-        // Consider deactivating rabbit model and activating true model if they are pre-existing children
-        // Instantiate can be performance-heavy if done repeatedly.
-        // For simplicity, following your current pattern:
-        if (hemannekenTrueModel)
-        {
-            // Destroy existing model if any to prevent duplicates (you'll need a reference to it)
-            // Or, ensure only one is active.
-            // For now, assuming this is handled or it's an initial setup.
-            Instantiate(hemannekenTrueModel, this.gameObject.transform);
-            if (hemannekenRabbitModel.transform.parent == this.transform) hemannekenRabbitModel.SetActive(false); // Example
-        }
-        IsTrueForm = true;
+        return GetDistanceToPlayer() <= stunDistance;
     }
-
-    public void EnableRabbitFormMesh()
-    {
-        if (hemannekenRabbitModel)
-        {
-            Instantiate(hemannekenRabbitModel, this.gameObject.transform);
-            if (hemannekenTrueModel.transform.parent == this.transform) hemannekenTrueModel.SetActive(false); // Example
-        }
-        IsTrueForm = false;
-    }
+    
     
     public void SetForm(bool isTrue)
     {
         IsTrueForm = isTrue;
         if (IsTrueForm)
         {
-            // Logic to show true form model and hide rabbit model
-            // e.g., hemannekenTrueModelGameObject.SetActive(true); hemannekenRabbitModelGameObject.SetActive(false);
-            Debug.Log("Hemanneken changed to True Form");
+            if (hemannekenTrueModel)
+            {
+                if(currentModel) Destroy(currentModel);
+                // Destroy existing model if any to prevent duplicates (you'll need a reference to it)
+                // Or, ensure only one is active.
+                // For now, assuming this is handled or it's an initial setup.
+                currentModel = Instantiate(hemannekenTrueModel, this.gameObject.transform);
+                if (hemannekenRabbitModel.transform.parent == this.transform) hemannekenRabbitModel.SetActive(false); // Example
+            }
         }
         else
         {
-            // Logic to show rabbit model and hide true form model
-            // e.g., hemannekenTrueModelGameObject.SetActive(false); hemannekenRabbitModelGameObject.SetActive(true);
-            Debug.Log("Hemanneken changed to Rabbit Form");
+            if (hemannekenRabbitModel)
+            {
+                if(currentModel) Destroy(currentModel);
+
+                currentModel = Instantiate(hemannekenRabbitModel, this.gameObject.transform);
+                if (hemannekenTrueModel.transform.parent == this.transform) hemannekenTrueModel.SetActive(false); // Example
+            }
         }
     }
 
@@ -199,16 +199,20 @@ public class HemannekenStateMachine : StateMachine
     public void PlayStunEffects() { Debug.Log("SFX/VFX: Hemanneken Stunned"); /* Implement actual effects */ }
     public void StopStunEffects() { Debug.Log("SFX/VFX: Hemanneken Stun Effects Stopped"); /* Implement cleanup */ }
     public void PlayReplyHeySound() { Debug.Log("SFX: Hemanneken replies 'Hey'"); /* Implement sound */ }
-    public void PlayTransformationEffects() { Debug.Log("SFX/VFX: Hemanneken Transforming"); /* Implement effects */ }
-    public void StopTransformationEffects() { Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped"); /* Implement cleanup */ }
-    public void PlayDeathEffects() { Debug.Log("SFX/VFX: Hemanneken Dying"); /* Implement effects */ }
 
-    public bool CanBeStunned()
+    public void PlayTransformationEffects()
     {
-        // Placeholder: Implement actual logic for lantern held up for 2s within 7m
-        // This might involve getting state from the player or a LanternManager
-        // e.g., return LanternManager.Instance.IsStunningBeamActive && GetDistanceToPlayer() <= 7f;
-        return false; // Default to false until implemented
+        ParticleSystem particles = GetComponentInChildren<ParticleSystem>();
+        particles.Play();
+        Debug.Log("SFX/VFX: Hemanneken Transforming");
+    }
+    public void StopTransformationEffects() { Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped"); /* Implement cleanup */ }
+
+    public void PlayDeathEffects()
+    {
+        ParticleSystem particles = GetComponentInChildren<ParticleSystem>();
+        particles.Play();
+        Debug.Log("SFX/VFX: Hemanneken Dying");
     }
 
     public void PerformAttachment()
