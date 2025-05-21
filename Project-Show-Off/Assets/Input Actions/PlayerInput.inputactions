@@ -2,14 +2,14 @@
     "name": "PlayerInput",
     "maps": [
         {
-            "name": "Movement",
+            "name": "Player",
             "id": "52c87893-c4c3-45e2-9b44-c141b0b16f73",
             "actions": [
                 {
                     "name": "Move",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "ed2834e5-0916-4def-b21d-f236596bb721",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -45,6 +45,33 @@
                     "name": "Crouch",
                     "type": "Button",
                     "id": "a445c181-d4eb-4ec9-b8e3-8c8c4688c682",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "EquipLantern",
+                    "type": "Button",
+                    "id": "fd82d026-7054-4bff-8cbf-797a099ace96",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "RaiseLantern",
+                    "type": "Button",
+                    "id": "e0cd2d23-60f6-45d1-b23a-885a1fdcebec",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "0c1aac2b-d2fc-4b30-b4ad-507fba3472fd",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -132,7 +159,7 @@
                 {
                     "name": "",
                     "id": "6458a2b4-247e-4297-aba8-a328dfd43e62",
-                    "path": "<Keyboard>/shift",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -150,36 +177,10 @@
                     "action": "Crouch",
                     "isComposite": false,
                     "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Lantern",
-            "id": "d82c6aae-badd-4c27-bcad-2dece83458b7",
-            "actions": [
-                {
-                    "name": "EquipLantern",
-                    "type": "Button",
-                    "id": "c716aada-f8a9-4542-ac6d-fb6350ee0104",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 },
                 {
-                    "name": "RaiseLantern",
-                    "type": "Button",
-                    "id": "220d87bb-cceb-4789-9a53-9c2a339ee02e",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                }
-            ],
-            "bindings": [
-                {
                     "name": "",
-                    "id": "3fef1872-1f20-4945-a994-db36c4ad1019",
+                    "id": "abe811e9-e6ce-43d4-92ee-9d1e557b2a41",
                     "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
@@ -190,12 +191,23 @@
                 },
                 {
                     "name": "",
-                    "id": "6a2982f4-f450-4a76-bf87-58a9670d51c0",
+                    "id": "27c2c3c0-d0f6-4775-abb9-d2c0a207c783",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "RaiseLantern",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "91c747c7-7ad3-4ec2-a03b-ef3448182899",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
