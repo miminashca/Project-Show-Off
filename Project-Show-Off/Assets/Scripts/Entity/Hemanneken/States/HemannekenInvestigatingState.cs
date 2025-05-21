@@ -68,14 +68,6 @@ public class HemannekenInvestigatingState : State
             SM.TransitToState(new HemannekenChasingState(SM));
             return;
         }
-
-        // Transition to Stunned
-        // "Stunned when Lantern is held up for 2 seconds and player is within 7 meters while holding Lantern up"
-        if (HSM.CanBeStunned()) // HSM.CanBeStunned() encapsulates lantern conditions
-        {
-            SM.TransitToState(new HemannekenStunningState(SM));
-            return;
-        }
     }
 
     public override void OnExitState()

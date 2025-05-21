@@ -12,16 +12,38 @@ public class HemannekenChasingState : State
     {
         Debug.Log("Entered Chasing State");
         HSM.LockNavMeshAgent(false);
+        HSM.interactor.countLanternTime = true;
     }
 
     public override void Handle()
     {
         HSM.aiNav.SetDestination(HSM.GetPlayerPosition());
-        if(HSM.PlayerIsInAttachingDistance()) SM.TransitToState(new HemannekenAttachedState(SM));
+        
+        if (HSM.PlayerIsInAttachingDistance())
+        {
+            SM.TransitToState(new HemannekenAttachedState(SM));
+            return;
+        }
+        // Transition to Stunned
+        // "Stunned when Lantern is held up for 2 seconds and player is within 7 meters while holding Lantern up"
+        if (CanBeStunned()) // HSM.CanBeStunned() encapsulates lantern conditions
+        {
+            SM.TransitToState(new HemannekenStunningState(SM));
+            return;
+        }
+        
+        if(HSM.PlayerIsInEndChaseDistance()) SM.TransitToState(new HemannekenRoamingState(SM));
     }
 
     public override void OnExitState()
     {
         HSM.LockNavMeshAgent(true);
+        HSM.interactor.countLanternTime = false;
+
+    }
+    
+    public bool CanBeStunned()
+    {
+        return HSM.interactor.lanternTimeCounter >= HSM.stunTimerDuration;
     }
 }

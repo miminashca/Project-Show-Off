@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 inputDirection;
     private float targetSpeed;
     private float signedSpeed;
+    [NonSerialized] public float speedModifier = 1;
 
     //references
     private CharacterController controller;
@@ -121,6 +122,8 @@ public class PlayerMovement : MonoBehaviour
             targetSpeed = 0f;
             isSprinting = false;
         }
+
+        targetSpeed *= speedModifier;
     }
 
     // Helper to decide sprint conditions

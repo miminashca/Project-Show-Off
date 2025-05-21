@@ -4,6 +4,7 @@ using UnityEngine;
 public static class HemannekenEventBus
 {
     public static event Action OnHeyTriggered;
+    public static event Action OnWaterTouch;
     public static event Action OnHemannekenAttached;
     public static event Action OnHemannekenDetached;
 
@@ -18,6 +19,10 @@ public static class HemannekenEventBus
     public static void DetachHemanneken()
     {
         OnHemannekenDetached?.Invoke();
+    }
+    public static void TouchWater()
+    {
+        OnWaterTouch?.Invoke();
     }
     
 }
