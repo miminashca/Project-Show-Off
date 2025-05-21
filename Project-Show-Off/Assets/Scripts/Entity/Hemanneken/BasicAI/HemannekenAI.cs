@@ -16,7 +16,6 @@ public class HemannekenAI : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        // If using NavMesh, set its speed etc. here or manage states
     }
 
     void Update()

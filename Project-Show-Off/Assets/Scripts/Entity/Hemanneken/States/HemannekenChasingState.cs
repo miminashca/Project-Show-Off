@@ -6,18 +6,22 @@ public class HemannekenChasingState : State
     {
     }
 
+    private HemannekenStateMachine HSM => (HemannekenStateMachine)SM;
+
     public override void OnEnterState()
     {
         Debug.Log("Entered Chasing State");
+        HSM.LockNavMeshAgent(false);
     }
 
     public override void Handle()
     {
-        throw new System.NotImplementedException();
+        HSM.aiNav.SetDestination(HSM.GetPlayerPosition());
+        if(HSM.PlayerIsInAttachingDistance()) SM.TransitToState(new HemannekenAttachedState(SM));
     }
 
     public override void OnExitState()
     {
-        throw new System.NotImplementedException();
+        HSM.LockNavMeshAgent(true);
     }
 }

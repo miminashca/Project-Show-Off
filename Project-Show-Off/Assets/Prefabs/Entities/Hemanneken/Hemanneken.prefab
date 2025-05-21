@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 1741672982412060041}
   - component: {fileID: 4459889473469353627}
   - component: {fileID: 6944228852296745939}
+  - component: {fileID: 6213530847861793275}
+  - component: {fileID: 940978611681298042}
   m_Layer: 0
   m_Name: Hemanneken
   m_TagString: Untagged
@@ -46,9 +48,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecb76c5b5f5c4e7b9163eaa86638c10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseDistanceRabbit: 3
-  chaseDistanceTrue: 10
+  chaseDistanceRabbit: 10
+  chaseDistanceTrue: 17
   investigateDistance: 50
+  attachDistance: 2
   hemannekenTrueModel: {fileID: 5591957516352670297, guid: 6def5dae03688428297355db78fff6cd, type: 3}
   hemannekenRabbitModel: {fileID: 5591957516352670297, guid: 459ba5e1530e64e1e8388e1b7b491c6d, type: 3}
 --- !u!195 &6944228852296745939
@@ -73,6 +76,31 @@ NavMeshAgent:
   m_BaseOffset: 0.27
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &6213530847861793275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7024320941259705108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 976dde10a4dbf46bca81fce7287beb6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &940978611681298042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7024320941259705108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47f382cd907c94c67bbbeff37c5b4464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 3
 --- !u!1001 &91626547540717771
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91,7 +119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.66
+      value: 2.09
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.z
@@ -220,7 +248,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.958
+      value: 2.05
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.y
@@ -286,7 +314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 1.13
       objectReference: {fileID: 0}
     - target: {fileID: 4588416983649962370, guid: d66d76fde00e64a33a764f1b8410d139, type: 3}
       propertyPath: m_LocalPosition.z
