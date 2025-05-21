@@ -433,6 +433,7 @@ GameObject:
   - component: {fileID: 5271307878977179669}
   - component: {fileID: 5403460284391899615}
   - component: {fileID: 818863107724947822}
+  - component: {fileID: 2470203979784429819}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -539,3 +540,22 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2097152
   interactionCheckInterval: 0.25
+--- !u!114 &2470203979784429819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d888838f9c74ba4185f6eda7bbcb510, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionDistance: 3
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 32768
+  cameraTransform: {fileID: 4258081052341108069}
+  interactionPromptUI: {fileID: 0}
+  interactionDotUI: {fileID: 0}

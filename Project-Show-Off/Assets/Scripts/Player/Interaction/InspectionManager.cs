@@ -21,6 +21,7 @@ public class InspectionManager : MonoBehaviour
     [Header("References - Auto-fetched if null")]
     [SerializeField] private CameraMovement cameraMovement;
     [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private HeadbobController headbobController;
 
     private PlayerInput playerInputActions;
 
@@ -51,6 +52,12 @@ public class InspectionManager : MonoBehaviour
 
         if (cameraMovement == null) cameraMovement = FindFirstObjectByType<CameraMovement>();
         if (playerMovement == null) playerMovement = FindFirstObjectByType<PlayerMovement>();
+        if (headbobController == null) headbobController = FindFirstObjectByType<HeadbobController>(); // << ADD THIS
+
+        if (cameraMovement == null) Debug.LogWarning("InspectionManager: CameraMovement script not found! Assign manually or ensure it's in the scene.");
+        if (playerMovement == null) Debug.LogWarning("InspectionManager: PlayerMovement script not found! Assign manually or ensure it's in the scene.");
+        if (headbobController == null) Debug.LogWarning("InspectionManager: HeadbobController script not found! Assign manually or ensure it's in the scene.");
+
 
         if (blurBackgroundPanel != null) blurBackgroundPanel.SetActive(false);
         if (clueNameText != null) clueNameText.gameObject.SetActive(false);
@@ -59,7 +66,7 @@ public class InspectionManager : MonoBehaviour
         if (inspectionPoint == null)
         {
             Debug.LogError("InspectionPoint is not assigned in InspectionManager! Please assign a Transform child of the Main Camera.");
-            enabled = false;
+            enabled = false; // Consider disabling the component if critical references are missing
         }
     }
 
@@ -155,11 +162,14 @@ public class InspectionManager : MonoBehaviour
         originalObjectScale = currentInspectedObject.transform.localScale;
         originalObjectParent = currentInspectedObject.transform.parent;
 
+        // --- Action Map Switching ---
         playerInputActions.Player.Disable();
         playerInputActions.Inspection.Enable();
 
-        if (playerMovement != null) playerMovement.enabled = false; // Still good to explicitly disable scripts
+        if (playerMovement != null) playerMovement.enabled = false;
         if (cameraMovement != null) cameraMovement.enabled = false;
+        if (headbobController != null) headbobController.enabled = false;
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
@@ -192,12 +202,14 @@ public class InspectionManager : MonoBehaviour
         isRotatingObject = false;
 
         // --- Action Map Switching ---
-        playerInputActions.Inspection.Disable(); // << DISABLE THE INSPECTION MAP
+        playerInputActions.Inspection.Disable();
         playerInputActions.Player.Enable();
 
 
-        if (playerMovement != null) playerMovement.enabled = true; // Still good to explicitly disable scripts
+        if (playerMovement != null) playerMovement.enabled = true;
         if (cameraMovement != null) cameraMovement.enabled = true;
+        if (headbobController != null) headbobController.enabled = true;
+
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 

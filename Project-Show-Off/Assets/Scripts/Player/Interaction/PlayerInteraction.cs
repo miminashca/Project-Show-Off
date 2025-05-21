@@ -5,39 +5,40 @@ public class PlayerInteraction : MonoBehaviour
 {
     [Header("Interaction Settings")]
     [SerializeField] private float interactionDistance = 3f;
-    [SerializeField] private LayerMask interactableLayer; // Set this layer on your clue objects
-    [SerializeField] private Transform cameraTransform; // Assign your player camera transform
+    [SerializeField] private LayerMask interactableLayer;
+    [SerializeField] private Transform cameraTransform;
 
     [Header("UI")]
-    [SerializeField] private GameObject interactionPromptUI; // Optional: A small UI element (e.g., "Press E to Interact")
+    [SerializeField] private GameObject interactionPromptUI;
+    [SerializeField] private GameObject interactionDotUI;
 
-    private PlayerInput playerInputActions; // Your generated Input Action Asset class
+    private PlayerInput playerInputActions;
     private ClueObject currentInteractableClue;
     private ClueObject lastHighlightedClue;
 
 
     void Awake()
     {
-        playerInputActions = new PlayerInput(); // Or YourPlayerControlsClassName
+        playerInputActions = new PlayerInput();
         if (cameraTransform == null)
         {
-            Camera cam = Camera.main; // Prefer Camera.main if it's tagged
+            Camera cam = Camera.main;
             if (cam != null) cameraTransform = cam.transform;
             else
             {
-                cam = GetComponentInChildren<Camera>(); // Fallback
+                cam = GetComponentInChildren<Camera>();
                 if (cam != null) cameraTransform = cam.transform;
                 else Debug.LogError("PlayerInteraction: Camera Transform not found or assigned!");
             }
         }
 
         if (interactionPromptUI != null) interactionPromptUI.SetActive(false);
+        if (interactionDotUI != null) interactionDotUI.SetActive(false);
     }
 
     private void OnEnable()
     {
         playerInputActions.Enable();
-        // This Interact is for INITIATING interaction from the world
         playerInputActions.Player.Interact.performed += TryInitiateInteraction;
     }
 
@@ -52,6 +53,7 @@ public class PlayerInteraction : MonoBehaviour
             lastHighlightedClue = null;
         }
         if (interactionPromptUI != null) interactionPromptUI.SetActive(false);
+        if (interactionDotUI != null) interactionDotUI.SetActive(false);
         currentInteractableClue = null;
     }
 
@@ -67,14 +69,17 @@ public class PlayerInteraction : MonoBehaviour
             if (lastHighlightedClue != null)
             {
                 lastHighlightedClue.Highlight(false);
-                SetInteractionPrompt(false); // Hide prompt if inspecting
                 lastHighlightedClue = null;
             }
             currentInteractableClue = null;
+            SetInteractionPrompt(false);
+            if (interactionDotUI != null) interactionDotUI.SetActive(false);
             return;
         }
 
         RaycastHit hit;
+        bool foundInteractableThisFrame = false;
+
         if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, interactionDistance, interactableLayer))
         {
             ClueObject clue = hit.collider.GetComponent<ClueObject>();
@@ -88,15 +93,22 @@ public class PlayerInteraction : MonoBehaviour
                     lastHighlightedClue = currentInteractableClue;
                 }
                 SetInteractionPrompt(true);
+                foundInteractableThisFrame = true;
             }
-            else // Hit something on interactable layer, but not a ClueObject or not interactable
+            else // Hit something on layer, but not an interactable clue
             {
-                ClearCurrentInteractable();
+                ClearCurrentInteractable(); // This will hide prompt and set foundInteractableThisFrame effectively to false
             }
         }
         else // Raycast hit nothing
         {
-            ClearCurrentInteractable();
+            ClearCurrentInteractable(); // This will hide prompt
+        }
+
+        // Manage dot visibility based on whether an interactable was found THIS FRAME
+        if (interactionDotUI != null)
+        {
+            interactionDotUI.SetActive(foundInteractableThisFrame);
         }
     }
 
