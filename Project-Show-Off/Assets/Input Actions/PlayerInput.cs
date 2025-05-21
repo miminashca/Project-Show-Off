@@ -88,14 +88,14 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     ""name"": ""PlayerInput"",
     ""maps"": [
         {
-            ""name"": ""Player"",
+            ""name"": ""Movement"",
             ""id"": ""52c87893-c4c3-45e2-9b44-c141b0b16f73"",
             ""actions"": [
                 {
                     ""name"": ""Move"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""ed2834e5-0916-4def-b21d-f236596bb721"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -131,33 +131,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""a445c181-d4eb-4ec9-b8e3-8c8c4688c682"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""EquipLantern"",
-                    ""type"": ""Button"",
-                    ""id"": ""fd82d026-7054-4bff-8cbf-797a099ace96"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""RaiseLantern"",
-                    ""type"": ""Button"",
-                    ""id"": ""e0cd2d23-60f6-45d1-b23a-885a1fdcebec"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Interact"",
-                    ""type"": ""Button"",
-                    ""id"": ""0c1aac2b-d2fc-4b30-b4ad-507fba3472fd"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -245,7 +218,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""6458a2b4-247e-4297-aba8-a328dfd43e62"",
-                    ""path"": ""<Keyboard>/leftShift"",
+                    ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -263,10 +236,36 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Crouch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Lantern"",
+            ""id"": ""d82c6aae-badd-4c27-bcad-2dece83458b7"",
+            ""actions"": [
+                {
+                    ""name"": ""EquipLantern"",
+                    ""type"": ""Button"",
+                    ""id"": ""c716aada-f8a9-4542-ac6d-fb6350ee0104"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""RaiseLantern"",
+                    ""type"": ""Button"",
+                    ""id"": ""220d87bb-cceb-4789-9a53-9c2a339ee02e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
                     ""name"": """",
-                    ""id"": ""abe811e9-e6ce-43d4-92ee-9d1e557b2a41"",
+                    ""id"": ""3fef1872-1f20-4945-a994-db36c4ad1019"",
                     ""path"": ""<Keyboard>/f"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -277,7 +276,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""27c2c3c0-d0f6-4775-abb9-d2c0a207c783"",
+                    ""id"": ""6a2982f4-f450-4a76-bf87-58a9670d51c0"",
                     ""path"": ""<Mouse>/rightButton"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -285,15 +284,32 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""RaiseLantern"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
-                },
+                }
+            ]
+        },
+        {
+            ""name"": ""Hemanneken"",
+            ""id"": ""1003c2fd-75ad-462a-8035-34815c826eb2"",
+            ""actions"": [
+                {
+                    ""name"": ""Hey"",
+                    ""type"": ""Button"",
+                    ""id"": ""561d177b-daf2-4eb3-a527-f6d8af3b8b48"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""91c747c7-7ad3-4ec2-a03b-ef3448182899"",
-                    ""path"": ""<Keyboard>/e"",
+                    ""id"": ""1c859124-1dd0-47e9-9f39-5408bec6351f"",
+                    ""path"": ""<Keyboard>/h"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Interact"",
+                    ""action"": ""Hey"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -385,12 +401,16 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Inspection_RotateObject = m_Inspection.FindAction("RotateObject", throwIfNotFound: true);
         m_Inspection_ConfirmInspection = m_Inspection.FindAction("ConfirmInspection", throwIfNotFound: true);
         m_Inspection_CancelInspection = m_Inspection.FindAction("CancelInspection", throwIfNotFound: true);
+        // Hemanneken
+        m_Hemanneken = asset.FindActionMap("Hemanneken", throwIfNotFound: true);
+        m_Hemanneken_Hey = m_Hemanneken.FindAction("Hey", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInput.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inspection.enabled, "This will cause a leak and performance issues, PlayerInput.Inspection.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Hemanneken.enabled, "This will cause a leak and performance issues, PlayerInput.Hemanneken.Disable() has not been called.");
     }
 
     /// <summary>
@@ -463,64 +483,49 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // Player
-    private readonly InputActionMap m_Player;
-    private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Move;
-    private readonly InputAction m_Player_Look;
-    private readonly InputAction m_Player_Jump;
-    private readonly InputAction m_Player_Sprint;
-    private readonly InputAction m_Player_Crouch;
-    private readonly InputAction m_Player_EquipLantern;
-    private readonly InputAction m_Player_RaiseLantern;
-    private readonly InputAction m_Player_Interact;
+    // Movement
+    private readonly InputActionMap m_Movement;
+    private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
+    private readonly InputAction m_Movement_Move;
+    private readonly InputAction m_Movement_Look;
+    private readonly InputAction m_Movement_Jump;
+    private readonly InputAction m_Movement_Sprint;
+    private readonly InputAction m_Movement_Crouch;
     /// <summary>
-    /// Provides access to input actions defined in input action map "Player".
+    /// Provides access to input actions defined in input action map "Movement".
     /// </summary>
-    public struct PlayerActions
+    public struct MovementActions
     {
         private @PlayerInput m_Wrapper;
 
         /// <summary>
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
-        public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public MovementActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         /// <summary>
-        /// Provides access to the underlying input action "Player/Move".
+        /// Provides access to the underlying input action "Movement/Move".
         /// </summary>
-        public InputAction @Move => m_Wrapper.m_Player_Move;
+        public InputAction @Move => m_Wrapper.m_Movement_Move;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Look".
+        /// Provides access to the underlying input action "Movement/Look".
         /// </summary>
-        public InputAction @Look => m_Wrapper.m_Player_Look;
+        public InputAction @Look => m_Wrapper.m_Movement_Look;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Jump".
+        /// Provides access to the underlying input action "Movement/Jump".
         /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Player_Jump;
+        public InputAction @Jump => m_Wrapper.m_Movement_Jump;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Sprint".
+        /// Provides access to the underlying input action "Movement/Sprint".
         /// </summary>
-        public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        public InputAction @Sprint => m_Wrapper.m_Movement_Sprint;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Crouch".
+        /// Provides access to the underlying input action "Movement/Crouch".
         /// </summary>
-        public InputAction @Crouch => m_Wrapper.m_Player_Crouch;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/EquipLantern".
-        /// </summary>
-        public InputAction @EquipLantern => m_Wrapper.m_Player_EquipLantern;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/RaiseLantern".
-        /// </summary>
-        public InputAction @RaiseLantern => m_Wrapper.m_Player_RaiseLantern;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Interact".
-        /// </summary>
-        public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        public InputAction @Crouch => m_Wrapper.m_Movement_Crouch;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Player; }
+        public InputActionMap Get() { return m_Wrapper.m_Movement; }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
         public void Enable() { Get().Enable(); }
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
@@ -528,9 +533,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
         public bool enabled => Get().enabled;
         /// <summary>
-        /// Implicitly converts an <see ref="PlayerActions" /> to an <see ref="InputActionMap" /> instance.
+        /// Implicitly converts an <see ref="MovementActions" /> to an <see ref="InputActionMap" /> instance.
         /// </summary>
-        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        public static implicit operator InputActionMap(MovementActions set) { return set.Get(); }
         /// <summary>
         /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
         /// </summary>
@@ -538,11 +543,11 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
         /// </remarks>
-        /// <seealso cref="PlayerActions" />
-        public void AddCallbacks(IPlayerActions instance)
+        /// <seealso cref="MovementActions" />
+        public void AddCallbacks(IMovementActions instance)
         {
-            if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_MovementActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MovementActionsCallbackInterfaces.Add(instance);
             @Move.started += instance.OnMove;
             @Move.performed += instance.OnMove;
             @Move.canceled += instance.OnMove;
@@ -558,15 +563,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Crouch.started += instance.OnCrouch;
             @Crouch.performed += instance.OnCrouch;
             @Crouch.canceled += instance.OnCrouch;
-            @EquipLantern.started += instance.OnEquipLantern;
-            @EquipLantern.performed += instance.OnEquipLantern;
-            @EquipLantern.canceled += instance.OnEquipLantern;
-            @RaiseLantern.started += instance.OnRaiseLantern;
-            @RaiseLantern.performed += instance.OnRaiseLantern;
-            @RaiseLantern.canceled += instance.OnRaiseLantern;
-            @Interact.started += instance.OnInteract;
-            @Interact.performed += instance.OnInteract;
-            @Interact.canceled += instance.OnInteract;
         }
 
         /// <summary>
@@ -575,8 +571,8 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <remarks>
         /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
         /// </remarks>
-        /// <seealso cref="PlayerActions" />
-        private void UnregisterCallbacks(IPlayerActions instance)
+        /// <seealso cref="MovementActions" />
+        private void UnregisterCallbacks(IMovementActions instance)
         {
             @Move.started -= instance.OnMove;
             @Move.performed -= instance.OnMove;
@@ -593,24 +589,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Crouch.started -= instance.OnCrouch;
             @Crouch.performed -= instance.OnCrouch;
             @Crouch.canceled -= instance.OnCrouch;
-            @EquipLantern.started -= instance.OnEquipLantern;
-            @EquipLantern.performed -= instance.OnEquipLantern;
-            @EquipLantern.canceled -= instance.OnEquipLantern;
-            @RaiseLantern.started -= instance.OnRaiseLantern;
-            @RaiseLantern.performed -= instance.OnRaiseLantern;
-            @RaiseLantern.canceled -= instance.OnRaiseLantern;
-            @Interact.started -= instance.OnInteract;
-            @Interact.performed -= instance.OnInteract;
-            @Interact.canceled -= instance.OnInteract;
         }
 
         /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />.
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="MovementActions.UnregisterCallbacks(IMovementActions)" />.
         /// </summary>
-        /// <seealso cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />
-        public void RemoveCallbacks(IPlayerActions instance)
+        /// <seealso cref="MovementActions.UnregisterCallbacks(IMovementActions)" />
+        public void RemoveCallbacks(IMovementActions instance)
         {
-            if (m_Wrapper.m_PlayerActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_MovementActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
@@ -620,19 +607,126 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <remarks>
         /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
         /// </remarks>
-        /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
-        /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
-        /// <seealso cref="PlayerActions.UnregisterCallbacks(IPlayerActions)" />
-        public void SetCallbacks(IPlayerActions instance)
+        /// <seealso cref="MovementActions.AddCallbacks(IMovementActions)" />
+        /// <seealso cref="MovementActions.RemoveCallbacks(IMovementActions)" />
+        /// <seealso cref="MovementActions.UnregisterCallbacks(IMovementActions)" />
+        public void SetCallbacks(IMovementActions instance)
         {
-            foreach (var item in m_Wrapper.m_PlayerActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_MovementActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_PlayerActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_MovementActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
     /// <summary>
-    /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
+    /// Provides a new <see cref="MovementActions" /> instance referencing this action map.
+    /// </summary>
+    public MovementActions @Movement => new MovementActions(this);
+
+    // Lantern
+    private readonly InputActionMap m_Lantern;
+    private List<ILanternActions> m_LanternActionsCallbackInterfaces = new List<ILanternActions>();
+    private readonly InputAction m_Lantern_EquipLantern;
+    private readonly InputAction m_Lantern_RaiseLantern;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Lantern".
+    /// </summary>
+    public struct LanternActions
+    {
+        private @PlayerInput m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public LanternActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Lantern/EquipLantern".
+        /// </summary>
+        public InputAction @EquipLantern => m_Wrapper.m_Lantern_EquipLantern;
+        /// <summary>
+        /// Provides access to the underlying input action "Lantern/RaiseLantern".
+        /// </summary>
+        public InputAction @RaiseLantern => m_Wrapper.m_Lantern_RaiseLantern;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Lantern; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="LanternActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(LanternActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="LanternActions" />
+        public void AddCallbacks(ILanternActions instance)
+        {
+            if (instance == null || m_Wrapper.m_LanternActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_LanternActionsCallbackInterfaces.Add(instance);
+            @EquipLantern.started += instance.OnEquipLantern;
+            @EquipLantern.performed += instance.OnEquipLantern;
+            @EquipLantern.canceled += instance.OnEquipLantern;
+            @RaiseLantern.started += instance.OnRaiseLantern;
+            @RaiseLantern.performed += instance.OnRaiseLantern;
+            @RaiseLantern.canceled += instance.OnRaiseLantern;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="LanternActions" />
+        private void UnregisterCallbacks(ILanternActions instance)
+        {
+            @EquipLantern.started -= instance.OnEquipLantern;
+            @EquipLantern.performed -= instance.OnEquipLantern;
+            @EquipLantern.canceled -= instance.OnEquipLantern;
+            @RaiseLantern.started -= instance.OnRaiseLantern;
+            @RaiseLantern.performed -= instance.OnRaiseLantern;
+            @RaiseLantern.canceled -= instance.OnRaiseLantern;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="LanternActions.UnregisterCallbacks(ILanternActions)" />.
+        /// </summary>
+        /// <seealso cref="LanternActions.UnregisterCallbacks(ILanternActions)" />
+        public void RemoveCallbacks(ILanternActions instance)
+        {
+            if (m_Wrapper.m_LanternActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="LanternActions.AddCallbacks(ILanternActions)" />
+        /// <seealso cref="LanternActions.RemoveCallbacks(ILanternActions)" />
+        /// <seealso cref="LanternActions.UnregisterCallbacks(ILanternActions)" />
+        public void SetCallbacks(ILanternActions instance)
+        {
+            foreach (var item in m_Wrapper.m_LanternActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_LanternActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="LanternActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
 
@@ -755,10 +849,102 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     public InspectionActions @Inspection => new InspectionActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
+    /// Provides access to input actions defined in input action map "Hemanneken".
     /// </summary>
-    /// <seealso cref="PlayerActions.AddCallbacks(IPlayerActions)" />
-    /// <seealso cref="PlayerActions.RemoveCallbacks(IPlayerActions)" />
-    public interface IPlayerActions
+    public struct HemannekenActions
+    {
+        private @PlayerInput m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public HemannekenActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Hemanneken/Hey".
+        /// </summary>
+        public InputAction @Hey => m_Wrapper.m_Hemanneken_Hey;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Hemanneken; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="HemannekenActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(HemannekenActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="HemannekenActions" />
+        public void AddCallbacks(IHemannekenActions instance)
+        {
+            if (instance == null || m_Wrapper.m_HemannekenActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_HemannekenActionsCallbackInterfaces.Add(instance);
+            @Hey.started += instance.OnHey;
+            @Hey.performed += instance.OnHey;
+            @Hey.canceled += instance.OnHey;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="HemannekenActions" />
+        private void UnregisterCallbacks(IHemannekenActions instance)
+        {
+            @Hey.started -= instance.OnHey;
+            @Hey.performed -= instance.OnHey;
+            @Hey.canceled -= instance.OnHey;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />.
+        /// </summary>
+        /// <seealso cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />
+        public void RemoveCallbacks(IHemannekenActions instance)
+        {
+            if (m_Wrapper.m_HemannekenActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="HemannekenActions.AddCallbacks(IHemannekenActions)" />
+        /// <seealso cref="HemannekenActions.RemoveCallbacks(IHemannekenActions)" />
+        /// <seealso cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />
+        public void SetCallbacks(IHemannekenActions instance)
+        {
+            foreach (var item in m_Wrapper.m_HemannekenActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_HemannekenActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="HemannekenActions" /> instance referencing this action map.
+    /// </summary>
+    public HemannekenActions @Hemanneken => new HemannekenActions(this);
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Movement" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="MovementActions.AddCallbacks(IMovementActions)" />
+    /// <seealso cref="MovementActions.RemoveCallbacks(IMovementActions)" />
+    public interface IMovementActions
     {
         /// <summary>
         /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
@@ -795,6 +981,14 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCrouch(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Lantern" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="LanternActions.AddCallbacks(ILanternActions)" />
+    /// <seealso cref="LanternActions.RemoveCallbacks(ILanternActions)" />
+    public interface ILanternActions
+    {
         /// <summary>
         /// Method invoked when associated input action "EquipLantern" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -809,13 +1003,21 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRaiseLantern(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Hemanneken" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="HemannekenActions.AddCallbacks(IHemannekenActions)" />
+    /// <seealso cref="HemannekenActions.RemoveCallbacks(IHemannekenActions)" />
+    public interface IHemannekenActions
+    {
         /// <summary>
-        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Hey" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnInteract(InputAction.CallbackContext context);
+        void OnHey(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Inspection" which allows adding and removing callbacks.
