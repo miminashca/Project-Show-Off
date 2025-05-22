@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 3437376869209605979}
   - component: {fileID: 8262545157358921120}
   - component: {fileID: 4223060785391457215}
+  - component: {fileID: 8669560186780883252}
+  - component: {fileID: 8553410629019569330}
   m_Layer: 0
   m_Name: Glasses
   m_TagString: Untagged
@@ -87,3 +89,42 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8669560186780883252
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601362564285942621}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.7126059, y: 0.21409705, z: 0.6856171}
+  m_Center: {x: -0.32362905, y: -0.008081377, z: 0.00012461841}
+--- !u!114 &8553410629019569330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7601362564285942621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d9b3c16635e5244a7c61f3155c705a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clueID: 
+  clueName: Mysterious Object
+  clueDescription: An interesting object worth inspecting.
+  inspectionRotationOffset: {x: 0, y: 0, z: 0}
+  inspectionScaleFactor: 1
+  highlightColor: {r: 1, g: 1, b: 0.5, a: 1}
