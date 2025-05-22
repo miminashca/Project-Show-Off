@@ -18,7 +18,7 @@ public class HemannekenRoamingState : State
 
     public override void Handle()
     {
-        if(HSM.nav) HSM.nav.Handle();
+        if(HSM.nav) HSM.nav.RoamWaypoints();
         
         if (HSM.IsTrueForm)
         { 

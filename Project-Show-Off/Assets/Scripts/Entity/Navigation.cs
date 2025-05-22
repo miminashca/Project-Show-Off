@@ -49,7 +49,7 @@ public class Navigation : MonoBehaviour
         SetDestination(navPointsPositions[newIndex]);
     }
 
-    public void Handle()
+    public void RoamWaypoints()
     { 
         // Move towards the destination
         transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
@@ -61,7 +61,19 @@ public class Navigation : MonoBehaviour
             OnDestinationReached();
         }  
     }
-    
+
+    public void Roam()
+    {
+        // Move towards the destination
+        transform.position = Vector3.MoveTowards(transform.position, destination, speed * Time.deltaTime);
+
+        // Check if we've reached the destination
+        if (Vector3.Distance(transform.position, destination) <= stoppingDistance)
+        {
+            isMoving = false;
+        }  
+    }
+
     /// <summary>
     /// Call this method to start moving the entity towards the given destination.
     /// </summary>

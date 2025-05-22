@@ -11,11 +11,13 @@ public class AiNavigation : MonoBehaviour
     void Awake()
     {
         navAgent = GetComponent<NavMeshAgent>();
+        if(!navAgent) return;
         navAgent.speed = speed;
     }
 
     public void SetDestination(Vector3 destination)
     {
+        if(!navAgent) return;
         navAgent.SetDestination(destination);
     }
     

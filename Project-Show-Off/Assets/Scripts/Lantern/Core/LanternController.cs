@@ -151,9 +151,9 @@ public class LanternController : MonoBehaviour
 
                     currentPhysicsSwayScript.lanternHoldTarget = lanternHandAnchor;
 
-                    Transform handleTransform = currentLanternInstance.transform.Find("Lantern Handle");
+                    Transform handleTransform = currentLanternInstance.transform.Find("Lantern RoamWaypoints");
                     if (handleTransform != null) currentPhysicsSwayScript.handleRigidbody = handleTransform.GetComponent<Rigidbody>();
-                    else Debug.LogError("PhysicsLanternSway: Could not find 'Lantern Handle'.");
+                    else Debug.LogError("PhysicsLanternSway: Could not find 'Lantern RoamWaypoints'.");
 
                     Transform lanternBodyPartTransform = currentLanternInstance.transform.Find("Lantern Body");
                     if (lanternBodyPartTransform != null) currentPhysicsSwayScript.swingingLanternBodyRB = lanternBodyPartTransform.GetComponent<Rigidbody>();

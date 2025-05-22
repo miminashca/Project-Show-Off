@@ -10,6 +10,9 @@ public class InteractWithHemanneken : MonoBehaviour
     [NonSerialized] private PlayerMovement playerMovement;
     private float speedDecrease = 0.1f;
     private float finalSpeedModifier = 1f;
+
+    private bool isCountingTime;
+    
     private void OnEnable()
     {
         playerMovement = GetComponent<PlayerMovement>();
@@ -27,7 +30,15 @@ public class InteractWithHemanneken : MonoBehaviour
     private void Update()
     {
         if (controls.Hemanneken.Hey.triggered) HemannekenEventBus.TriggerHey();
-        if (controls.Player.RaiseLantern.triggered) isHoldingLantern = !isHoldingLantern;
+
+        if (controls.Player.RaiseLantern.WasPressedThisFrame())
+        {
+            isHoldingLantern = true;
+        }
+        else if (controls.Player.RaiseLantern.WasReleasedThisFrame())
+        {
+            isHoldingLantern = false;
+        }        
 
 
         if (isHoldingLantern && countLanternTime)

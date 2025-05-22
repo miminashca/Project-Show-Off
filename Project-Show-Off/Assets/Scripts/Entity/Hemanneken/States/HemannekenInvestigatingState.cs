@@ -22,7 +22,7 @@ public class HemannekenInvestigatingState : State
 
         // Moves towards the player's position at the time of "Hey"
         _investigationTargetPosition = HSM.GetPlayerLastKnownPosition(); // HSM should store this when "Hey" is triggered
-        HSM.aiNav.SetDestination(_investigationTargetPosition);
+        HSM.nav.SetDestination(_investigationTargetPosition);
 
         // // Replies with its own “Hey” Call with a delay
         // float distanceToTarget = Vector3.Distance(HSM.transform.position, _investigationTargetPosition);
@@ -45,7 +45,8 @@ public class HemannekenInvestigatingState : State
         _investigationEndTime = Time.time + HSM.investigationTimerDuration;
         // Moves towards the player's position at the time of "Hey"
         _investigationTargetPosition = HSM.GetPlayerLastKnownPosition(); // HSM should store this when "Hey" is triggered
-        HSM.aiNav.SetDestination(_investigationTargetPosition);
+        HSM.nav.SetDestination(_investigationTargetPosition);
+        HSM.nav.Roam();
 
         // Replies with its own “Hey” Call with a delay
         float distanceToTarget = Vector3.Distance(HSM.transform.position, _investigationTargetPosition);

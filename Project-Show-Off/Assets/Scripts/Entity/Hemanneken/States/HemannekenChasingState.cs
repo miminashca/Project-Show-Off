@@ -12,12 +12,14 @@ public class HemannekenChasingState : State
     {
         Debug.Log("Entered Chasing State");
         HSM.LockNavMeshAgent(false);
-        HSM.interactor.countLanternTime = true;
     }
 
     public override void Handle()
     {
-        HSM.aiNav.SetDestination(HSM.GetPlayerPosition());
+        HSM.interactor.countLanternTime = true;
+
+        HSM.nav.SetDestination(HSM.GetPlayerPosition());
+        HSM.nav.Roam();
         
         if (HSM.PlayerIsInAttachingDistance())
         {
