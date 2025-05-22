@@ -3720,7 +3720,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 114.4, y: 3.72, z: 46.2}
-  m_LocalScale: {x: 20.131243, y: 14.665868, z: 47.03592}
+  m_LocalScale: {x: 20.131243, y: 14.665868, z: 48.446995}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -3741,7 +3741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &791540712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3965,34 +3965,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 677103880}
     m_Modifications:
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: moveSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchSpeed
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: playerFootsteps
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: baseFootstepInterval
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchFootstepMultiplier
-      value: 1.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: minMovementSpeedForFootsteps
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 177.461
-      objectReference: {fileID: 0}
     - target: {fileID: 1424622276937907353, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_Name
       value: Clog
@@ -4068,6 +4040,34 @@ PrefabInstance:
     - target: {fileID: 8292596121966006567, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: playerFootsteps
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: baseFootstepInterval
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchFootstepMultiplier
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: minMovementSpeedForFootsteps
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 177.461
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7743,6 +7743,68 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1738143875}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1742265145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1742265148}
+  - component: {fileID: 1742265147}
+  - component: {fileID: 1742265146}
+  m_Layer: 0
+  m_Name: ShallowCollider (2)
+  m_TagString: ShallowCollider
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1742265146
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742265145}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!33 &1742265147
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742265145}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1742265148
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742265145}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.27751103, z: -0, w: 0.9607225}
+  m_LocalPosition: {x: 126.9437, y: 5.9776, z: 113.5942}
+  m_LocalScale: {x: 24.760012, y: 25.01264, z: 55.086143}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 32.223, z: 0}
 --- !u!1 &1750019074
 GameObject:
   m_ObjectHideFlags: 0
@@ -9195,4 +9257,5 @@ SceneRoots:
   - {fileID: 1542339429}
   - {fileID: 932005515}
   - {fileID: 782847618}
+  - {fileID: 1742265148}
   - {fileID: 791540713}
