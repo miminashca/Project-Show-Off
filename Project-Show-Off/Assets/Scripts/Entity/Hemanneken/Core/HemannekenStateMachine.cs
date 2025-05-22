@@ -179,7 +179,7 @@ public class HemannekenStateMachine : StateMachine
 
     public void LockNavMeshAgent(bool Lock)
     {
-        if (!aiNav || !aiNav.navAgent) return;
+        //if (!aiNav || !aiNav.navAgent) return;
 
         if (Lock)
         {

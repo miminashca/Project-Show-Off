@@ -18,8 +18,7 @@ public class HemannekenChasingState : State
     {
         HSM.interactor.countLanternTime = true;
 
-        HSM.nav.SetDestination(HSM.GetPlayerPosition());
-        HSM.nav.Roam();
+        HSM.aiNav.SetDestination(HSM.GetPlayerPosition());
         
         if (HSM.PlayerIsInAttachingDistance())
         {

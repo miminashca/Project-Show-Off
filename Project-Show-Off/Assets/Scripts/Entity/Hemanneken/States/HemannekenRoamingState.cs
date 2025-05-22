@@ -32,7 +32,10 @@ public class HemannekenRoamingState : State
 
     private void TriggerOnHey()
     {
-        if(HSM.IsTrueForm && HSM.PlayerIsInInvestigateDistance()) SM.TransitToState(new HemannekenInvestigatingState(SM));
+        if (HSM.PlayerIsInInvestigateDistance())
+        {
+            if(HSM.IsTrueForm) SM.TransitToState(new HemannekenInvestigatingState(SM));
+        }
     }
 
     public override void OnExitState()
