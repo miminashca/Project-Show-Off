@@ -40,10 +40,6 @@ public class LanternController : MonoBehaviour
 
     [Header("Raise Animation")]
     public Vector3 raisedLocalPositionOffset = new Vector3(0, 0.2f, 0.05f);
-    // public float raiseAnimationDuration = 0.3f; // REMOVED - Now controlled by PhysicsLanternSway.localOffsetSmoothTime
-
-    // private Vector3 defaultLocalLanternPosition = Vector3.zero; // REMOVED
-    // private Coroutine raiseAnimationCoroutine; // REMOVED
 
     private Coroutine interactionCoroutine;
     private PlayerInput playerInputActions;
@@ -53,6 +49,11 @@ public class LanternController : MonoBehaviour
         if (playerInputActions == null)
         {
             playerInputActions = new PlayerInput();
+        }
+
+        if (lanternHandAnchor == null)
+        {
+            Debug.LogError("LanternController: lanternHandAnchor is not assigned!", this);
         }
     }
 
@@ -96,6 +97,11 @@ public class LanternController : MonoBehaviour
         {
             playerInputActions.Player.Disable();
         }
+
+        if (isEquipped)
+        {
+            ToggleEquip();
+        }
     }
 
     void HandleInput()
@@ -133,40 +139,43 @@ public class LanternController : MonoBehaviour
             if (currentLanternInstance == null)
             {
                 currentLanternInstance = Instantiate(lanternPrefab, lanternHandAnchor);
-                // No need to set localPosition here, PhysicsLanternSway will handle it based on its targetLocalOffset
                 currentLanternInstance.transform.localRotation = Quaternion.identity;
+                LanternParts parts = currentLanternInstance.GetComponent<LanternParts>();
 
-                currentPhysicsSwayScript = currentLanternInstance.GetComponent<PhysicsLanternSway>();
-                if (currentPhysicsSwayScript == null)
+                if (parts == null)
                 {
-                    currentPhysicsSwayScript = currentLanternInstance.GetComponentInChildren<PhysicsLanternSway>();
+                    Debug.LogError("LanternController: Lantern prefab is missing the LanternParts script!", currentLanternInstance);
+                    // Handle this critical error, maybe by destroying currentLanternInstance and not proceeding
+                    isEquipped = false; // Revert equip state
+                    if (currentLanternInstance != null) Destroy(currentLanternInstance);
+                    currentLanternInstance = null;
+                    return;
                 }
+
+                currentPhysicsSwayScript = parts.swayScript;
+                lanternLight = parts.lanternLight;
+                lightFlicker = parts.lightFlicker;
 
                 if (currentPhysicsSwayScript != null)
                 {
                     currentPhysicsSwayScript.PlayerInputActionsInstance = this.playerInputActions;
-                    Camera mainCam = Camera.main; // Or your player camera reference
+                    Camera mainCam = Camera.main;
                     if (mainCam != null) currentPhysicsSwayScript.playerCameraTransform = mainCam.transform;
                     else Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
 
                     currentPhysicsSwayScript.lanternHoldTarget = lanternHandAnchor;
+                    currentPhysicsSwayScript.handleRigidbody = parts.handleRigidbody;
+                    currentPhysicsSwayScript.swingingLanternBodyRB = parts.swingingLanternBodyRB;
 
-                    Transform handleTransform = currentLanternInstance.transform.Find("Lantern RoamWaypoints");
-                    if (handleTransform != null) currentPhysicsSwayScript.handleRigidbody = handleTransform.GetComponent<Rigidbody>();
-                    else Debug.LogError("PhysicsLanternSway: Could not find 'Lantern RoamWaypoints'.");
+                    if (parts.handleRigidbody == null) Debug.LogError("LanternParts on prefab has no Handle Rigidbody assigned.", parts);
+                    if (parts.swingingLanternBodyRB == null) Debug.LogError("LanternParts on prefab has no Swinging Lantern Body Rigidbody assigned.", parts);
 
-                    Transform lanternBodyPartTransform = currentLanternInstance.transform.Find("Lantern Body");
-                    if (lanternBodyPartTransform != null) currentPhysicsSwayScript.swingingLanternBodyRB = lanternBodyPartTransform.GetComponent<Rigidbody>();
-                    else Debug.LogError("PhysicsLanternSway: Could not find 'Lantern Body'.");
-
-                    // Set initial offset immediately and reset sway to snap to it
-                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero); // Start at default position
-                    currentPhysicsSwayScript.ResetSway(true); // Reset sway respecting the new immediate offset
+                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero);
+                    currentPhysicsSwayScript.ResetSway(true);
                 }
                 else Debug.LogError("No PhysicsLanternSway script found on lantern prefab!");
 
-                lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
-                lightFlicker = currentLanternInstance.GetComponentInChildren<LightFlicker>();
+                if (lanternLight == null) Debug.LogError("LanternParts on prefab has no Light component assigned!", parts);
             }
 
             currentLanternInstance.SetActive(true);
@@ -197,8 +206,6 @@ public class LanternController : MonoBehaviour
             Debug.Log("Lantern Unequipped");
         }
     }
-
-    // IEnumerator AnimateLanternPosition(...) // REMOVED
 
     void StartRaising()
     {
