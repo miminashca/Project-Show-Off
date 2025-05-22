@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5124092622439185106}
   - component: {fileID: 7665495684148905247}
+  - component: {fileID: 2475724410292576016}
   m_Layer: 0
   m_Name: LanternJointed
   m_TagString: Untagged
@@ -61,6 +62,23 @@ MonoBehaviour:
   moveRotationSwayAmount: 1
   overallGravityInfluence: 5
   overallSettlingSpeed: 4
+--- !u!114 &2475724410292576016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4722296896312563861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53b9c5063693a0148b1e0165c76f12fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swayScript: {fileID: 7665495684148905247}
+  handleRigidbody: {fileID: 6308565584742078529}
+  swingingLanternBodyRB: {fileID: 7538896301535132852}
+  lanternLight: {fileID: 1353597522249357278}
+  lightFlicker: {fileID: 7285070022633756178}
 --- !u!1 &5120799285059063411
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +349,7 @@ GameObject:
   - component: {fileID: 5604259777215508840}
   - component: {fileID: 8139242308001947722}
   m_Layer: 0
-  m_Name: LightSourcePoint (1)
+  m_Name: Flame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

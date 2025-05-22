@@ -1,8 +1,8 @@
-// InspectionManager.cs
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
+using System.Collections;
 
 public class InspectionManager : MonoBehaviour
 {
@@ -25,6 +25,8 @@ public class InspectionManager : MonoBehaviour
     [SerializeField] private HeadbobController headbobController;
 
     private PlayerInput playerInputActions;
+
+    private Coroutine activateInspectionCoroutine;
 
     private GameObject currentInspectedObject;
     private ClueObject currentClueData;
@@ -73,8 +75,6 @@ public class InspectionManager : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInputActions.Enable(); // Enable all action maps
-
         // Player Action Map
         playerInputActions.Inspection.RotateObject.started += OnRotateObjectStarted;
         playerInputActions.Inspection.RotateObject.canceled += OnRotateObjectCanceled;
@@ -90,6 +90,8 @@ public class InspectionManager : MonoBehaviour
             playerInputActions.Inspection.RotateObject.canceled -= OnRotateObjectCanceled;
             playerInputActions.Inspection.ConfirmInspection.performed -= OnInteractPerformed;
             playerInputActions.Inspection.CancelInspection.performed -= OnCancelPerformed;
+
+            playerInputActions.Inspection.Disable();
         }
     }
 
@@ -163,13 +165,12 @@ public class InspectionManager : MonoBehaviour
         originalObjectScale = currentInspectedObject.transform.localScale;
         originalObjectParent = currentInspectedObject.transform.parent;
 
-        // --- Action Map Switching ---
-        playerInputActions.Player.Disable();
-        playerInputActions.Inspection.Enable();
-
         if (playerMovement != null) playerMovement.enabled = false;
         if (cameraMovement != null) cameraMovement.enabled = false;
         if (headbobController != null) headbobController.enabled = false;
+
+        // --- Action Map Switching ---
+        playerInputActions.Player.Disable();
 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -194,18 +195,53 @@ public class InspectionManager : MonoBehaviour
         {
             col.enabled = false;
         }
-        Debug.Log($"Started inspecting {currentClueData.clueName}");
+
+        Debug.Log($"Preparing to inspect {currentClueData.clueName}. Inspection input will activate next frame.");
+
+        // Start coroutine to enable inspection input map after a frame delay
+        activateInspectionCoroutine = StartCoroutine(EnableInspectionInputAfterFrame());
     }
 
-    private void EndInspectionCleanup() // Renamed from EndInspection to avoid confusion with a public method
+    private IEnumerator EnableInspectionInputAfterFrame()
     {
+        yield return null; // Wait for one frame
+
+        // Check if inspection is still active (wasn't cancelled during the frame delay)
+        if (isInspecting && currentInspectedObject != null)
+        {
+            playerInputActions.Inspection.Enable(); // NOW enable the "Inspection" action map
+            Debug.Log("Inspection input map enabled.");
+        }
+        else
+        {
+            Debug.LogWarning("Inspection was cancelled or object became null before inspection input could be enabled.");
+            // Ensure cleanup if something went wrong
+            if (playerInputActions != null) playerInputActions.Inspection.Disable();
+        }
+        activateInspectionCoroutine = null; // Coroutine finished
+    }
+
+    private void StopAndClearActivateInspectionCoroutine()
+    {
+        if (activateInspectionCoroutine != null)
+        {
+            StopCoroutine(activateInspectionCoroutine);
+            activateInspectionCoroutine = null;
+            // If coroutine was stopped, ensure the inspection map is not left enabled unintentionally
+            if (playerInputActions != null) playerInputActions.Inspection.Disable();
+            Debug.Log("ActivateInspectionMode coroutine stopped; Inspection map ensured disabled.");
+        }
+    }
+
+    private void EndInspectionCleanup()
+    {
+        StopAndClearActivateInspectionCoroutine();
+
         isInspecting = false;
         isRotatingObject = false;
 
         // --- Action Map Switching ---
         playerInputActions.Inspection.Disable();
-        playerInputActions.Player.Enable();
-
 
         if (playerMovement != null) playerMovement.enabled = true;
         if (cameraMovement != null) cameraMovement.enabled = true;
@@ -222,21 +258,11 @@ public class InspectionManager : MonoBehaviour
         if (currentClueData != null) currentClueData = null;
     }
 
-    private void CollectCurrentClue()
-    {
-        if (!isInspecting || currentClueData == null) return;
-
-        Debug.Log($"Collecting {currentClueData.clueName}");
-        currentClueData.OnCollected();
-
-        currentInspectedObject = null;
-        currentClueData = null;
-        EndInspectionCleanup();
-    }
-
     public void CancelInspection()
     {
         if (!isInspecting) return;
+
+        StopAndClearActivateInspectionCoroutine();
 
         Debug.Log($"Cancelling inspection of {(currentClueData != null ? currentClueData.clueName : "object")}");
         if (currentInspectedObject != null)
@@ -245,6 +271,7 @@ public class InspectionManager : MonoBehaviour
             currentInspectedObject.transform.position = originalObjectPosition;
             currentInspectedObject.transform.rotation = originalObjectRotation;
             currentInspectedObject.transform.localScale = originalObjectScale;
+
             Collider col = currentInspectedObject.GetComponent<Collider>();
             if (col != null)
             {
@@ -262,5 +289,18 @@ public class InspectionManager : MonoBehaviour
     public bool IsInspecting()
     {
         return isInspecting;
+    }
+
+    private void CollectCurrentClue()
+    {
+        if (!isInspecting || currentClueData == null) return;
+
+        Debug.Log($"Collecting {currentClueData.clueName}");
+        currentClueData.OnCollected();
+
+        currentInspectedObject = null;
+        currentClueData = null;
+
+        EndInspectionCleanup();
     }
 }

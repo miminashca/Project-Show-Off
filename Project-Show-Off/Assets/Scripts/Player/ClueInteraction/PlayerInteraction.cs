@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // For PlayerInput
+using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -38,14 +38,14 @@ public class PlayerInteraction : MonoBehaviour
 
     private void OnEnable()
     {
-        playerInputActions.Enable();
+        playerInputActions.Player.Enable();
         playerInputActions.Player.Interact.performed += TryInitiateInteraction;
     }
 
     private void OnDisable()
     {
         playerInputActions.Player.Interact.performed -= TryInitiateInteraction;
-        playerInputActions.Disable();
+        playerInputActions.Player.Disable();
 
         if (lastHighlightedClue != null)
         {
