@@ -5,8 +5,8 @@ using FMODUnity;
 public class RandomSoundEmitter : MonoBehaviour
 {
     public EventReference fmodEvent; // Drag your FMOD event here
-    public float minDelay = 25f;
-    public float maxDelay = 45f;
+    public float minDelay = 5f;
+    public float maxDelay = 10f;
 
     private Coroutine playRoutine;
 
