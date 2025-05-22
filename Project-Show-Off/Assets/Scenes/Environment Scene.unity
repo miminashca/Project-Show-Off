@@ -3167,55 +3167,24 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7650862299324327497, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 686111684}
-    - targetCorrespondingSourceObject: {fileID: 7650862299324327497, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 686111691}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
 --- !u!4 &686111682 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2320310762055274204, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
   m_PrefabInstance: {fileID: 686111681}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &686111683 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7650862299324327497, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+--- !u!114 &686111691 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7028059540663029170, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
   m_PrefabInstance: {fileID: 686111681}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &686111684
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 686111683}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7d1d148e47d14473b84b5c4389132bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &686111691
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 686111683}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb8892af8e8edf7459d9e9caae6f7cee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  footstepsEvent:
-    Guid:
-      Data1: 1003012975
-      Data2: 1201770998
-      Data3: 109357979
-      Data4: 1375971050
-    Path: event:/Player/Footsteps
 --- !u!1001 &694282334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9149,11 +9118,11 @@ SceneRoots:
   - {fileID: 6429374575694346712}
   - {fileID: 1423260586}
   - {fileID: 910254257}
+  - {fileID: 1825512369}
   - {fileID: 1119070611}
-  - {fileID: 1454715495}
   - {fileID: 53965075}
   - {fileID: 712757155}
-  - {fileID: 1825512369}
+  - {fileID: 1454715495}
   - {fileID: 677103880}
   - {fileID: 826375526}
   - {fileID: 1837375677}

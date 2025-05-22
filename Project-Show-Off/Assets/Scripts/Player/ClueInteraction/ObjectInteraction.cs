@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInteraction : MonoBehaviour
+public class ObjectInteraction : MonoBehaviour
 {
     [Header("Interaction Settings")]
     [SerializeField] private float interactionDistance = 3f;

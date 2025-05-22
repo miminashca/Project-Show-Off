@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class InteractWithHemanneken : MonoBehaviour
+public class HemannekenInteraction : MonoBehaviour
 {
     private PlayerInput controls;
     private bool isHoldingLantern = false;

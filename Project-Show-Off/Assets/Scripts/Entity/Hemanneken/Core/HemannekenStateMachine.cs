@@ -29,7 +29,7 @@ public class HemannekenStateMachine : StateMachine
     private Vector3 playerLastKnownPosition; // To store the last known position
 
     private GameObject currentModel;
-    [NonSerialized] public InteractWithHemanneken interactor;
+    [NonSerialized] public HemannekenInteraction interactor;
 
     protected override State InitialState => new HemannekenRoamingState(this);
 
@@ -37,7 +37,7 @@ public class HemannekenStateMachine : StateMachine
 
     protected override void Start()
     {
-        interactor = FindFirstObjectByType<InteractWithHemanneken>();
+        interactor = FindFirstObjectByType<HemannekenInteraction>();
         
         aiNav = GetComponent<AiNavigation>();
         nav = GetComponent<Navigation>();
