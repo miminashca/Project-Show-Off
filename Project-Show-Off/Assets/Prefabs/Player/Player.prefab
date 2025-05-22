@@ -434,6 +434,7 @@ GameObject:
   - component: {fileID: 5403460284391899615}
   - component: {fileID: 818863107724947822}
   - component: {fileID: 2470203979784429819}
+  - component: {fileID: 3619885651251276535}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -540,6 +541,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2097152
   interactionCheckInterval: 0.25
+  raisedLocalPositionOffset: {x: 0, y: 0.2, z: 0.05}
 --- !u!114 &2470203979784429819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -559,3 +561,26 @@ MonoBehaviour:
   cameraTransform: {fileID: 4258081052341108069}
   interactionPromptUI: {fileID: 0}
   interactionDotUI: {fileID: 0}
+--- !u!136 &3619885651251276535
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}

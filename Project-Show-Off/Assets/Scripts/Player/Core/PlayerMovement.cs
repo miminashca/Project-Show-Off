@@ -1,3 +1,4 @@
+// PlayerMovement.cs
 using System;
 using UnityEngine;
 
@@ -17,6 +18,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(1f, 2f)] private float crouchHeight = 1f;
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
+
+    // --- NEW: Footstep Settings (Simple) ---
+    [Header("Footstep Settings (Simple)")]
+    [SerializeField] private PlayerFootsteps playerFootsteps; // Assign your PlayerFootsteps script here in the Inspector
+    [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f; // Minimum horizontal speed to trigger footsteps
+    [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f; // Time in seconds between footsteps when walking normally (e.g., 0.5 for 2 steps/sec)
+    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f; // Multiplier for interval when sprinting (e.g., 0.7 makes steps 30% faster)
+    [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f; // Multiplier for interval when crouching (e.g., 1.5 makes steps 50% slower)
+    // --- END NEW ---
 
     //const
     private float gravity = -9.81f;
@@ -39,6 +49,10 @@ public class PlayerMovement : MonoBehaviour
     private float signedSpeed;
     [NonSerialized] public float speedModifier = 1;
 
+    // --- NEW: Footstep Timer Variable ---
+    private float timeToNextFootstep; // Counts down to 0 to trigger a step
+    // --- END NEW ---
+
     //references
     private CharacterController controller;
     private PlayerInput controls;
@@ -46,13 +60,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
+        Debug.Log("PlayerMovement Awake: Initializing.");
         lastPos = transform.position;
         headCheckDistance = standingHeight - crouchHeight;
         finalSpeed = moveSpeed;
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>().transform;
         controller.height = standingHeight;
-        playerCamera.position = new Vector3(playerCamera.transform.position.x, standingHeight, playerCamera.position.z);
+        playerCamera.position = new Vector3(playerCamera.transform.position.x, standingHeight, playerCamera.transform.position.z);
+
+        // --- NEW: Initialize footstep timer to allow first step quickly ---
+        timeToNextFootstep = 0f;
+        // --- END NEW ---
     }
     private void OnEnable()
     {
@@ -67,7 +86,11 @@ public class PlayerMovement : MonoBehaviour
     {
         Crouch();
         Gravity();
-        Move();
+        Move(); // This method calculates movement and updates velocity
+
+        // --- NEW: Call the footstep handling logic ---
+        HandleSimpleFootsteps();
+        // --- END NEW ---
     }
 
     private void Move()
@@ -199,7 +222,7 @@ public class PlayerMovement : MonoBehaviour
     public float GetMovementSpeed()
     {
         Vector3 v = controller.velocity;
-        v.y = 0f;
+        v.y = 0f; // Ignore vertical speed for footsteps
         //Debug.Log(v.magnitude);
         return v.magnitude;
     }
@@ -211,4 +234,63 @@ public class PlayerMovement : MonoBehaviour
         lastPos = transform.position;
         return signedSpeed;
     }
+
+    // --- NEW: Simple Footstep Logic Method (Refined) ---
+    private void HandleSimpleFootsteps()
+    {
+        if (playerFootsteps == null)
+        {
+            Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
+            return;
+        }
+
+        float currentHorizontalSpeed = GetMovementSpeed();
+        // Debug.Log($"PlayerMovement HandleSimpleFootsteps: isGrounded={isGrounded}, currentHorizontalSpeed={currentHorizontalSpeed}");
+
+        // Condition for playing footsteps: Player must be grounded AND moving above a threshold
+        bool shouldPlayFootsteps = isGrounded && currentHorizontalSpeed > minMovementSpeedForFootsteps;
+
+        if (shouldPlayFootsteps)
+        {
+            // Calculate the desired time interval between footsteps based on current state
+            float effectiveFootstepInterval = baseFootstepInterval;
+            if (isSprinting)
+            {
+                effectiveFootstepInterval *= sprintFootstepMultiplier; // Shorter interval (faster steps)
+            }
+            else if (isCrouching)
+            {
+                effectiveFootstepInterval *= crouchFootstepMultiplier; // Longer interval (slower steps)
+            }
+
+            // Decrement the timer until the next footstep is due
+            timeToNextFootstep -= Time.deltaTime;
+
+            // If the timer has counted down to zero or below
+            if (timeToNextFootstep <= 0f)
+            {
+                playerFootsteps.PlayFootstep(); // Trigger the footstep sound
+
+                // Reset the timer for the *next* footstep
+                // Add the interval. If it's still <= 0 (e.g., from high speed or low framerate),
+                // add another interval until it becomes positive. This prevents playing multiple
+                // sounds rapidly if a large amount of time passes in one frame.
+                timeToNextFootstep += effectiveFootstepInterval;
+                while (timeToNextFootstep <= 0f) // Handle cases where Time.deltaTime is very large
+                {
+                    timeToNextFootstep += effectiveFootstepInterval;
+                }
+
+                // Debug.Log($"PlayerMovement HandleSimpleFootsteps: Footstep triggered! Next step in {timeToNextFootstep:F2}s");
+            }
+        }
+        else // Player is not grounded OR not moving fast enough
+        {
+            // Reset the timer. This ensures that when the player starts moving again or lands,
+            // a footstep can play quickly without waiting for a long accumulated interval.
+            timeToNextFootstep = 0f;
+            // Debug.Log("PlayerMovement HandleSimpleFootsteps: Not moving or not grounded, resetting footstep timer.");
+        }
+    }
+    // --- END NEW ---
 }
