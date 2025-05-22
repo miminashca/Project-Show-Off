@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class InspectionManager : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class InspectionManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject blurBackgroundPanel;
-    [SerializeField] private Text clueNameText;
-    [SerializeField] private Text clueDescriptionText;
+    [SerializeField] private TextMeshPro clueNameText;
+    [SerializeField] private TextMeshPro clueDescriptionText;
 
     [Header("References - Auto-fetched if null")]
     [SerializeField] private CameraMovement cameraMovement;
