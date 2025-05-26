@@ -91,8 +91,7 @@ public class PlayerFootsteps : MonoBehaviour
             instance.setParameterByName(PARAM_DEEP_WATER, deepWater);
             instance.setParameterByName(PARAM_WOOD, wood);
 
-            // UNCOMMENTED: This line now uses 'currentEnvironment', resolving the CS0219 warning.
-            Debug.Log($"PlayerFootsteps: Environment set to {currentEnvironment}. Dirt: {dirt}, Shallow: {shallowWater}, Deep: {deepWater}");
+            // Debug.Log($"PlayerFootsteps: Environment set to {currentEnvironment}. Dirt: {dirt}, Shallow: {shallowWater}, Deep: {deepWater}");
         }
         else
         {
