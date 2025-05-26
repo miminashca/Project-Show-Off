@@ -1,248 +1,136 @@
 using System;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Serialization;
 
+[RequireComponent(typeof(PlayerSensor), typeof(AgentMovement), typeof(HemannekenVisuals))]
 public class HemannekenStateMachine : StateMachine
 {
-    [SerializeField, Range(0f, 10f)] private float chaseDistanceRabbit = 3f;
-    [SerializeField, Range(0f, 15f)] private float chaseDistanceTrue = 15f;
-    [SerializeField, Range(0f, 20f)] private float endChaseDistance = 20f;
-    [SerializeField, Range(0f, 10f)] private float stunDistance = 10f;
-    [SerializeField, Range(0f, 100f)] private float investigateDistance = 50f;
-    [SerializeField, Range(0f, 100f)] private float attachDistance = 1f;
-    [SerializeField] private GameObject hemannekenTrueModel;
-    [SerializeField] private GameObject hemannekenRabbitModel;
-    [Range(0, 30)] public int investigationTimerDuration = 10;
+    [Header("Configuration")]
+    [SerializeField] public HemannekenAIConfig aiConfig; // Assign in Inspector
 
-    // Timers and durations needed by states
-    [Header("State Durations & Settings")]
-    public float stunTimerDuration = 5f;
-    public float transformationDuration = 1f; // Example duration for transformation
-    public float deathEffectDuration = 2f; // Example duration for death effects
+    // Public references for States (Context)
+    public PlayerSensor Sensor { get; private set; }
+    public AgentMovement Movement { get; private set; }
+    public HemannekenVisuals Visuals { get; private set; }
+    public HemannekenInteraction Interactor { get; private set; } // Player interaction (e.g. lantern)
 
-    [NonSerialized] public AiNavigation aiNav;
-    [NonSerialized] public Navigation nav;
-    [NonSerialized] public bool IsTrueForm; // You'll need to set this, e.g., based on spawn or transformation
+    // Internal state properties, managed by this SM or its components
+    public bool IsInitiallyTrueForm { get; set; } // Set by HemannekenManager on spawn
+
+    protected override State InitialState => new HemannekenRoamingState(this); // Default, can be adjusted
+
+    // High-level game interaction properties
+    private Transform _playerTransformForAttachment; // Store when needed
+
+    // ... in HemannekenStateMachine.cs, inside Awake() ...
+    protected virtual void Awake() 
+    {
+        if (aiConfig == null)
+        {
+            Debug.LogError("HemannekenAIConfig is not assigned in the Inspector!", this);
+            enabled = false;
+            return;
+        }
+
+        Sensor = GetComponent<PlayerSensor>();
+        Movement = GetComponent<AgentMovement>(); // This is our custom movement
+        Visuals = GetComponent<HemannekenVisuals>();
+        Interactor = FindFirstObjectByType<HemannekenInteraction>();
+
+        Sensor.Initialize(aiConfig);
     
-    private Transform playerTransform;
-    private Vector3 playerLastKnownPosition; // To store the last known position
+        // Find SpawnPointsManager - ensure this logic correctly finds your SpawnPointsManager
+        SpawnPointsManager spManager = GetComponentInChildren<SpawnPointsManager>();
+        // Option 2: If SPManager is globally findable (less ideal but works)
+        // if (spManager == null) spManager = FindFirstObjectByType<SpawnPointsManager>();
+    
+        if (spManager == null) Debug.LogWarning("SpawnPointsManager not found for AgentMovement initialization.", this);
 
-    private GameObject currentModel;
-    [NonSerialized] public HemannekenInteraction interactor;
+        Movement.Initialize(spManager, aiConfig); // Pass the whole config
+        Visuals.Initialize();
 
-    protected override State InitialState => new HemannekenRoamingState(this);
-
-    public event Action OnPlayerDetected;
+        Visuals.SetForm(IsInitiallyTrueForm, transform);
+        HemannekenEventBus.OnHeyTriggered += HandleHeyEvent;
+    }
+// ... rest of the class
 
     protected override void Start()
     {
-        interactor = FindFirstObjectByType<HemannekenInteraction>();
-        
-        aiNav = GetComponent<AiNavigation>();
-        nav = GetComponent<Navigation>();
-        
-        // Find player, handle if not found
-        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
-        if (playerMovement != null)
-        {
-            playerTransform = playerMovement.transform;
-            playerLastKnownPosition = playerTransform.position; // Initialize with current player position
-        }
-        else
-        {
-            Debug.LogError("PlayerMovement object not found in the scene! Hemanneken AI will not function correctly.", this);
-            playerLastKnownPosition = transform.position + transform.forward * 5f; // Fallback
-        }
+        // Set initial form based on spawn condition
+        Visuals.SetForm(IsInitiallyTrueForm, transform);
 
-        if (hemannekenRabbitModel && hemannekenTrueModel)
-        {
-            // Determine initial form based on spawn condition (e.g., over water or land)
-            // For now, assuming IsTrueForm is set externally or defaults. Example:
-            // IsTrueForm = CheckSpawnCondition(); // Implement this method
-            SetForm(IsTrueForm);
-        }
-
-        HemannekenEventBus.OnHeyTriggered += RecordPlayerLastKnownPosition;
+        // Base Start will initialize the first state.
         base.Start();
     }
 
-    private void OnDisable()
+    private void OnDestroy() // Changed from OnDisable for consistency with EventBus unsubscription
     {
-        HemannekenEventBus.OnHeyTriggered -= RecordPlayerLastKnownPosition;
+        HemannekenEventBus.OnHeyTriggered -= HandleHeyEvent;
     }
 
-    // Method to update the player's last known position
-    // This should be called when an event occurs that makes the Hemanneken aware of the player's location (e.g., "Hey" call)
-    public void RecordPlayerLastKnownPosition()
+    private void HandleHeyEvent()
     {
-        if (playerTransform != null)
+        // The state machine itself (or PlayerSensor) records the position.
+        // States then react based on this recorded position and their logic.
+        Sensor.RecordPlayerLastKnownPosition();
+        // States like Roaming or Investigating will handle transitions based on this event.
+    }
+
+    // --- High-level Interaction Methods ---
+    public void PerformAttachmentToPlayer()
+    {
+        _playerTransformForAttachment = Sensor.PlayerTransform; // Cache for detachment
+        if (_playerTransformForAttachment != null)
         {
-            playerLastKnownPosition = playerTransform.position;
-            OnPlayerDetected?.Invoke();
+            Debug.Log("Hemanneken Attached to Player");
+            transform.SetParent(_playerTransformForAttachment);
+            // Define an attachment point or offset on the player, or use a fixed offset
+            transform.localPosition = new Vector3(0, 1, -0.5f); // Example offset
+            Visuals.SetModelVisibility(false); // Hide model as per HemannekenAttachedState logic
+            //Movement.EnableAgent(false); // Ensure agent is fully stopped and disabled
         }
         else
         {
-            // If playerTransform was lost somehow after Start (unlikely but good to be safe)
-            Debug.LogWarning("Player transform is null. Cannot record last known position accurately.", this);
-            // Keep the last valid playerLastKnownPosition or use a fallback
+            Debug.LogError("Cannot attach: PlayerTransform is null.", this);
         }
     }
 
-    // The requested method
-    public Vector3 GetPlayerLastKnownPosition()
+    public void PerformDetachmentFromPlayer()
     {
-        // This will return the position recorded by RecordPlayerLastKnownPosition()
-        // or the initial player position if RecordPlayerLastKnownPosition() hasn't been called yet.
-        return playerLastKnownPosition;
-    }
-
-    public float GetDistanceToPlayer()
-    {
-        if (playerTransform == null) return float.MaxValue; // Player not found, effectively infinite distance
-
-        Vector3 posA = gameObject.transform.position;
-        posA.y = 0;
-        Vector3 posB = playerTransform.position;
-        posB.y = 0;
-        
-        return Vector3.Magnitude(posA - posB);
-    }
-
-    public Vector3 GetPlayerPosition()
-    {
-        if (playerTransform == null)
+        Debug.Log("Hemanneken Detached from Player");
+        if (_playerTransformForAttachment != null)
         {
-            Debug.LogError("Attempted to GetPlayerPosition, but playerTransform is null.", this);
-            return playerLastKnownPosition; // Return last known as a fallback
+            transform.SetParent(null); // Detach
+            _playerTransformForAttachment = null;
         }
-        return playerTransform.position;
-    }
-
-    public bool PlayerIsInRabbitChaseDistance()
-    {
-        return GetDistanceToPlayer() <= chaseDistanceRabbit;
-    }
-
-    public bool PlayerIsInEndChaseDistance()
-    {
-        return GetDistanceToPlayer() >= endChaseDistance;
-    }
-
-    public bool PlayerIsInTrueChaseDistance()
-    {
-        return GetDistanceToPlayer() <= chaseDistanceTrue;
-    }
-
-    public bool PlayerIsInInvestigateDistance()
-    {
-        return GetDistanceToPlayer() <= investigateDistance;
-    }
-
-    public bool PlayerIsInAttachingDistance()
-    {
-        return GetDistanceToPlayer() <= attachDistance;
-    }
-    public bool PlayerIsInStunDistance()
-    {
-        return GetDistanceToPlayer() <= stunDistance;
-    }
-    
-    
-    public void SetForm(bool isTrue)
-    {
-        IsTrueForm = isTrue;
-        if (IsTrueForm)
-        {
-            if (hemannekenTrueModel)
-            {
-                if(currentModel) Destroy(currentModel);
-                // Destroy existing model if any to prevent duplicates (you'll need a reference to it)
-                // Or, ensure only one is active.
-                // For now, assuming this is handled or it's an initial setup.
-                currentModel = Instantiate(hemannekenTrueModel, this.gameObject.transform);
-                if (hemannekenRabbitModel.transform.parent == this.transform) hemannekenRabbitModel.SetActive(false); // Example
-            }
-        }
-        else
-        {
-            if (hemannekenRabbitModel)
-            {
-                if(currentModel) Destroy(currentModel);
-
-                currentModel = Instantiate(hemannekenRabbitModel, this.gameObject.transform);
-                if (hemannekenTrueModel.transform.parent == this.transform) hemannekenTrueModel.SetActive(false); // Example
-            }
-        }
-    }
-
-
-    public void LockNavMeshAgent(bool Lock)
-    {
-        //if (!aiNav || !aiNav.navAgent) return;
-
-        if (Lock)
-        {
-            // aiNav.navAgent.updatePosition = false;
-            // aiNav.navAgent.updateRotation = false;
-            aiNav.navAgent.enabled = false;
-        }
-        else
-        {
-            // aiNav.navAgent.updatePosition = true;
-            // aiNav.navAgent.updateRotation = true;
-            aiNav.navAgent.enabled = true;
-        }
-    }
-    // --- Methods for State Logic (as assumed by the state classes) ---
-
-    public void PlayStunEffects() { Debug.Log("SFX/VFX: Hemanneken Stunned"); /* Implement actual effects */ }
-    public void StopStunEffects() { Debug.Log("SFX/VFX: Hemanneken Stun Effects Stopped"); /* Implement cleanup */ }
-    public void PlayReplyHeySound() { Debug.Log("SFX: Hemanneken replies 'Hey'"); /* Implement sound */ }
-
-    public void PlayTransformationEffects()
-    {
-        ParticleSystem particles = GetComponentInChildren<ParticleSystem>();
-        particles.Play();
-        Debug.Log("SFX/VFX: Hemanneken Transforming");
-    }
-    public void StopTransformationEffects() { Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped"); /* Implement cleanup */ }
-
-    public void PlayDeathEffects()
-    {
-        ParticleSystem particles = GetComponentInChildren<ParticleSystem>();
-        particles.Play();
-        Debug.Log("SFX/VFX: Hemanneken Dying");
-    }
-
-    public void PerformAttachment()
-    {
-        Debug.Log("Hemanneken Attached to Player");
-        // Logic to parent to player, apply offset, etc.
-        // transform.SetParent(playerTransform);
-        // transform.localPosition = new Vector3(0, 1, -0.5f); // Example offset
+        Visuals.SetModelVisibility(true); // Show model again
+        // Agent will be re-enabled by the next state if needed
     }
 
     public void ApplySlowToPlayer()
     {
         Debug.Log("Player Slowed");
-        // Access player movement script and reduce speed
-        // e.g., playerTransform.GetComponent<PlayerMovement>().ApplySpeedModifier(0.7f);
+        // Example: Sensor.PlayerTransform?.GetComponent<PlayerMovement>()?.ApplySpeedModifier(0.7f);
     }
 
     public void RemoveSlowFromPlayer()
     {
         Debug.Log("Player Slow Removed");
-        // e.g., playerTransform.GetComponent<PlayerMovement>().RemoveSpeedModifier(0.7f);
+        // Example: Sensor.PlayerTransform?.GetComponent<PlayerMovement>()?.RemoveSpeedModifier(0.7f);
     }
     
     public bool IsPlayerSubmergedInWater()
     {
         // Placeholder: Implement logic to check if player is crouched in water
         // e.g., return PlayerStatus.Instance.IsSubmerged;
-        return false; // Default to false
+        Debug.LogWarning("IsPlayerSubmergedInWater check not implemented.");
+        return false; 
     }
 
     public void PlayPlayerDefeatAnimation() { Debug.Log("GAME OVER: Playing player defeat animation"); /* Implement */ }
     public void TriggerGameOver() { Debug.Log("GAME OVER triggered"); Time.timeScale = 0; /* Show UI, etc. */ }
+
+    public void DestroySelfAfterDelay(float delay)
+    {
+        Destroy(gameObject, delay);
+    }
 }

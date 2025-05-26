@@ -240,7 +240,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerFootsteps == null)
         {
-            Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
+            //Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
             return;
         }
 
