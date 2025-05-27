@@ -4843,9 +4843,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1741672982412060041}
   - component: {fileID: 4459889473469353627}
-  - component: {fileID: 6213530847861793275}
-  - component: {fileID: 940978611681298042}
-  - component: {fileID: 570662067259707263}
+  - component: {fileID: 381907839171290958}
+  - component: {fileID: 5403740640629636576}
+  - component: {fileID: 7745754292186392169}
   m_Layer: 0
   m_Name: Hemanneken
   m_TagString: Untagged
@@ -4882,19 +4882,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ecb76c5b5f5c4e7b9163eaa86638c10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseDistanceRabbit: 10
-  chaseDistanceTrue: 15
-  endChaseDistance: 20
-  stunDistance: 10
-  investigateDistance: 50
-  attachDistance: 2
-  hemannekenTrueModel: {fileID: 5591957516352670297, guid: 6def5dae03688428297355db78fff6cd, type: 3}
-  hemannekenRabbitModel: {fileID: 5591957516352670297, guid: 459ba5e1530e64e1e8388e1b7b491c6d, type: 3}
-  investigationTimerDuration: 10
-  stunTimerDuration: 3
-  transformationDuration: 1
-  deathEffectDuration: 2
---- !u!114 &6213530847861793275
+  aiConfig: {fileID: 11400000, guid: 286a82ff654a04ea4aa28e655a29d542, type: 2}
+--- !u!114 &381907839171290958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4903,11 +4892,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 7024320941259705108}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 976dde10a4dbf46bca81fce7287beb6d, type: 3}
+  m_Script: {fileID: 11500000, guid: 4686a9dcce3124e74998a19328a890b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2.8
---- !u!114 &940978611681298042
+--- !u!114 &5403740640629636576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4916,32 +4904,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 7024320941259705108}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 47f382cd907c94c67bbbeff37c5b4464, type: 3}
+  m_Script: {fileID: 11500000, guid: 5be58ca398f754794a8aa4d19e3b2d59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
---- !u!195 &570662067259707263
-NavMeshAgent:
+--- !u!114 &7745754292186392169
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7024320941259705108}
   m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3897870351e8f4f5a8504ba477357fa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hemannekenTrueModelPrefab: {fileID: 5591957516352670297, guid: 6def5dae03688428297355db78fff6cd, type: 3}
+  hemannekenRabbitModelPrefab: {fileID: 5591957516352670297, guid: 459ba5e1530e64e1e8388e1b7b491c6d, type: 3}
 --- !u!1001 &91626547540717771
 PrefabInstance:
   m_ObjectHideFlags: 0

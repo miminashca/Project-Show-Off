@@ -1,74 +1,82 @@
 using UnityEngine;
-using System.Collections; // Required for Coroutines
+using System.Collections;
 
 public class HemannekenInvestigatingState : State
 {
     private HemannekenStateMachine HSM => (HemannekenStateMachine)SM;
     private float _investigationEndTime;
-    private Vector3 _investigationTargetPosition;
     private Coroutine _replyCoroutine;
 
-    public HemannekenInvestigatingState(StateMachine pSM) : base(pSM)
-    {
-    }
+    public HemannekenInvestigatingState(StateMachine pSM) : base(pSM) { }
 
     public override void OnEnterState()
     {
         Debug.Log("Entered Investigating State");
-        HSM.LockNavMeshAgent(false); // Allow movement
+        //HSM.Movement.EnableAgent(true); // Allow movement
 
-        // Investigation timer
-        _investigationEndTime = Time.time + HSM.investigationTimerDuration; // Assuming HSM.investigationTimerDuration = 10f;
-
-        // Moves towards the player's position at the time of "Hey"
-        _investigationTargetPosition = HSM.GetPlayerLastKnownPosition(); // HSM should store this when "Hey" is triggered
-        _investigationTargetPosition.y += 0.5f;
-        HSM.aiNav.SetDestination(_investigationTargetPosition);
-
-        // // Replies with its own “Hey” Call with a delay
-        // float distanceToTarget = Vector3.Distance(HSM.transform.position, _investigationTargetPosition);
-        // // Example delay: 0.1s per meter, min 0.5s, max 3s. Adjust as needed.
-        // float replyDelay = Mathf.Clamp(distanceToTarget * 0.1f, 0.5f, 3.0f);
-        // _replyCoroutine = HSM.StartCoroutine(DelayedHeyReplyCoroutine(replyDelay));
-
-        HSM.OnPlayerDetected += NavigateToPlayer;
+        // Subscribe to player detection events from the sensor for this state
+        HSM.Sensor.OnPlayerDetected += HandlePlayerDetectedWhileInvestigating;
+        
+        SetupInvestigation();
     }
 
-    private IEnumerator DelayedHeyReplyCoroutine(float delay)
+    private void SetupInvestigation()
     {
-        yield return new WaitForSeconds(delay);
-        HSM.PlayReplyHeySound(); // Assuming HSM has a method like this
-        Debug.Log("Hemanneken (Investigating) replies: Hey!");
+        _investigationEndTime = Time.time + HSM.aiConfig.investigationTimerDuration;
+        
+        Vector3 targetPos = HSM.Sensor.PlayerLastKnownPosition;
+        // Optional: Add a slight Y offset if your ground level isn't perfectly flat for NavMeshAgent
+        // targetPos.y = HSM.transform.position.y; // Or a fixed offset from ground
+        HSM.Movement.SetDestination(targetPos, MovementStyle.SplineWave);
+
+        // Cancel previous reply if any, and start a new one
+        if (_replyCoroutine != null) HSM.StopCoroutine(_replyCoroutine);
+        _replyCoroutine = HSM.StartCoroutine(DelayedHeyReplyCoroutine());
     }
 
-    private void NavigateToPlayer()
+    private void HandlePlayerDetectedWhileInvestigating()
     {
-        _investigationEndTime = Time.time + HSM.investigationTimerDuration;
-        // Moves towards the player's position at the time of "Hey"
-        _investigationTargetPosition = HSM.GetPlayerLastKnownPosition(); // HSM should store this when "Hey" is triggered
-        HSM.aiNav.SetDestination(_investigationTargetPosition);
-
-        // Replies with its own “Hey” Call with a delay
-        float distanceToTarget = Vector3.Distance(HSM.transform.position, _investigationTargetPosition);
-        // Example delay: 0.1s per meter, min 0.5s, max 3s. Adjust as needed.
-        float replyDelay = Mathf.Clamp(distanceToTarget * 0.1f, 0.5f, 3.0f);
-        _replyCoroutine = HSM.StartCoroutine(DelayedHeyReplyCoroutine(replyDelay));
+        // Player made another "Hey" or was re-detected, reset investigation
+        Debug.Log("Player re-detected during investigation. Resetting target and timer.");
+        SetupInvestigation(); // Re-target and reset timer
     }
+
+    private IEnumerator DelayedHeyReplyCoroutine()
+    {
+        // Dynamic delay based on distance or fixed, adjust as needed
+        float distanceToTarget = Vector3.Distance(HSM.transform.position, HSM.Sensor.PlayerLastKnownPosition);
+        float replyDelay = Mathf.Clamp(distanceToTarget * 0.05f, 0.5f, 2.0f); // Shorter delay
+        
+        yield return new WaitForSeconds(replyDelay);
+        HSM.Visuals.PlayReplyHeySound();
+    }
+
     public override void Handle()
     {
-        // Transition to Roaming (true form) when investigation timer runs out
         if (Time.time >= _investigationEndTime)
         {
-            SM.TransitToState(new HemannekenRoamingState(SM));
+            Debug.Log("Investigation timer ended.");
+            SM.TransitToState(new HemannekenRoamingState(SM)); // Back to roaming
             return;
         }
 
-        // Transition to Chasing when the player comes within 10 meters
-        if (HSM.PlayerIsInTrueChaseDistance()) // Assuming 10m is HSM.trueChaseDistance
+        // If player comes into direct chase range while investigating
+        if (HSM.Visuals.IsTrueForm && HSM.Sensor.IsPlayerInTrueChaseDistance())
         {
+            Debug.Log("Player entered chase distance during investigation.");
             SM.TransitToState(new HemannekenChasingState(SM));
             return;
         }
+        // If it was in rabbit form and investigating (though current logic makes it transform first)
+        // and player comes into rabbit chase range
+        else if (!HSM.Visuals.IsTrueForm && HSM.Sensor.IsPlayerInRabbitChaseDistance())
+        {
+            Debug.Log("Player entered rabbit chase distance during investigation (transition to Enchantix).");
+            SM.TransitToState(new HemannekenEnchantixState(SM));
+            return;
+        }
+
+        // Continue moving towards investigation point (handled by AgentMovement)
     }
 
     public override void OnExitState()
@@ -79,9 +87,7 @@ public class HemannekenInvestigatingState : State
             HSM.StopCoroutine(_replyCoroutine);
             _replyCoroutine = null;
         }
-        
-        // Stop movement before transitioning. Next state's OnEnter will manage agent.
-        HSM.LockNavMeshAgent(false); 
-        HSM.OnPlayerDetected -= NavigateToPlayer;
+        HSM.Sensor.OnPlayerDetected -= HandlePlayerDetectedWhileInvestigating;
+        // Next state's OnEnter will manage agent.
     }
 }

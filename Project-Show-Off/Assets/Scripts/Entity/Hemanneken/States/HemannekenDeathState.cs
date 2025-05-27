@@ -4,29 +4,18 @@ public class HemannekenDeathState : State
 {
     private HemannekenStateMachine HSM => (HemannekenStateMachine)SM;
 
-    public HemannekenDeathState(StateMachine pSM) : base(pSM)
-    {
-    }
+    public HemannekenDeathState(StateMachine pSM) : base(pSM) { }
 
     public override void OnEnterState()
     {
         Debug.Log("Entered Death State");
-        HSM.LockNavMeshAgent(true); // Stop all movement
+        HSM.Movement.StopAgentCompletely(); // Stop all movement
+        //HSM.Movement.EnableAgent(false); // Disable agent
 
-        // Play death effects (SFX, VFX)
-        HSM.PlayDeathEffects(); // Assuming HSM.PlayDeathEffects() exists
-
-        // "The creature is dead and is removed from the scene."
-        // Destroy the GameObject after a short delay for effects to play out.
-        // HSM.deathEffectDuration should be defined in HemannekenStateMachine
-        GameObject.Destroy(HSM.gameObject, HSM.deathEffectDuration);
+        HSM.Visuals.PlayDeathEffects();
+        HSM.DestroySelfAfterDelay(HSM.aiConfig.deathEffectDuration);
     }
 
-    public override void Handle()
-    {
-    }
-
-    public override void OnExitState()
-    {
-    }
+    public override void Handle() { /* No actions needed, waiting for destruction */ }
+    public override void OnExitState() { /* Usually not called as GameObject is destroyed */ }
 }
