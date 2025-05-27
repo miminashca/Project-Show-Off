@@ -92,6 +92,16 @@ public class PlayerSensor : MonoBehaviour
         }
         return PlayerTransform.position;
     }
+    
+    public Vector3 GetPlayerCameraPosition()
+    {
+        if (PlayerTransform == null)
+        {
+            Debug.LogWarning("Attempted to GetPlayerCameraPosition, but playerTransform is null. Returning last known.", this);
+            return PlayerLastKnownPosition;
+        }
+        return PlayerTransform.gameObject.GetComponentInChildren<Camera>().transform.position;
+    }
 
     public float GetDistanceToPlayer()
     {
