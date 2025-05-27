@@ -43,7 +43,7 @@ public class HemannekenInteraction : MonoBehaviour
 
         if (isHoldingLantern && countLanternTime)
         {
-            Debug.Log(lanternTimeCounter);
+            //Debug.Log(lanternTimeCounter);
             lanternTimeCounter += Time.deltaTime;
         }
         else
