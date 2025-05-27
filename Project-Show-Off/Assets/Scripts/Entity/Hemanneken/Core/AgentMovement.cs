@@ -61,7 +61,7 @@ public class AgentMovement : MonoBehaviour
         {
             _spManager.SpawnPointsInitialized -= InitMainPatrolPoints;
             _spManager.SpawnPointsInitialized += InitMainPatrolPoints;
-            if (_spManager.SpawnPoints != null && _spManager.SpawnPoints.Count > 0 && !_patrolPointsInitialized)
+            if (_spManager.SecondarySpawnPoints != null && _spManager.SecondarySpawnPoints.Count > 0 && !_patrolPointsInitialized)
             {
                 InitMainPatrolPoints();
             }
@@ -71,11 +71,11 @@ public class AgentMovement : MonoBehaviour
     private void InitMainPatrolPoints()
     {
         _mainPatrolPoints.Clear();
-        if (_spManager == null || _spManager.SpawnPoints == null || _spManager.SpawnPoints.Count == 0)
+        if (_spManager == null || _spManager.SecondarySpawnPoints == null || _spManager.SecondarySpawnPoints.Count == 0)
         {
             _patrolPointsInitialized = false; return;
         }
-        foreach (SpawnPoint p in _spManager.SpawnPoints) _mainPatrolPoints.Add(p.transform.position); // Store full 3D position
+        foreach (SpawnPoint p in _spManager.SecondarySpawnPoints) _mainPatrolPoints.Add(p.transform.position); // Store full 3D position
         _patrolPointsInitialized = _mainPatrolPoints.Count > 0;
         _needsNewPathSegmentForRoaming = true;
     }
