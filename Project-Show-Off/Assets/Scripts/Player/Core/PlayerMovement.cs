@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerFootsteps playerFootsteps; // Assign your PlayerFootsteps script here in the Inspector
     [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f; // Minimum horizontal speed to trigger footsteps
     [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f; // Time in seconds between footsteps when walking normally (e.g., 0.5 for 2 steps/sec)
-    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f; // Multiplier for interval when sprinting (e.g., 0.7 makes steps 30% faster)
+    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f; // Multiplier for interval when sprinting (e.7 makes steps 30% faster)
     [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f; // Multiplier for interval when crouching (e.g., 1.5 makes steps 50% slower)
     // --- END NEW ---
 
@@ -124,27 +124,35 @@ public class PlayerMovement : MonoBehaviour
     // Determine what the target speed should be
     private void CalculateTargetSpeed()
     {
+        // IMPORTANT CHANGE HERE:
+        // Assume not sprinting at the start of each calculation,
+        // and only set to true if sprinting conditions are met.
+        isSprinting = false;
+
         // Base walk/crouch speed
         targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
         signedSpeed = GetSignedMovementSpeed();
 
-        if (signedSpeed < -0.1f)
-        {
-            // Backwards
-            targetSpeed *= 0.5f;
-            isSprinting = false;
-        }
-        else if (ShouldStartSprinting())
+        // Prioritize sprint condition
+        if (ShouldStartSprinting())
         {
             targetSpeed += sprintSpeedIncrement;
-            isSprinting = true;
+            isSprinting = true; // Set to true only if currently sprinting
         }
+        // Handle backward movement (no sprinting when moving backward)
+        else if (signedSpeed < -0.1f)
+        {
+            targetSpeed *= 0.5f;
+            // isSprinting remains false
+        }
+        // Handle no movement (no speed, no sprinting)
         else if (!isMoving)
         {
-            // No movement input → no speed
             targetSpeed = 0f;
-            isSprinting = false;
+            // isSprinting remains false
         }
+        // If none of the above, it's normal forward walking or crouching,
+        // and isSprinting correctly remains false.
 
         targetSpeed *= speedModifier;
     }
@@ -152,10 +160,10 @@ public class PlayerMovement : MonoBehaviour
     // Helper to decide sprint conditions
     private bool ShouldStartSprinting()
     {
-        return controls.Player.Sprint.inProgress
+        return controls.Player.Sprint.inProgress // Check if the sprint action is active
             && isMoving
             && !isCrouching
-            && signedSpeed > 0.1f;
+            && signedSpeed > 0.1f; // Ensure moving forward
     }
 
     // Smoothly lerp from current speed to targetSpeed
@@ -240,15 +248,25 @@ public class PlayerMovement : MonoBehaviour
     {
         if (playerFootsteps == null)
         {
-            Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
+            //Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
             return;
         }
 
         float currentHorizontalSpeed = GetMovementSpeed();
-        // Debug.Log($"PlayerMovement HandleSimpleFootsteps: isGrounded={isGrounded}, currentHorizontalSpeed={currentHorizontalSpeed}");
-
-        // Condition for playing footsteps: Player must be grounded AND moving above a threshold
         bool shouldPlayFootsteps = isGrounded && currentHorizontalSpeed > minMovementSpeedForFootsteps;
+
+        // --- NEW: Determine and set the FMOD MovementState parameter ---
+        float movementStateValue = 0.5f; // Default to walking (0.5)
+        if (isSprinting)
+        {
+            movementStateValue = 1.0f; // Sprinting (1.0)
+        }
+        else if (isCrouching)
+        {
+            movementStateValue = 0.0f; // Crouching (0.0)
+        }
+        playerFootsteps.SetMovementState(movementStateValue);
+        // --- END NEW ---
 
         if (shouldPlayFootsteps)
         {
@@ -263,33 +281,22 @@ public class PlayerMovement : MonoBehaviour
                 effectiveFootstepInterval *= crouchFootstepMultiplier; // Longer interval (slower steps)
             }
 
-            // Decrement the timer until the next footstep is due
             timeToNextFootstep -= Time.deltaTime;
 
-            // If the timer has counted down to zero or below
             if (timeToNextFootstep <= 0f)
             {
                 playerFootsteps.PlayFootstep(); // Trigger the footstep sound
 
-                // Reset the timer for the *next* footstep
-                // Add the interval. If it's still <= 0 (e.g., from high speed or low framerate),
-                // add another interval until it becomes positive. This prevents playing multiple
-                // sounds rapidly if a large amount of time passes in one frame.
                 timeToNextFootstep += effectiveFootstepInterval;
-                while (timeToNextFootstep <= 0f) // Handle cases where Time.deltaTime is very large
+                while (timeToNextFootstep <= 0f)
                 {
                     timeToNextFootstep += effectiveFootstepInterval;
                 }
-
-                // Debug.Log($"PlayerMovement HandleSimpleFootsteps: Footstep triggered! Next step in {timeToNextFootstep:F2}s");
             }
         }
         else // Player is not grounded OR not moving fast enough
         {
-            // Reset the timer. This ensures that when the player starts moving again or lands,
-            // a footstep can play quickly without waiting for a long accumulated interval.
             timeToNextFootstep = 0f;
-            // Debug.Log("PlayerMovement HandleSimpleFootsteps: Not moving or not grounded, resetting footstep timer.");
         }
     }
     // --- END NEW ---

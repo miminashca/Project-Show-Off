@@ -1,52 +1,42 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class HemannekenAttachedState : State
 {
-    public HemannekenAttachedState(StateMachine pSM) : base(pSM)
-    {
-    }
     private HemannekenStateMachine HSM => (HemannekenStateMachine)SM;
-    List<MeshRenderer> meshes;
 
+    public HemannekenAttachedState(StateMachine pSM) : base(pSM) { }
 
     public override void OnEnterState()
     {
         Debug.Log("Entered Attached State");
         
-        HSM.LockNavMeshAgent(true);
-
-        HemannekenEventBus.AttachHemanneken();
-        meshes = HSM.GetComponentsInChildren<MeshRenderer>().ToList();
-        foreach (MeshRenderer mR in meshes)
-        {
-            if (mR.gameObject.tag == "HemannekenMesh") mR.gameObject.SetActive(false);
-        }
-
-        HemannekenEventBus.OnWaterTouch += Die;
+        HSM.PerformAttachmentToPlayer(); // Handles parenting, positioning, visual hiding, agent disabling
+        
+        HemannekenEventBus.AttachHemanneken(); // Global game event
+        HemannekenEventBus.OnWaterTouch += HandleWaterTouch;
     }
 
     public override void Handle()
     {
-        HSM.gameObject.transform.position = HSM.GetPlayerPosition();
+        // Position is now managed by being parented to the player via PerformAttachmentToPlayer
+        // If specific relative movement or updates are needed while attached, do them here.
+        // For example, ensuring rotation matches player or a fixed offset.
+        // For now, HSM.PerformAttachmentToPlayer already set a localPosition.
     }
 
     public override void OnExitState()
     {
-        HemannekenEventBus.DetachHemanneken();
-        foreach (MeshRenderer mR in meshes)
-        {
-            if (mR.gameObject.tag == "HemannekenMesh") mR.gameObject.SetActive(true);
-        }
-        HSM.LockNavMeshAgent(false);
-        HemannekenEventBus.OnWaterTouch -= Die;
-
+        Debug.Log("Exited Attached State");
+        HSM.PerformDetachmentFromPlayer(); // Handles unparenting, visual restoring
+        
+        HemannekenEventBus.DetachHemanneken(); // Global game event
+        HemannekenEventBus.OnWaterTouch -= HandleWaterTouch;
+        // The next state will handle enabling the agent if necessary.
     }
 
-    private void Die()
+    private void HandleWaterTouch()
     {
-        HSM.TransitToState(new HemannekenDeathState(SM));
+        Debug.Log("Attached Hemanneken detected water touch.");
+        HSM.TransitToState(new HemannekenDeathState(HSM));
     }
 }
-
