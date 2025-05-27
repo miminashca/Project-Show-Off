@@ -5,25 +5,68 @@ public class PlayerSensor : MonoBehaviour
 {
     public Transform PlayerTransform { get; private set; }
     public Vector3 PlayerLastKnownPosition { get; private set; }
-
-    public event Action OnPlayerDetected; // For investigating state
+    public event Action OnPlayerDetected;
 
     private HemannekenAIConfig _aiConfig;
+    private Transform _hemannekenTransform;
 
-    public void Initialize(HemannekenAIConfig aiConfig)
+    public void Initialize(HemannekenAIConfig aiConfig, Transform hemannekenTransform)
     {
         _aiConfig = aiConfig;
-        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
-        if (playerMovement != null)
+        _hemannekenTransform = hemannekenTransform;
+
+        // Try to find Player dynamically if not set, or rely on a central manager
+        if (PlayerTransform == null)
         {
-            PlayerTransform = playerMovement.transform;
+            // A more robust way might be a static reference or singleton for the player if it's always one.
+            PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>(); // Or use a tag
+            if (playerMovement != null)
+            {
+                PlayerTransform = playerMovement.transform;
+            }
+            else
+            {
+                Debug.LogError("PlayerSensor: PlayerMovement object not found! Player detection will be limited.", this);
+            }
+        }
+
+        if (PlayerTransform != null)
+        {
             PlayerLastKnownPosition = PlayerTransform.position;
         }
         else
         {
-            Debug.LogError("PlayerMovement object not found in the scene! PlayerSensor will not function correctly.", this);
-            // Fallback: last known position is ahead of the AI
-            PlayerLastKnownPosition = transform.position + transform.forward * 5f; 
+            // Fallback if player truly not found: LKP is ahead of Hemanneken
+            PlayerLastKnownPosition = _hemannekenTransform.position + _hemannekenTransform.forward * 5f;
+            Debug.LogWarning("PlayerSensor: PlayerTransform is null after Initialize. LKP set to fallback.", this);
+        }
+
+        // Subscribe to the global shout event
+        HunterEventBus.OnPlayerShouted += HandleGlobalPlayerShout;
+    }
+
+    void OnDestroy()
+    {
+        PlayerActionEventBus.OnPlayerShouted -= HandleGlobalPlayerShout;
+    }
+
+    private void HandleGlobalPlayerShout(Vector3 shoutPosition)
+    {
+        if (this == null || !enabled || !gameObject.activeInHierarchy || _aiConfig == null || _hemannekenTransform == null) return;
+
+        // Use Hemanneken's investigateDistance as its "hearing range" for shouts.
+        float hearingRange = _aiConfig.investigateDistance;
+        float distanceToShout = Vector3.Distance(_hemannekenTransform.position, shoutPosition);
+
+        if (distanceToShout <= hearingRange)
+        {
+            Debug.Log($"Hemanneken Sensor ({_hemannekenTransform.name}): Heard player shout at {shoutPosition} within range {hearingRange} (Dist: {distanceToShout}). LKP updated.");
+            PlayerLastKnownPosition = shoutPosition;
+            OnPlayerDetected?.Invoke(); // Signal to subscribed states (Roaming, Investigating)
+        }
+        else
+        {
+            // Debug.Log($"Hemanneken Sensor ({_hemannekenTransform.name}): Heard player shout at {shoutPosition} but was too far (Dist: {distanceToShout}, Range: {hearingRange}).");
         }
     }
 
@@ -49,15 +92,25 @@ public class PlayerSensor : MonoBehaviour
         }
         return PlayerTransform.position;
     }
+    
+    public Vector3 GetPlayerCameraPosition()
+    {
+        if (PlayerTransform == null)
+        {
+            Debug.LogWarning("Attempted to GetPlayerCameraPosition, but playerTransform is null. Returning last known.", this);
+            return PlayerLastKnownPosition;
+        }
+        return PlayerTransform.gameObject.GetComponentInChildren<Camera>().transform.position;
+    }
 
     public float GetDistanceToPlayer()
     {
-        if (PlayerTransform == null) return float.MaxValue;
+        if (PlayerTransform == null || _hemannekenTransform == null) return float.MaxValue;
 
-        Vector3 myPos = transform.position;
-        myPos.y = 0; // Compare on 2D plane
+        Vector3 myPos = _hemannekenTransform.position;
+        // myPos.y = 0; // Compare on 2D plane
         Vector3 playerPos = PlayerTransform.position;
-        playerPos.y = 0;
+        // playerPos.y = 0;
         
         return Vector3.Distance(myPos, playerPos);
     }

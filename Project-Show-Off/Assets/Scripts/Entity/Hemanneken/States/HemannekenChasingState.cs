@@ -25,7 +25,8 @@ public class HemannekenChasingState : State
 
         if (Time.time >= _nextChaseUpdateTime)
         {
-            Vector3 currentPlayerPosition = HSM.Sensor.GetPlayerCurrentPosition();
+            Vector3 currentPlayerPosition = HSM.Sensor.GetPlayerCameraPosition();
+            currentPlayerPosition.y -= 0.2f;
             
             // Check if player has moved enough to warrant a new path
             if ((currentPlayerPosition - _lastChasedPlayerPosition).sqrMagnitude > PLAYER_MOVE_THRESHOLD_SQR || 

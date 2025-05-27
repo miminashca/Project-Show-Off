@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
+// NEW CHANGE
+using FMODUnity;
+// END CHANGE
 
 public class LanternController : MonoBehaviour
 {
@@ -43,6 +46,14 @@ public class LanternController : MonoBehaviour
 
     private Coroutine interactionCoroutine;
     private PlayerInput playerInputActions;
+
+    // NEW CHANGE
+    [Header("FMOD Sounds")]
+    [SerializeField]
+    private EventReference lanternPullOutSoundEvent;
+    [SerializeField]
+    private EventReference lanternPutAwaySoundEvent;
+    // END CHANGE
 
     private void Awake()
     {
@@ -188,10 +199,17 @@ public class LanternController : MonoBehaviour
                 currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
             }
 
-
             if (!outOfFuel && lanternLight != null) SetLightState(true, defaultIntensity, defaultRange);
             else if (lanternLight != null) SetLightState(false);
             Debug.Log("Lantern Equipped");
+
+            // NEW CHANGE
+            // Play Lantern Pullout sound when equipped
+            if (lanternPullOutSoundEvent.Guid != System.Guid.Empty) // Changed IsValid() to Guid check
+            {
+                RuntimeManager.PlayOneShot(lanternPullOutSoundEvent, transform.position);
+            }
+            // END CHANGE
         }
         else // Unequipping
         {
@@ -204,6 +222,14 @@ public class LanternController : MonoBehaviour
                 currentLanternInstance.SetActive(false);
             }
             Debug.Log("Lantern Unequipped");
+
+            // NEW CHANGE
+            // Play Lantern Putaway sound when unequipped
+            if (lanternPutAwaySoundEvent.Guid != System.Guid.Empty) // Changed IsValid() to Guid check
+            {
+                RuntimeManager.PlayOneShot(lanternPutAwaySoundEvent, transform.position);
+            }
+            // END CHANGE
         }
     }
 
@@ -283,15 +309,14 @@ public class LanternController : MonoBehaviour
         {
             // If it was raised, it will remain visually raised unless StopRaising is called.
             // If you want it to reset to lowered position on refill:
-            if (isRaised)
-            {
-                // Optionally decide if refilling should lower it or keep it raised
-                // StopRaising(); // Uncomment to lower on refill
-            }
-            else // If not raised, ensure light is at default values
-            {
-                SetLightState(true, defaultIntensity, defaultRange);
-            }
+            // if (isRaised)
+            // {
+            //     StopRaising(); // Uncomment to lower on refill
+            // }
+            // else // If not raised, ensure light is at default values
+            // {
+            SetLightState(true, defaultIntensity, defaultRange);
+            // }
 
             if (currentPhysicsSwayScript != null && !isRaised) // If not raised, ensure it's at default offset
             {
@@ -364,6 +389,9 @@ public class LanternController : MonoBehaviour
             Gizmos.color = Color.gray;
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
             Gizmos.DrawWireSphere(interactionCenter, nixieAttractRadius);
+            // NEW CHANGE - Removed extraneous line
+            // ServiceManager.Service<Game>().
+            // END CHANGE
         }
     }
 }

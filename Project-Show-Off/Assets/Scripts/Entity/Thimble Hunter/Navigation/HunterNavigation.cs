@@ -2,10 +2,10 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-[RequireComponent(typeof(ThimbleHunterAI))] // Relies on ThimbleHunterAI for some parameters
+[RequireComponent(typeof(HunterAI))] // Relies on ThimbleHunterAI for some parameters
 public class HunterNavigation : MonoBehaviour
 {
-    private ThimbleHunterAI _hunterAI;
+    private HunterAI _hunterAI;
 
     [Header("Roaming Node Graph")]
     public List<Transform> RoamingNodes = new List<Transform>();
@@ -25,7 +25,7 @@ public class HunterNavigation : MonoBehaviour
 
     void Awake()
     {
-        _hunterAI = GetComponent<ThimbleHunterAI>();
+        _hunterAI = GetComponent<HunterAI>();
         if (_hunterAI == null)
         {
             Debug.LogError("HunterNavigation requires a ThimbleHunterAI component on the same GameObject!", this);

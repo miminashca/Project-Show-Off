@@ -9,8 +9,6 @@ public class HemannekenRoamingState : State
     public override void OnEnterState()
     {
         Debug.Log("Entered Roaming State");
-        //HSM.Movement.EnableAgent(true); // Allow movement for roaming
-        HemannekenEventBus.OnHeyTriggered += HandleHeyTriggered; // Global hey event
         HSM.Sensor.OnPlayerDetected += HandlePlayerDirectlyDetected; // Direct detection for investigation
     }
 
@@ -66,8 +64,6 @@ public class HemannekenRoamingState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Roaming State");
-        HemannekenEventBus.OnHeyTriggered -= HandleHeyTriggered;
         HSM.Sensor.OnPlayerDetected -= HandlePlayerDirectlyDetected;
-        // Next state's OnEnter will manage agent.
     }
 }

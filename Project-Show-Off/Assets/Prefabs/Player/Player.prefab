@@ -434,9 +434,10 @@ GameObject:
   - component: {fileID: 5403460284391899615}
   - component: {fileID: 818863107724947822}
   - component: {fileID: 2470203979784429819}
+  - component: {fileID: 6220929352804563842}
   - component: {fileID: 3993550361658757861}
-  - component: {fileID: 3619885651251276535}
   - component: {fileID: 7028059540663029170}
+  - component: {fileID: 3619885651251276535}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -568,6 +569,18 @@ MonoBehaviour:
   cameraTransform: {fileID: 4258081052341108069}
   interactionPromptUI: {fileID: 0}
   interactionDotUI: {fileID: 0}
+--- !u!114 &6220929352804563842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e436c1f7e132a3a4f87f86226d129e47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3993550361658757861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,6 +593,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7d1d148e47d14473b84b5c4389132bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7028059540663029170
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb8892af8e8edf7459d9e9caae6f7cee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  footstepsEvent:
+    Guid:
+      Data1: 1003012975
+      Data2: 1201770998
+      Data3: 109357979
+      Data4: 1375971050
+    Path: event:/Player/Footsteps
 --- !u!136 &3619885651251276535
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -603,22 +635,3 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7028059540663029170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7650862299324327497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb8892af8e8edf7459d9e9caae6f7cee, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  footstepsEvent:
-    Guid:
-      Data1: 1003012975
-      Data2: 1201770998
-      Data3: 109357979
-      Data4: 1375971050
-    Path: event:/Player/Footsteps
