@@ -162,6 +162,15 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Hey"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b9112f7-4819-4f5c-bc8e-2c4247556ff0"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -296,6 +305,17 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e484caf5-1d58-4c35-a0bb-63cbe8abe5fa"",
+                    ""path"": ""<Keyboard>/h"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Hey"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -366,34 +386,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
-        },
-        {
-            ""name"": ""Hemanneken"",
-            ""id"": ""1003c2fd-75ad-462a-8035-34815c826eb2"",
-            ""actions"": [
-                {
-                    ""name"": ""Hey"",
-                    ""type"": ""Button"",
-                    ""id"": ""561d177b-daf2-4eb3-a527-f6d8af3b8b48"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                }
-            ],
-            ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""1c859124-1dd0-47e9-9f39-5408bec6351f"",
-                    ""path"": ""<Keyboard>/h"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Hey"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                }
-            ]
         }
     ],
     ""controlSchemes"": []
@@ -408,21 +400,18 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         m_Player_EquipLantern = m_Player.FindAction("EquipLantern", throwIfNotFound: true);
         m_Player_RaiseLantern = m_Player.FindAction("RaiseLantern", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
+        m_Player_Hey = m_Player.FindAction("Hey", throwIfNotFound: true);
         // Inspection
         m_Inspection = asset.FindActionMap("Inspection", throwIfNotFound: true);
         m_Inspection_RotateObject = m_Inspection.FindAction("RotateObject", throwIfNotFound: true);
         m_Inspection_ConfirmInspection = m_Inspection.FindAction("ConfirmInspection", throwIfNotFound: true);
         m_Inspection_CancelInspection = m_Inspection.FindAction("CancelInspection", throwIfNotFound: true);
-        // Hemanneken
-        m_Hemanneken = asset.FindActionMap("Hemanneken", throwIfNotFound: true);
-        m_Hemanneken_Hey = m_Hemanneken.FindAction("Hey", throwIfNotFound: true);
     }
 
     ~@PlayerInput()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInput.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Inspection.enabled, "This will cause a leak and performance issues, PlayerInput.Inspection.Disable() has not been called.");
-        UnityEngine.Debug.Assert(!m_Hemanneken.enabled, "This will cause a leak and performance issues, PlayerInput.Hemanneken.Disable() has not been called.");
     }
 
     /// <summary>
@@ -506,6 +495,7 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_EquipLantern;
     private readonly InputAction m_Player_RaiseLantern;
     private readonly InputAction m_Player_Interact;
+    private readonly InputAction m_Player_Hey;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -549,6 +539,10 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Interact".
         /// </summary>
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Hey".
+        /// </summary>
+        public InputAction @Hey => m_Wrapper.m_Player_Hey;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -599,6 +593,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started += instance.OnInteract;
             @Interact.performed += instance.OnInteract;
             @Interact.canceled += instance.OnInteract;
+            @Hey.started += instance.OnHey;
+            @Hey.performed += instance.OnHey;
+            @Hey.canceled += instance.OnHey;
         }
 
         /// <summary>
@@ -634,6 +631,9 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
             @Interact.started -= instance.OnInteract;
             @Interact.performed -= instance.OnInteract;
             @Interact.canceled -= instance.OnInteract;
+            @Hey.started -= instance.OnHey;
+            @Hey.performed -= instance.OnHey;
+            @Hey.canceled -= instance.OnHey;
         }
 
         /// <summary>
@@ -785,102 +785,6 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="InspectionActions" /> instance referencing this action map.
     /// </summary>
     public InspectionActions @Inspection => new InspectionActions(this);
-
-    // Hemanneken
-    private readonly InputActionMap m_Hemanneken;
-    private List<IHemannekenActions> m_HemannekenActionsCallbackInterfaces = new List<IHemannekenActions>();
-    private readonly InputAction m_Hemanneken_Hey;
-    /// <summary>
-    /// Provides access to input actions defined in input action map "Hemanneken".
-    /// </summary>
-    public struct HemannekenActions
-    {
-        private @PlayerInput m_Wrapper;
-
-        /// <summary>
-        /// Construct a new instance of the input action map wrapper class.
-        /// </summary>
-        public HemannekenActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "Hemanneken/Hey".
-        /// </summary>
-        public InputAction @Hey => m_Wrapper.m_Hemanneken_Hey;
-        /// <summary>
-        /// Provides access to the underlying input action map instance.
-        /// </summary>
-        public InputActionMap Get() { return m_Wrapper.m_Hemanneken; }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
-        public void Enable() { Get().Enable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
-        public void Disable() { Get().Disable(); }
-        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
-        public bool enabled => Get().enabled;
-        /// <summary>
-        /// Implicitly converts an <see ref="HemannekenActions" /> to an <see ref="InputActionMap" /> instance.
-        /// </summary>
-        public static implicit operator InputActionMap(HemannekenActions set) { return set.Get(); }
-        /// <summary>
-        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <param name="instance">Callback instance.</param>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
-        /// </remarks>
-        /// <seealso cref="HemannekenActions" />
-        public void AddCallbacks(IHemannekenActions instance)
-        {
-            if (instance == null || m_Wrapper.m_HemannekenActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_HemannekenActionsCallbackInterfaces.Add(instance);
-            @Hey.started += instance.OnHey;
-            @Hey.performed += instance.OnHey;
-            @Hey.canceled += instance.OnHey;
-        }
-
-        /// <summary>
-        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
-        /// </summary>
-        /// <remarks>
-        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
-        /// </remarks>
-        /// <seealso cref="HemannekenActions" />
-        private void UnregisterCallbacks(IHemannekenActions instance)
-        {
-            @Hey.started -= instance.OnHey;
-            @Hey.performed -= instance.OnHey;
-            @Hey.canceled -= instance.OnHey;
-        }
-
-        /// <summary>
-        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />.
-        /// </summary>
-        /// <seealso cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />
-        public void RemoveCallbacks(IHemannekenActions instance)
-        {
-            if (m_Wrapper.m_HemannekenActionsCallbackInterfaces.Remove(instance))
-                UnregisterCallbacks(instance);
-        }
-
-        /// <summary>
-        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
-        /// </summary>
-        /// <remarks>
-        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
-        /// </remarks>
-        /// <seealso cref="HemannekenActions.AddCallbacks(IHemannekenActions)" />
-        /// <seealso cref="HemannekenActions.RemoveCallbacks(IHemannekenActions)" />
-        /// <seealso cref="HemannekenActions.UnregisterCallbacks(IHemannekenActions)" />
-        public void SetCallbacks(IHemannekenActions instance)
-        {
-            foreach (var item in m_Wrapper.m_HemannekenActionsCallbackInterfaces)
-                UnregisterCallbacks(item);
-            m_Wrapper.m_HemannekenActionsCallbackInterfaces.Clear();
-            AddCallbacks(instance);
-        }
-    }
-    /// <summary>
-    /// Provides a new <see cref="HemannekenActions" /> instance referencing this action map.
-    /// </summary>
-    public HemannekenActions @Hemanneken => new HemannekenActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -944,6 +848,13 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInteract(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Hey" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnHey(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Inspection" which allows adding and removing callbacks.
@@ -973,20 +884,5 @@ public partial class @PlayerInput: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCancelInspection(InputAction.CallbackContext context);
-    }
-    /// <summary>
-    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Hemanneken" which allows adding and removing callbacks.
-    /// </summary>
-    /// <seealso cref="HemannekenActions.AddCallbacks(IHemannekenActions)" />
-    /// <seealso cref="HemannekenActions.RemoveCallbacks(IHemannekenActions)" />
-    public interface IHemannekenActions
-    {
-        /// <summary>
-        /// Method invoked when associated input action "Hey" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnHey(InputAction.CallbackContext context);
     }
 }

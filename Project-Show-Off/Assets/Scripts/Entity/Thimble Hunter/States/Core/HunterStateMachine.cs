@@ -1,25 +1,25 @@
 using UnityEngine;
 
-[RequireComponent(typeof(ThimbleHunterAI))]
-public class ThimbleHunterStateMachine : StateMachine // Inherits from your abstract StateMachine
+[RequireComponent(typeof(HunterAI))]
+public class HunterStateMachine : StateMachine // Inherits from your abstract StateMachine
 {
     // Public property to allow states to access the ThimbleHunterAI component
-    public ThimbleHunterAI HunterAI { get; private set; }
+    public HunterAI HunterAI { get; private set; }
 
     // --- State Instances ---
     // Make these public if you want to access them from outside for specific reasons,
     // otherwise private is fine.
-    public ThimbleHunterRoamingState RoamingState { get; private set; }
-    public ThimbleHunterInvestigatingState InvestigatingState { get; private set; }
-    public ThimbleHunterChasingState ChasingState { get; private set; }
-    public ThimbleHunterAimingState AimingState { get; private set; }
-    public ThimbleHunterShootingState ShootingState { get; private set; }
-    // public ThimbleHunterCloseKillingState CloseKillingState { get; private set; }
+    public HunterRoamingState RoamingState { get; private set; }
+    public HunterInvestigatingState InvestigatingState { get; private set; }
+    public HunterChasingState ChasingState { get; private set; }
+    public HunterAimingState AimingState { get; private set; }
+    public HunterShootingState ShootingState { get; private set; }
+    // public HunterCloseKillingState CloseKillingState { get; private set; }
 
     // Awake is called before Start
     protected virtual void Awake()
     {
-        HunterAI = GetComponent<ThimbleHunterAI>();
+        HunterAI = GetComponent<HunterAI>();
         if (HunterAI == null)
         {
             Debug.LogError("ThimbleHunterStateMachine requires a ThimbleHunterAI component on the same GameObject!", this);
@@ -28,12 +28,12 @@ public class ThimbleHunterStateMachine : StateMachine // Inherits from your abst
         }
 
         // Initialize all states, passing 'this' (the StateMachine)
-        RoamingState = new ThimbleHunterRoamingState(this);
-        InvestigatingState = new ThimbleHunterInvestigatingState(this);
-        ChasingState = new ThimbleHunterChasingState(this);
-        AimingState = new ThimbleHunterAimingState(this);
-        ShootingState = new ThimbleHunterShootingState(this);
-        // CloseKillingState = new ThimbleHunterCloseKillingState(this);
+        RoamingState = new HunterRoamingState(this);
+        InvestigatingState = new HunterInvestigatingState(this);
+        ChasingState = new HunterChasingState(this);
+        AimingState = new HunterAimingState(this);
+        ShootingState = new HunterShootingState(this);
+        // CloseKillingState = new HunterCloseKillingState(this);
 
         // Note: The base StateMachine's Start() method will call InitStartState()
         // and then TransitToState(initialState).

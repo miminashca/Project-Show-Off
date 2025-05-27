@@ -1,16 +1,16 @@
 using UnityEngine;
 
-public class ThimbleHunterShootingState : State
+public class HunterShootingState : State
 {
-    private ThimbleHunterAI _hunterAI;
-    private ThimbleHunterStateMachine _hunterSM;
+    private HunterAI _hunterAI;
+    private HunterStateMachine _hunterSM;
 
     private float _currentReloadTime;
     private bool _hasFired;
 
-    public ThimbleHunterShootingState(StateMachine stateMachine) : base(stateMachine)
+    public HunterShootingState(StateMachine stateMachine) : base(stateMachine)
     {
-        _hunterSM = stateMachine as ThimbleHunterStateMachine;
+        _hunterSM = stateMachine as HunterStateMachine;
         if (_hunterSM == null)
         {
             Debug.LogError("ThimbleHunterShootingState received an incompatible StateMachine!", stateMachine);

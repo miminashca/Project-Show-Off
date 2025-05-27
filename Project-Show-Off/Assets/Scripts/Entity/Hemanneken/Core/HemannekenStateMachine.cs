@@ -32,12 +32,13 @@ public class HemannekenStateMachine : StateMachine
         }
 
         Sensor = GetComponent<PlayerSensor>();
-        Movement = GetComponent<AgentMovement>(); // This is our custom movement
+        Movement = GetComponent<AgentMovement>();
         Visuals = GetComponent<HemannekenVisuals>();
         Interactor = FindFirstObjectByType<HemannekenInteraction>();
 
-        Sensor.Initialize(aiConfig);
-    
+        if (Sensor == null) Debug.LogError("PlayerSensor not found!", this);
+        else Sensor.Initialize(aiConfig, this.transform);
+
         // Find SpawnPointsManager - ensure this logic correctly finds your SpawnPointsManager
         SpawnPointsManager spManager = GetComponentInChildren<SpawnPointsManager>();
         // Option 2: If SPManager is globally findable (less ideal but works)
@@ -45,13 +46,11 @@ public class HemannekenStateMachine : StateMachine
     
         if (spManager == null) Debug.LogWarning("SpawnPointsManager not found for AgentMovement initialization.", this);
 
-        Movement.Initialize(spManager, aiConfig); // Pass the whole config
+        Movement.Initialize(GetComponentInChildren<SpawnPointsManager>(), aiConfig); // Ensure SPManager is found
         Visuals.Initialize();
 
         Visuals.SetForm(IsInitiallyTrueForm, transform);
-        HemannekenEventBus.OnHeyTriggered += HandleHeyEvent;
     }
-// ... rest of the class
 
     protected override void Start()
     {
@@ -62,17 +61,9 @@ public class HemannekenStateMachine : StateMachine
         base.Start();
     }
 
-    private void OnDestroy() // Changed from OnDisable for consistency with EventBus unsubscription
+    private void OnDestroy()
     {
-        HemannekenEventBus.OnHeyTriggered -= HandleHeyEvent;
-    }
 
-    private void HandleHeyEvent()
-    {
-        // The state machine itself (or PlayerSensor) records the position.
-        // States then react based on this recorded position and their logic.
-        Sensor.RecordPlayerLastKnownPosition();
-        // States like Roaming or Investigating will handle transitions based on this event.
     }
 
     // --- High-level Interaction Methods ---

@@ -1,16 +1,16 @@
 using UnityEngine;
 
-public class ThimbleHunterAimingState : State
+public class HunterAimingState : State
 {
-    private ThimbleHunterAI _hunterAI;
-    private ThimbleHunterStateMachine _hunterSM;
+    private HunterAI _hunterAI;
+    private HunterStateMachine _hunterSM;
 
     private float _currentAimTime;
     private const float AIM_TRACKING_SPEED = 5f; // Adjust for how quickly Hunter locks on
 
-    public ThimbleHunterAimingState(StateMachine stateMachine) : base(stateMachine)
+    public HunterAimingState(StateMachine stateMachine) : base(stateMachine)
     {
-        _hunterSM = stateMachine as ThimbleHunterStateMachine;
+        _hunterSM = stateMachine as HunterStateMachine;
         if (_hunterSM == null)
         {
             Debug.LogError("ThimbleHunterAimingState received an incompatible StateMachine!", stateMachine);

@@ -11,25 +11,31 @@ public class HemannekenInteraction : MonoBehaviour
     private float speedDecrease = 0.1f;
     private float finalSpeedModifier = 1f;
 
-    private bool isCountingTime;
-    
-    private void OnEnable()
+    // private bool isCountingTime; // This variable was declared but not used
+
+    private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
         controls = new PlayerInput();
-        controls.Enable();
+    }
+
+    private void OnEnable()
+    {
+        controls.Enable(); // Enable controls
         HemannekenEventBus.OnHemannekenAttached += HemAttached;
         HemannekenEventBus.OnHemannekenDetached += HemDetached;
     }
+
     private void OnDisable()
     {
-        controls.Disable();
+        controls.Disable(); // Disable controls
         HemannekenEventBus.OnHemannekenAttached -= HemAttached;
         HemannekenEventBus.OnHemannekenDetached -= HemDetached;
     }
+
     private void Update()
     {
-        if (controls.Hemanneken.Hey.triggered) HemannekenEventBus.TriggerHey();
+        // "Hey" input logic is GONE from here
 
         if (controls.Player.RaiseLantern.WasPressedThisFrame())
         {
@@ -38,12 +44,10 @@ public class HemannekenInteraction : MonoBehaviour
         else if (controls.Player.RaiseLantern.WasReleasedThisFrame())
         {
             isHoldingLantern = false;
-        }        
-
+        }
 
         if (isHoldingLantern && countLanternTime)
         {
-            Debug.Log(lanternTimeCounter);
             lanternTimeCounter += Time.deltaTime;
         }
         else
@@ -55,11 +59,12 @@ public class HemannekenInteraction : MonoBehaviour
     private void HemAttached()
     {
         finalSpeedModifier -= speedDecrease;
-        playerMovement.speedModifier = finalSpeedModifier;
+        if (playerMovement != null) playerMovement.speedModifier = finalSpeedModifier;
     }
+
     private void HemDetached()
     {
         finalSpeedModifier += speedDecrease;
-        playerMovement.speedModifier = finalSpeedModifier;
+        if (playerMovement != null) playerMovement.speedModifier = finalSpeedModifier;
     }
 }

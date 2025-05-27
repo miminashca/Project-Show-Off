@@ -1,16 +1,16 @@
 using UnityEngine;
 
-public class ThimbleHunterInvestigatingState : State
+public class HunterInvestigatingState : State
 {
-    private ThimbleHunterAI _hunterAI;
-    private ThimbleHunterStateMachine _hunterSM;
+    private HunterAI _hunterAI;
+    private HunterStateMachine _hunterSM;
 
     private float _currentInvestigationTime;
     private Vector3 _investigationTargetPosition;
 
-    public ThimbleHunterInvestigatingState(StateMachine stateMachine) : base(stateMachine)
+    public HunterInvestigatingState(StateMachine stateMachine) : base(stateMachine)
     {
-        _hunterSM = stateMachine as ThimbleHunterStateMachine;
+        _hunterSM = stateMachine as HunterStateMachine;
         if (_hunterSM == null)
         {
             Debug.LogError("ThimbleHunterInvestigatingState received an incompatible StateMachine!", stateMachine);
@@ -42,44 +42,42 @@ public class ThimbleHunterInvestigatingState : State
     {
         if (_hunterAI == null) return;
 
-        // --- Transition Checks (Priority Order) ---
-        // 1. To CHASING: Player is visible
         if (_hunterAI.IsPlayerVisible)
         {
+            Debug.Log($"{_hunterAI.gameObject.name} (Investigating): Player visible! Transitioning to Chase.");
             SM.TransitToState(_hunterSM.ChasingState);
             return;
         }
 
-        // --- Investigation Logic ---
         _currentInvestigationTime -= Time.deltaTime;
         _hunterAI.CurrentInvestigationTimer = _currentInvestigationTime;
 
-        // If player makes another "Hey!" while investigating, reset LKP and timer
-        if (_hunterAI.CanHearPlayerAlert)
+        if (_hunterAI.CanHearPlayerAlert) // Check for new shout
         {
-            Debug.Log($"{_hunterAI.gameObject.name} heard new alert while investigating. Resetting investigation.");
-            _investigationTargetPosition = _hunterAI.LastKnownPlayerPosition; // LKP updated by AI component
+            _hunterAI.AcknowledgePlayerAlert(); // Consume the alert
+            Debug.Log($"{_hunterAI.gameObject.name} (Investigating): Heard new alert. Resetting investigation. New LKP: {_hunterAI.LastKnownPlayerPosition}");
+            _investigationTargetPosition = _hunterAI.LastKnownPlayerPosition;
             if (_hunterAI.NavAgent.isOnNavMesh)
             {
                 _hunterAI.NavAgent.SetDestination(_investigationTargetPosition);
             }
-            _currentInvestigationTime = _hunterAI.InvestigationDuration; // Reset timer
+            _currentInvestigationTime = _hunterAI.InvestigationDuration;
+
+            if (!_hunterAI.HunterAnimator.GetBool("IsMoving")) // If was idle, start moving anim
+            {
+                _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+            }
         }
 
-        // Reached LKP, perform search routine (placeholder for now)
         if (!_hunterAI.NavAgent.pathPending && _hunterAI.NavAgent.remainingDistance < _hunterAI.NavAgent.stoppingDistance + 0.1f)
         {
-            // TODO: Implement search routine (e.g., look around, move to sub-points)
-            // For now, just wait out the timer.
-            _hunterAI.HunterAnimator.SetBool("IsMoving", false); // Stop moving animation if at LKP
+            _hunterAI.HunterAnimator.SetBool("IsMoving", false);
+            // TODO: Implement look around behavior
         }
 
-
-        // --- Transition Checks (After main logic) ---
-        // 2. To ROAMING: InvestigationTimer expires and Player not re-acquired
         if (_currentInvestigationTime <= 0f)
         {
-            Debug.Log($"{_hunterAI.gameObject.name} investigation timer expired.");
+            Debug.Log($"{_hunterAI.gameObject.name} (Investigating): Investigation timer expired. Transitioning to Roam.");
             SM.TransitToState(_hunterSM.RoamingState);
             return;
         }

@@ -6,8 +6,8 @@ using System.Collections.Generic; // For NodeGraph if it's a List
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AudioSource))]
 // Ensure ThimbleHunterStateMachine is also on this GameObject
-[RequireComponent(typeof(ThimbleHunterStateMachine))]
-public class ThimbleHunterAI : MonoBehaviour
+[RequireComponent(typeof(HunterStateMachine))]
+public class HunterAI : MonoBehaviour
 {
     [Header("Core Attributes")]
     public float MaxSuperpositionDistance = 50f;
@@ -43,7 +43,7 @@ public class ThimbleHunterAI : MonoBehaviour
     // --- Runtime AI Data (public properties for states to access) ---
     public Vector3 LastKnownPlayerPosition { get; set; }
     public bool IsPlayerVisible { get; private set; }
-    public bool CanHearPlayerAlert { get; private set; } // Flag set by event, consumed by state
+    public bool CanHearPlayerAlert { get; private set; }
     public float CurrentInvestigationTimer { get; set; }
     public float CurrentAimTimer { get; set; }
     public float CurrentReloadTimer { get; set; }
@@ -73,9 +73,14 @@ public class ThimbleHunterAI : MonoBehaviour
         if (GunMuzzleTransform == null) GunMuzzleTransform = transform; // Default to self if not set
     }
 
-    void Start()
+    void OnEnable()
     {
-        HunterEventBus.OnPlayerShouted += HandlePlayerShoutEvent;
+        PlayerActionEventBus.OnPlayerShouted += HandlePlayerShoutEvent;
+    }
+
+    void OnDisable()
+    {
+        PlayerActionEventBus.OnPlayerShouted -= HandlePlayerShoutEvent;
     }
 
     void OnDestroy()
@@ -89,7 +94,6 @@ public class ThimbleHunterAI : MonoBehaviour
     {
         if (PlayerTransform == null) return;
         ProcessSensors();
-        CanHearPlayerAlert = false; // Reset after states have had a chance to react in their Handle()
     }
 
     void ProcessSensors()
@@ -121,12 +125,26 @@ public class ThimbleHunterAI : MonoBehaviour
 
     private void HandlePlayerShoutEvent(Vector3 shoutPosition)
     {
+        if (this == null || !enabled || !gameObject.activeInHierarchy) return; // Safety check
+
         if (Vector3.Distance(transform.position, shoutPosition) <= AuditoryDetectionRange)
         {
             CanHearPlayerAlert = true;
             LastKnownPlayerPosition = shoutPosition;
+            Debug.Log($"{gameObject.name} heard player shout at {shoutPosition} (Dist: {Vector3.Distance(transform.position, shoutPosition)}). LKP updated. CanHearPlayerAlert = true");
+        }
+        else
+        {
+            Debug.Log($"{gameObject.name} heard player shout at {shoutPosition} but was too far (Dist: {Vector3.Distance(transform.position, shoutPosition)}, Range: {AuditoryDetectionRange}).");
         }
     }
+
+    public void AcknowledgePlayerAlert()
+    {
+        CanHearPlayerAlert = false;
+        Debug.Log($"{gameObject.name} acknowledged player alert. CanHearPlayerAlert = false");
+    }
+
 
     public void FireGun()
     {
@@ -168,11 +186,8 @@ public class ThimbleHunterAI : MonoBehaviour
         {
             return hit.collider.CompareTag("Player");
         }
-        // If raycast hits nothing, it implies a clear path to the aimPoint (assuming aimPoint itself is the player or valid)
-        // A more robust check might be needed if aimPoint isn't guaranteed to be the player.
-        return true; // Path is clear if nothing is hit between muzzle and aimpoint
+        return true;
     }
-
 
     void OnDrawGizmosSelected()
     {

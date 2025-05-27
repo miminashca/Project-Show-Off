@@ -1,18 +1,17 @@
 using UnityEngine;
 
-public class ThimbleHunterRoamingState : State // Inherits from your abstract State
+public class HunterRoamingState : State
 {
-    private ThimbleHunterAI _hunterAI; // Cached reference for convenience
-    private ThimbleHunterStateMachine _hunterSM; // Cached specific state machine
-
+    private HunterAI _hunterAI;
+    private HunterStateMachine _hunterSM;
     private float _superpositionCheckTimer;
     private const float SUPERPOSITION_CHECK_INTERVAL = 5.0f;
 
-    // Constructor takes the StateMachine instance (as per your base State class)
-    public ThimbleHunterRoamingState(StateMachine stateMachine) : base(stateMachine)
+    // Constructor takes the StateMachine instance
+    public HunterRoamingState(StateMachine stateMachine) : base(stateMachine)
     {
         // Cast SM to the specific ThimbleHunterStateMachine to access HunterAI
-        _hunterSM = stateMachine as ThimbleHunterStateMachine;
+        _hunterSM = stateMachine as HunterStateMachine;
         if (_hunterSM == null)
         {
             Debug.LogError("ThimbleHunterRoamingState was given a StateMachine that is not a ThimbleHunterStateMachine!", stateMachine);
@@ -44,8 +43,11 @@ public class ThimbleHunterRoamingState : State // Inherits from your abstract St
             SM.TransitToState(_hunterSM.ChasingState); // Use specific state machine to get state instance
             return;
         }
-        if (_hunterAI.CanHearPlayerAlert)
+
+        if (_hunterAI.CanHearPlayerAlert) // Check the flag
         {
+            Debug.Log($"{_hunterAI.gameObject.name} (Roaming): Heard player alert. Transitioning to Investigate.");
+            _hunterAI.AcknowledgePlayerAlert(); // Consume the alert
             SM.TransitToState(_hunterSM.InvestigatingState);
             return;
         }

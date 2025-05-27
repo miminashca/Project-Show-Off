@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class ThimbleHunterChasingState : State
+public class HunterChasingState : State
 {
-    private ThimbleHunterAI _hunterAI;
-    private ThimbleHunterStateMachine _hunterSM;
+    private HunterAI _hunterAI;
+    private HunterStateMachine _hunterSM;
 
-    public ThimbleHunterChasingState(StateMachine stateMachine) : base(stateMachine)
+    public HunterChasingState(StateMachine stateMachine) : base(stateMachine)
     {
-        _hunterSM = stateMachine as ThimbleHunterStateMachine;
+        _hunterSM = stateMachine as HunterStateMachine;
         if (_hunterSM == null)
         {
             Debug.LogError("ThimbleHunterChasingState received an incompatible StateMachine!", stateMachine);
