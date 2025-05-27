@@ -8,8 +8,8 @@ public class HemannekenVisuals : MonoBehaviour
     [SerializeField] private GameObject _hemannekenRabbitModelPrefab;
     
     // Existing variables (example)
-    [Header("Effects")]
-    [SerializeField] private ParticleSystem _particleSystem; // Assign in Inspector
+    //[Header("Effects")]
+    private ParticleSystem _particleSystem; // Assign in Inspector
 
     // --- ADD THESE NEW VARIABLES FOR STUN RETREAT ---
     [Header("Stun Retreat Behavior")]
@@ -20,14 +20,25 @@ public class HemannekenVisuals : MonoBehaviour
     [Tooltip("Optional: Small upward movement for a 'jump back' feel.")]
     [SerializeField] private float _stunRetreatUpwardOffset = 0.1f;
     
+    [Header("Stun Circling Behavior")]
+    [Tooltip("Radius of the small circle the entity makes while stunned.")]
+    [SerializeField] private float _stunCircleRadius = 0.2f;
+    [Tooltip("Speed at which the entity moves around the circle (degrees per second).")]
+    [SerializeField] private float _stunCircleSpeed = 90.0f; // Degrees per second
+    [Tooltip("Amplitude of the vertical movement during circling. Set to 0 for no vertical motion.")]
+    [SerializeField] private float _stunVerticalRadius = 0.1f;
+    
+    private Coroutine _activeStunBehaviorCoroutine;
+    private bool _isStunBehaviorActive = false; // Flag to control the coroutine's loops
+    
     private GameObject _currentModelInstance;
-    private Coroutine _activeRetreatCoroutine; // To manage an ongoing retreat
     private PlayerSensor _playerSensor; // To manage an ongoing retreat
     public bool IsTrueForm { get; private set; }
 
     public void Initialize()
     {
         _playerSensor = GetComponent<PlayerSensor>();
+        _particleSystem = GetComponentInChildren<ParticleSystem>();
     }
 
     public void SetForm(bool isTrue, Transform parentTransform)
@@ -68,73 +79,121 @@ public class HemannekenVisuals : MonoBehaviour
     //     Debug.Log("SFX/VFX: Hemanneken Stunned"); 
     //     if (_particleSystem != null) _particleSystem.Play(); // Example
     // }
-    public void PlayStunEffects()
+    // Call this to start the stun visual effects and the retreat/circling behavior
+    public void StartStunEffectsAndBehavior()
     {
-        Debug.Log("SFX/VFX: " + gameObject.name + " Stunned");
-        if (_particleSystem != null) _particleSystem.Play();
-        else{Debug.Log("Particle system is null!");}
+        Debug.Log("SFX/VFX: " + gameObject.name + " Stun Behavior Started");
 
-        // If a retreat is already in progress, stop it to start the new one
-        if (_activeRetreatCoroutine != null)
+        if (_particleSystem != null)
         {
-            StopCoroutine(_activeRetreatCoroutine);
+            _particleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            _particleSystem.Play();
         }
-        else{Debug.Log("Coroutine is null!");}
 
-        // Start the scared retreat movement
-        _activeRetreatCoroutine = StartCoroutine(StunRetreatCoroutine());
-    }
-    public void StopStunEffects()
-    {
-        if (_particleSystem != null) _particleSystem.Play();
-
-        if (_activeRetreatCoroutine != null)
+        if (_activeStunBehaviorCoroutine != null)
         {
-            StopCoroutine(_activeRetreatCoroutine);
+            StopCoroutine(_activeStunBehaviorCoroutine);
         }
+
+        _isStunBehaviorActive = true;
+        _activeStunBehaviorCoroutine = StartCoroutine(StunBehaviorCoroutine());
     }
 
-    // --- ADD THIS NEW COROUTINE METHOD TO YOUR CLASS ---
-    private IEnumerator StunRetreatCoroutine()
+    public void StopStunBehavior()
     {
-        if (!_playerSensor)
+        if (!_isStunBehaviorActive && _activeStunBehaviorCoroutine == null)
         {
-            Debug.Log("Player sensor is null!");
+            return;
+        }
+
+        Debug.Log(gameObject.name + " Stun Behavior Stopped by external call.");
+        _isStunBehaviorActive = false;
+
+        if (_activeStunBehaviorCoroutine != null)
+        {
+            StopCoroutine(_activeStunBehaviorCoroutine);
+            _activeStunBehaviorCoroutine = null;
+        }
+    }
+
+    private IEnumerator StunBehaviorCoroutine()
+    {
+        // --- Phase 1: Scared Retreat ---
+        if (_playerSensor == null || _playerSensor.PlayerTransform == null)
+        {
+            Debug.LogError("PlayerSensor or PlayerTransform is not assigned. Cannot perform stun retreat.");
+            _isStunBehaviorActive = false;
+            _activeStunBehaviorCoroutine = null;
             yield break;
         }
-        
-        Vector3 startPosition = transform.position;
-        // Calculate the direction: directly backwards from current facing direction
-        Vector3 backwardDirection = startPosition - _playerSensor.PlayerTransform.position;
 
-        // Incorporate the optional upward offset for a "jump back" feel
-        Vector3 retreatDirection = (backwardDirection.normalized + Vector3.up * _stunRetreatUpwardOffset).normalized;
-        // If no upward offset, just pure backward movement
+        Vector3 startPosition = transform.position;
+        Vector3 playerPos = _playerSensor.PlayerTransform.position;
+        Vector3 backwardDirection = (startPosition - playerPos);
+        backwardDirection.y = 0;
+        backwardDirection = backwardDirection.normalized;
+
+        Vector3 retreatDirection = (backwardDirection + Vector3.up * _stunRetreatUpwardOffset).normalized;
         if (Mathf.Approximately(_stunRetreatUpwardOffset, 0f))
         {
-            retreatDirection = backwardDirection.normalized;
+            retreatDirection = backwardDirection;
         }
+        Vector3 targetRetreatPosition = startPosition + retreatDirection * _stunRetreatDistance;
 
-        Vector3 targetPosition = startPosition + retreatDirection * _stunRetreatDistance;
-
-        float elapsedTime = 0f;
-        while (elapsedTime < _stunRetreatDuration)
+        float retreatElapsedTime = 0f;
+        while (retreatElapsedTime < _stunRetreatDuration)
         {
-            // Interpolate position smoothly over time
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / _stunRetreatDuration);
-            elapsedTime += Time.deltaTime;
-            yield return null; // Wait for the next frame
+            if (!_isStunBehaviorActive)
+            {
+                Debug.Log("Stun behavior stopped during retreat phase.");
+                _activeStunBehaviorCoroutine = null;
+                yield break;
+            }
+            transform.position = Vector3.Lerp(startPosition, targetRetreatPosition, retreatElapsedTime / _stunRetreatDuration);
+            retreatElapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        transform.position = targetRetreatPosition;
+
+        // --- Phase 2: Circling in Place (until StopStunBehavior is called) ---
+        if (!_isStunBehaviorActive)
+        {
+            Debug.Log("Stun behavior stopped just before circling phase.");
+            _activeStunBehaviorCoroutine = null;
+            yield break;
         }
 
-        // Ensure the entity reaches the exact target position
-        transform.position = targetPosition;
-        _activeRetreatCoroutine = null; // Mark coroutine as finished
+        Vector3 circleCenter = transform.position;
+        float currentCircleAngle = 0f;
+
+        Debug.Log(gameObject.name + " entering 3D circling phase. Will continue until StopStunBehavior is called.");
+
+        while (_isStunBehaviorActive)
+        {
+            currentCircleAngle += _stunCircleSpeed * Time.deltaTime;
+            if (currentCircleAngle >= 360f) currentCircleAngle -= 360f;
+
+            // Calculate horizontal offsets (XZ plane)
+            float xOffset = Mathf.Cos(currentCircleAngle * Mathf.Deg2Rad) * _stunCircleRadius;
+            float zOffset = Mathf.Sin(currentCircleAngle * Mathf.Deg2Rad) * _stunCircleRadius;
+
+            // --- MODIFIED: Calculate vertical offset (Y axis) ---
+            // Using Sin for vertical to make it potentially out of phase with Cos on X, leading to a more "rolling" circle.
+            // You can use Cos here as well, or use a different angle (e.g., currentCircleAngle + 90)
+            // or apply a _stunVerticalFrequencyMultiplier to currentCircleAngle if you want different speeds.
+            float yOffset = Mathf.Sin(currentCircleAngle * Mathf.Deg2Rad /* * _stunVerticalFrequencyMultiplier (if using) */) * _stunVerticalRadius;
+            // --- END OF MODIFICATION ---
+
+            Vector3 nextCirclePosition = circleCenter + new Vector3(xOffset, yOffset, zOffset);
+
+            transform.position = Vector3.Lerp(transform.position, nextCirclePosition, Time.deltaTime * 10f);
+
+            yield return null;
+        }
+
+        Debug.Log(gameObject.name + " circling phase ended because _isStunBehaviorActive is false.");
+        _activeStunBehaviorCoroutine = null;
     }
-    // public void StopStunEffects() 
-    // { 
-    //     Debug.Log("SFX/VFX: Hemanneken Stun Effects Stopped"); 
-    //     if (_particleSystem != null) _particleSystem.Stop(); // Example
-    // }
 
     public void PlayReplyHeySound() { Debug.Log("SFX: Hemanneken replies 'Hey'"); /* Implement sound */ }
 

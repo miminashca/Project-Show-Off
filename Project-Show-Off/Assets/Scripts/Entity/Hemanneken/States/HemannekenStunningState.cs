@@ -13,8 +13,8 @@ public class HemannekenStunningState : State
         HSM.Movement.StopAgentCompletely(); // Stop movement
         //HSM.Movement.EnableAgent(false); // Disable agent for stun duration
 
-        _stunEndTime = Time.time + HSM.aiConfig.stunEffectDuration; 
-        HSM.Visuals.PlayStunEffects();
+        _stunEndTime = Time.time + HSM.aiConfig.stunEffectDuration;
+        HSM.Visuals.StartStunEffectsAndBehavior();
     }
 
     public override void Handle()
@@ -28,7 +28,7 @@ public class HemannekenStunningState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Stunning State");
-        HSM.Visuals.StopStunEffects();
+        HSM.Visuals.StopStunBehavior();
         // Next state (Roaming) will re-enable agent in its OnEnter.
     }
 }
