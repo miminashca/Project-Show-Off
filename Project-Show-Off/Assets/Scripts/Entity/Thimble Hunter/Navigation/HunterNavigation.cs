@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
-[RequireComponent(typeof(HunterAI))] // Relies on ThimbleHunterAI for some parameters
+[RequireComponent(typeof(HunterAI))]
 public class HunterNavigation : MonoBehaviour
 {
     private HunterAI _hunterAI;
@@ -13,7 +13,7 @@ public class HunterNavigation : MonoBehaviour
     {
         Random,
         Sequential,
-        NearestToPlayer // Subtly guide hunter
+        NearestToPlayer
     }
     public NodeSelectionMode RoamingNodeSelection = NodeSelectionMode.Random;
     private int _currentNodeIndex = -1; // For sequential mode

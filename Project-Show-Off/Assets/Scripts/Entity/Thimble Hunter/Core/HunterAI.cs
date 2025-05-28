@@ -26,6 +26,13 @@ public class HunterAI : MonoBehaviour
     public float AimTime = 2.0f;
     public float ReloadTime = 3.0f;
     public float InvestigationDuration = 8.0f;
+    public float SuperpositionAttemptCooldown = 10.0f;
+
+    [Header("Player Targeting Offsets")]
+    public Vector3 PlayerVisibilityPointOffsetStanding = new Vector3(0, 1.6f, 0); // Approx head height when standing
+    public Vector3 PlayerVisibilityPointOffsetCrouching = new Vector3(0, 0.9f, 0); // Approx head height when crouching
+    public Vector3 PlayerAimPointOffsetStanding = new Vector3(0, 1.0f, 0);     // Approx torso center when standing
+    public Vector3 PlayerAimPointOffsetCrouching = new Vector3(0, 0.7f, 0);    // Approx torso center when crouching
 
     [Header("References")]
     public Transform PlayerTransform;
@@ -34,7 +41,6 @@ public class HunterAI : MonoBehaviour
 
     [Header("Gameplay Rules")]
     public float WaterSurfaceYLevel = 0.5f;
-    // public HunterNodeGraph NodeGraph; // Assign if you create a HunterNodeGraph component/ScriptableObject
 
     [Header("VFX/SFX (Assign in Inspector)")]
     public GameObject MuzzleFlashPrefab;
@@ -61,6 +67,7 @@ public class HunterAI : MonoBehaviour
     public float CurrentInvestigationTimer { get; set; }
     public float CurrentAimTimer { get; set; }
     public float CurrentReloadTimer { get; set; }
+    public float CurrentSuperpositionCooldownTimer { get; set; }
     public Transform CurrentTargetNode { get; set; }
     public Vector3 CurrentConfirmedAimTarget { get; set; }
 
@@ -94,6 +101,8 @@ public class HunterAI : MonoBehaviour
 
         if (EyeLevelTransform == null) EyeLevelTransform = transform;
         if (GunMuzzleTransform == null) GunMuzzleTransform = transform;
+
+        CurrentSuperpositionCooldownTimer = 0f;
     }
 
     void OnEnable()
@@ -113,6 +122,11 @@ public class HunterAI : MonoBehaviour
 
     void Update()
     {
+        if (CurrentSuperpositionCooldownTimer > 0)
+        {
+            CurrentSuperpositionCooldownTimer -= Time.deltaTime;
+        }
+
         if (PlayerTransform == null)
         {
             IsPlayerVisible = false;
@@ -121,12 +135,42 @@ public class HunterAI : MonoBehaviour
         ProcessSensors();
     }
 
+    public Vector3 GetPlayerVisibilityCheckPoint()
+    {
+        if (PlayerTransform == null) return Vector3.zero; // Or some invalid position
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsCrouching)
+        {
+            return PlayerTransform.position + PlayerVisibilityPointOffsetCrouching;
+        }
+        return PlayerTransform.position + PlayerVisibilityPointOffsetStanding;
+    }
+
+    public Vector3 GetPlayerAimPoint()
+    {
+        if (PlayerTransform == null) return Vector3.zero;
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsCrouching)
+        {
+            return PlayerTransform.position + PlayerAimPointOffsetCrouching;
+        }
+        return PlayerTransform.position + PlayerAimPointOffsetStanding;
+    }
+
     void ProcessSensors()
     {
         IsPlayerVisible = false;
         if (PlayerTransform == null || EyeLevelTransform == null) return;
 
-        Vector3 playerTargetPoint = PlayerTransform.position + Vector3.up * 1.0f;
+        Vector3 playerTargetPoint = GetPlayerVisibilityCheckPoint();
+        if (playerTargetPoint == Vector3.zero) return;
+
+        // Optional: If visibility point itself is underwater, player is not visible from there.
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerTargetPoint, WaterSurfaceYLevel))
+        {
+            // Debug.Log("Player visibility point is submerged.");
+            IsPlayerVisible = false;
+            return;
+        }
+
         Vector3 directionToPlayer = playerTargetPoint - EyeLevelTransform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
 
@@ -134,12 +178,6 @@ public class HunterAI : MonoBehaviour
         {
             if (Vector3.Angle(EyeLevelTransform.forward, directionToPlayer.normalized) <= VisionConeAngle / 2f)
             {
-                // Optional: Tall Grass / Crouch check
-                // if (TargetPlayerStatus != null && TargetPlayerStatus.IsCrouching && TargetPlayerStatus.IsInTallGrassZone) {
-                //    IsPlayerVisible = false; // Player is hidden
-                //    return;
-                // }
-
                 RaycastHit hit;
                 int hunterLayer = LayerMask.NameToLayer("Hunter");
                 LayerMask ignoreHunterMask = ~(1 << hunterLayer);
@@ -149,7 +187,7 @@ public class HunterAI : MonoBehaviour
                     if (hit.collider.CompareTag("Player"))
                     {
                         IsPlayerVisible = true;
-                        LastKnownPlayerPosition = PlayerTransform.position;
+                        LastKnownPlayerPosition = PlayerTransform.position; // LKP is player's base position
                     }
                 }
             }
@@ -165,11 +203,9 @@ public class HunterAI : MonoBehaviour
             CanHearPlayerAlert = true;
             LastKnownPlayerPosition = shoutPosition;
             Debug.Log($"{gameObject.name} heard player shout at {shoutPosition} (Dist: {Vector3.Distance(transform.position, shoutPosition)}). LKP updated. CanHearPlayerAlert = true");
+            PlaySound(HeardNoiseSound);
         }
-        else
-        {
-            Debug.Log($"{gameObject.name} heard player shout at {shoutPosition} but was too far (Dist: {Vector3.Distance(transform.position, shoutPosition)}, Range: {AuditoryDetectionRange}).");
-        }
+        // Removed the "too far" debug log for brevity during play
     }
 
     public void AcknowledgePlayerAlert()
@@ -186,7 +222,6 @@ public class HunterAI : MonoBehaviour
         }
     }
 
-
     public void FireGun()
     {
         Debug.Log($"{gameObject.name}: BANG!");
@@ -196,39 +231,31 @@ public class HunterAI : MonoBehaviour
 
         if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
         {
-            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform); // Parent to muzzle for lifetime
+            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform);
         }
 
         if (PlayerTransform == null || GunMuzzleTransform == null) return;
 
-        Vector3 aimTargetToUse = CurrentConfirmedAimTarget; // Use the target confirmed by AimingState
-        if (aimTargetToUse == Vector3.zero) // Fallback if not set (shouldn't happen in normal flow)
+        Vector3 aimTargetToUse = CurrentConfirmedAimTarget;
+        if (aimTargetToUse == Vector3.zero)
         {
-            Debug.LogWarning($"{gameObject.name}: CurrentConfirmedAimTarget was zero, using PlayerTransform direct for shot.");
-            aimTargetToUse = PlayerTransform.position + Vector3.up * 1.0f;
+            Debug.LogWarning($"{gameObject.name}: CurrentConfirmedAimTarget was zero, using dynamic PlayerAimPoint for shot.");
+            aimTargetToUse = GetPlayerAimPoint(); // Get current best aim point
+            if (aimTargetToUse == Vector3.zero) return; // Player likely gone
         }
 
-        Vector3 directionToTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
-        float shotDistance = ShootingRange * 1.2f; // Give a little extra range for the raycast
-
-        RaycastHit hit;
-        int hunterLayer = LayerMask.NameToLayer("Hunter");
-        LayerMask shootableMask = ~(1 << hunterLayer); // Don't hit self
-
-        // Check for water impact directly, even if IsPathToPlayerClearForShot passed
-        // This handles if player moved into water at the last micro-second.
+        // Final check: Is this confirmed/derived aim target submerged?
         if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimTargetToUse, WaterSurfaceYLevel))
         {
-            Debug.Log($"{gameObject.name} SHOT hit water (player submerged).");
+            Debug.Log($"{gameObject.name} SHOT aimed at submerged point. Impacting water.");
             if (BulletImpactWaterPrefab != null)
             {
-                // Attempt to find where the bullet would hit the water surface
-                // This is a simplified raycast towards the aim target, capped by water surface
-                Ray waterRay = new Ray(GunMuzzleTransform.position, directionToTarget);
+                Vector3 directionToSubmergedTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
+                Ray waterRay = new Ray(GunMuzzleTransform.position, directionToSubmergedTarget);
                 Plane waterPlane = new Plane(Vector3.up, new Vector3(0, WaterSurfaceYLevel, 0));
                 if (waterPlane.Raycast(waterRay, out float enterDist))
                 {
-                    if (enterDist <= shotDistance)
+                    if (enterDist <= ShootingRange * 1.2f) // Use shotDistance concept
                     {
                         Instantiate(BulletImpactWaterPrefab, waterRay.GetPoint(enterDist), Quaternion.LookRotation(Vector3.down));
                     }
@@ -237,29 +264,36 @@ public class HunterAI : MonoBehaviour
             return; // Shot is ineffective
         }
 
+        // Proceed with raycast if aim target is not submerged
+        Vector3 directionToTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
+        float shotDistance = ShootingRange * 1.2f;
+
+        RaycastHit hit;
+        int hunterLayer = LayerMask.NameToLayer("Hunter");
+        LayerMask shootableMask = ~(1 << hunterLayer);
 
         if (Physics.Raycast(GunMuzzleTransform.position, directionToTarget, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider.CompareTag("Player"))
             {
-                Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name}");
-                PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
-                if (playerHealth != null)
+                // Check if the *actual hit point on the player* is submerged (e.g., shot low, hit legs in water)
+                if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point, WaterSurfaceYLevel))
                 {
-                    playerHealth.TakeDamage(GunDamage);
+                    Debug.Log($"{gameObject.name} SHOT HIT Player's submerged part at {hit.point}. Impacting water.");
+                    if (BulletImpactWaterPrefab != null) Instantiate(BulletImpactWaterPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
-                if (BulletImpactPlayerPrefab != null)
+                else
                 {
-                    Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                    Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name} at {hit.point}");
+                    PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
+                    if (playerHealth != null) playerHealth.TakeDamage(GunDamage);
+                    if (BulletImpactPlayerPrefab != null) Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
             }
             else
             {
                 Debug.Log($"{gameObject.name} HIT Obstacle: {hit.collider.name} at {hit.point}");
-                if (BulletImpactObstaclePrefab != null)
-                {
-                    Instantiate(BulletImpactObstaclePrefab, hit.point, Quaternion.LookRotation(hit.normal));
-                }
+                if (BulletImpactObstaclePrefab != null) Instantiate(BulletImpactObstaclePrefab, hit.point, Quaternion.LookRotation(hit.normal));
             }
         }
         else
@@ -290,53 +324,137 @@ public class HunterAI : MonoBehaviour
 
     public bool IsPathToPlayerClearForShot(Vector3 aimPoint)
     {
+        if (PlayerTransform == null) return false;
+
+        // 1. Check if the intended aimPoint itself is submerged
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimPoint, WaterSurfaceYLevel))
+        {
+            Debug.Log($"{gameObject.name}: Aim point for shot ({aimPoint}) is submerged. Path NOT clear.");
+            return false;
+        }
+
         if (GunMuzzleTransform == null) return false;
+
         Vector3 directionToAimPoint = (aimPoint - GunMuzzleTransform.position).normalized;
         float distanceToAimPoint = Vector3.Distance(GunMuzzleTransform.position, aimPoint);
+
+        // Prevent issues with zero distance/direction
+        if (distanceToAimPoint < 0.01f) return true; // Effectively at the target, assume clear
+
         int hunterLayer = LayerMask.NameToLayer("Hunter");
         LayerMask ignoreHunterMask = ~(1 << hunterLayer);
         RaycastHit hit;
-        if (Physics.Raycast(GunMuzzleTransform.position, directionToAimPoint, out hit, distanceToAimPoint * 1.05f, ignoreHunterMask, QueryTriggerInteraction.Ignore))
+
+        // 2. Raycast *just short* of the aimPoint to see if anything obstructs the path
+        // We use 0.99f * distance to ensure we don't hit the player target itself with this check
+        if (Physics.Raycast(GunMuzzleTransform.position, directionToAimPoint, out hit, distanceToAimPoint * 0.99f, ignoreHunterMask, QueryTriggerInteraction.Ignore))
         {
-            return hit.collider.CompareTag("Player");
+            // If this raycast hits something, it's an obstacle before reaching the player.
+            Debug.Log($"{gameObject.name}: Path to player for shot blocked by obstacle: {hit.collider.name}");
+            return false;
         }
+
+        // 3. If no obstacle was hit, the path to (just before) the aimPoint is clear.
+        // The assumption is that aimPoint is accurately on the player.
+        // A final direct check to player can be redundant if aimPoint is trusted, but ensures the very end is clear.
+        // For simplicity now, if the short raycast is clear, we consider the path clear to the aimpoint.
         return true;
     }
 
     void OnDrawGizmosSelected()
     {
+        // --- Vision Cone & Sensor Ranges ---
         if (EyeLevelTransform != null)
         {
-            Gizmos.color = Color.yellow;
+            Gizmos.color = IsPlayerVisible ? Color.green : Color.yellow;
             Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
             Vector3 fovLine1 = Quaternion.AngleAxis(VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
             Vector3 fovLine2 = Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
             Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine1);
             Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine2);
-            if (IsPlayerVisible && PlayerTransform != null)
+
+            if (PlayerTransform != null)
             {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(EyeLevelTransform.position, PlayerTransform.position + Vector3.up * 1.0f);
+                Vector3 currentVisibilityPoint = GetPlayerVisibilityCheckPoint();
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawSphere(currentVisibilityPoint, 0.15f);
+                if (IsPlayerVisible)
+                {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawLine(EyeLevelTransform.position, currentVisibilityPoint);
+                }
+                else if (Vector3.Distance(EyeLevelTransform.position, currentVisibilityPoint) <= VisionConeRange)
+                {
+                    Gizmos.color = Color.red; // In range but not visible (LoS blocked or angle)
+                    Gizmos.DrawLine(EyeLevelTransform.position, currentVisibilityPoint);
+                }
             }
         }
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, AuditoryDetectionRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, ShootingRange);
-        Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Melee Range Gizmo
+        Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Melee
         Gizmos.DrawWireSphere(transform.position, MeleeRange);
 
+        // --- Superposition Trigger Distance ---
+        Gizmos.color = new Color(0.8f, 0.5f, 0.2f, 0.7f); // Orange for superposition trigger
+        Gizmos.DrawWireSphere(transform.position, MaxSuperpositionDistance);
+        if (PlayerTransform != null && Vector3.Distance(transform.position, PlayerTransform.position) > MaxSuperpositionDistance)
+        {
+            Gizmos.color = Color.red; // Indicate player is outside this range
+            Gizmos.DrawLine(transform.position, PlayerTransform.position);
+        }
+
+
+        // --- Last Known Player Position ---
         if (LastKnownPlayerPosition != Vector3.zero)
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(LastKnownPlayerPosition, 0.5f);
         }
 
+        // --- Current Confirmed Aim Target (from Aiming State) ---
         if (CurrentConfirmedAimTarget != Vector3.zero)
         {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.3f);
+            Gizmos.color = Color.white;
+            Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.2f);
             if (GunMuzzleTransform != null) Gizmos.DrawLine(GunMuzzleTransform.position, CurrentConfirmedAimTarget);
+        }
+
+        // --- Water Surface Visualization & Player Submergence ---
+        if (PlayerTransform != null)
+        {
+            Vector3 playerBase = PlayerTransform.position;
+            float lineLength = 5f; // Length of the water level indicator lines
+
+            // Draw a simple representation of water level around player
+            Gizmos.color = new Color(0.2f, 0.5f, 1f, 0.4f); // Light blue, semi-transparent
+            Vector3 waterLineStart, waterLineEnd;
+
+            // Forward/Backward lines at water level
+            waterLineStart = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z - lineLength / 2);
+            waterLineEnd = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z + lineLength / 2);
+            Gizmos.DrawLine(waterLineStart, waterLineEnd);
+
+            // Left/Right lines at water level
+            waterLineStart = new Vector3(playerBase.x - lineLength / 2, WaterSurfaceYLevel, playerBase.z);
+            waterLineEnd = new Vector3(playerBase.x + lineLength / 2, WaterSurfaceYLevel, playerBase.z);
+            Gizmos.DrawLine(waterLineStart, waterLineEnd);
+
+            // Indicate if player's current AIM POINT is submerged
+            Vector3 currentAimGizmoPoint = GetPlayerAimPoint();
+            if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(currentAimGizmoPoint, WaterSurfaceYLevel))
+            {
+                Gizmos.color = Color.blue; // Dark blue if aim point submerged
+                Gizmos.DrawSphere(currentAimGizmoPoint, 0.25f);
+                Gizmos.DrawLine(currentAimGizmoPoint, new Vector3(currentAimGizmoPoint.x, WaterSurfaceYLevel, currentAimGizmoPoint.z)); // Line to surface
+            }
+            else
+            {
+                Gizmos.color = Color.yellow; // Yellow if aim point above water
+                Gizmos.DrawSphere(currentAimGizmoPoint, 0.25f);
+            }
         }
     }
 }

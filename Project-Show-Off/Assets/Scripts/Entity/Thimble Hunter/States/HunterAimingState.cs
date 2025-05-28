@@ -7,16 +7,11 @@ public class HunterAimingState : State
 
     private float _currentAimTime;
     private const float AIM_TRACKING_SPEED = 5f;
-    private Vector3 _playerAimPoint;
+    private Vector3 _playerAimPointInternal;
 
     public HunterAimingState(StateMachine stateMachine) : base(stateMachine)
     {
         _hunterSM = stateMachine as HunterStateMachine;
-        if (_hunterSM == null)
-        {
-            Debug.LogError("ThimbleHunterAimingState received an incompatible StateMachine!", stateMachine);
-            return;
-        }
         _hunterAI = _hunterSM.HunterAI;
     }
 
@@ -32,6 +27,7 @@ public class HunterAimingState : State
 
         _currentAimTime = _hunterAI.AimTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
+        _hunterAI.CurrentConfirmedAimTarget = Vector3.zero;
 
         HunterEventBus.HunterStartedAiming();
         _hunterAI.PlaySound(_hunterAI.StartAimingSound);
@@ -41,15 +37,19 @@ public class HunterAimingState : State
     {
         if (_hunterAI == null || _hunterAI.PlayerTransform == null)
         {
-            Debug.LogWarning($"{_hunterAI.gameObject.name} lost player reference in AimingState. Transitioning to Investigate.");
             SM.TransitToState(_hunterSM.InvestigatingState);
             return;
         }
 
-        // --- Aiming Logic ---
-        // Slowly turn towards the player
-        _playerAimPoint = _hunterAI.PlayerTransform.position + Vector3.up * 1.0f;
-        Vector3 directionToPlayer = (_playerAimPoint - _hunterAI.EyeLevelTransform.position).normalized; // Aim from eye level
+        _playerAimPointInternal = _hunterAI.GetPlayerAimPoint(); // Use the getter from HunterAI
+        if (_playerAimPointInternal == Vector3.zero) // Player might have disappeared
+        {
+            SM.TransitToState(_hunterSM.InvestigatingState);
+            return;
+        }
+
+
+        Vector3 directionToPlayer = (_playerAimPointInternal - _hunterAI.EyeLevelTransform.position).normalized;
         if (directionToPlayer != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
@@ -59,33 +59,22 @@ public class HunterAimingState : State
         _currentAimTime -= Time.deltaTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
 
-        // --- Transition Checks (Priority Order) ---
-        // 1. To CHASING: Player breaks LoS OR moves significantly out of ShootingRange during aim
-        if (!_hunterAI.IsPlayerVisible || Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) > _hunterAI.ShootingRange * 1.1f /* Add some hysteresis */)
+        if (!_hunterAI.IsPlayerVisible || Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) > _hunterAI.ShootingRange * 1.1f)
         {
-            Debug.Log($"{_hunterAI.gameObject.name} lost target or target moved out of range while aiming.");
             SM.TransitToState(_hunterSM.ChasingState);
             return;
         }
-        // (Alternative: if LoS completely broken, could go to INVESTIGATING directly)
-        // if (!_hunterAI.IsPlayerVisible)
-        // {
-        //     SM.TransitToState(_hunterSM.InvestigatingState);
-        //     return;
-        // }
 
-
-        // 2. To SHOOTING: AimTimer expires AND LoS to Player's AimPoint is still clear
         if (_currentAimTime <= 0f)
         {
-            if (_hunterAI.IsPathToPlayerClearForShot(_playerAimPoint))
+            if (_hunterAI.IsPathToPlayerClearForShot(_playerAimPointInternal))
             {
-                _hunterAI.CurrentConfirmedAimTarget = _playerAimPoint; // Confirm the aim target for shooting state
+                _hunterAI.CurrentConfirmedAimTarget = _playerAimPointInternal;
                 SM.TransitToState(_hunterSM.ShootingState);
             }
             else
             {
-                Debug.Log($"{_hunterAI.gameObject.name} path blocked for shot at last moment or player in water.");
+                Debug.Log($"{_hunterAI.gameObject.name} path blocked for shot or target submerged.");
                 SM.TransitToState(_hunterSM.ChasingState);
             }
             return;
@@ -97,6 +86,5 @@ public class HunterAimingState : State
         if (_hunterAI == null) return;
         _hunterAI.HunterAnimator.SetBool("IsAiming", false);
         _hunterAI.CurrentAimTimer = 0f;
-        // NavAgent.isStopped will be handled by the next state if it needs movement.
     }
 }

@@ -42,7 +42,7 @@ public class PlayerSensor : MonoBehaviour
         }
 
         // Subscribe to the global shout event
-        HunterEventBus.OnPlayerShouted += HandleGlobalPlayerShout;
+        HunterEventBus.OnHunterHeardPlayer += HandleGlobalPlayerShout;
     }
 
     void OnDestroy()
