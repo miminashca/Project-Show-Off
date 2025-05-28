@@ -145,8 +145,11 @@ MonoBehaviour:
   EnablePhysicalSize: 0
   Thumbnail: 
   CurrentStatePreset: " <sbspreset pkgurl=\"pkg://Pathway_WIP\" label=\"\" >\n  <presetinput
-    identifier=\"$outputsize\" uid=\"3964766090\" type=\"8\" value=\"10,10\" />\n
-    </sbspreset>\n"
+    identifier=\"$outputsize\" uid=\"3964766090\" type=\"8\" value=\"10,10\" />\n 
+    <presetinput identifier=\"hue\" uid=\"2370694383\" type=\"0\" value=\"0.517\"
+    />\n  <presetinput identifier=\"saturation\" uid=\"2370690991\" type=\"0\" value=\"0.559\"
+    />\n  <presetinput identifier=\"luminosity\" uid=\"2370689833\" type=\"0\" value=\"0.537\"
+    />\n </sbspreset>\n"
   IsRuntimeOnly: 0
   GenerateAllOutputs: 0
   GenerateAllMipmaps: 1
@@ -235,7 +238,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.5
+        Data: 0.517
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
@@ -255,7 +258,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.5
+        Data: 0.559
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
@@ -275,7 +278,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.5
+        Data: 0.537
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
