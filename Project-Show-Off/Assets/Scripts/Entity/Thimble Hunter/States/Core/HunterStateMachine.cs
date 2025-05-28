@@ -1,20 +1,16 @@
 using UnityEngine;
 
 [RequireComponent(typeof(HunterAI))]
-public class HunterStateMachine : StateMachine // Inherits from your abstract StateMachine
+public class HunterStateMachine : StateMachine
 {
-    // Public property to allow states to access the ThimbleHunterAI component
     public HunterAI HunterAI { get; private set; }
 
-    // --- State Instances ---
-    // Make these public if you want to access them from outside for specific reasons,
-    // otherwise private is fine.
     public HunterRoamingState RoamingState { get; private set; }
     public HunterInvestigatingState InvestigatingState { get; private set; }
     public HunterChasingState ChasingState { get; private set; }
     public HunterAimingState AimingState { get; private set; }
     public HunterShootingState ShootingState { get; private set; }
-    // public HunterCloseKillingState CloseKillingState { get; private set; }
+    public HunterCloseKillingState CloseKillingState { get; private set; }
 
     // Awake is called before Start
     protected virtual void Awake()
@@ -33,10 +29,7 @@ public class HunterStateMachine : StateMachine // Inherits from your abstract St
         ChasingState = new HunterChasingState(this);
         AimingState = new HunterAimingState(this);
         ShootingState = new HunterShootingState(this);
-        // CloseKillingState = new HunterCloseKillingState(this);
-
-        // Note: The base StateMachine's Start() method will call InitStartState()
-        // and then TransitToState(initialState).
+        CloseKillingState = new HunterCloseKillingState(this);
     }
 
     // Implementation of the abstract property from your base StateMachine
@@ -56,8 +49,4 @@ public class HunterStateMachine : StateMachine // Inherits from your abstract St
             return RoamingState;
         }
     }
-
-    // The base StateMachine's Start() and Update() will handle the core loop.
-    // Start() calls InitStartState() then TransitToState(initialState)
-    // Update() calls currentState.Handle()
 }

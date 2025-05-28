@@ -6,7 +6,8 @@ public class HunterAimingState : State
     private HunterStateMachine _hunterSM;
 
     private float _currentAimTime;
-    private const float AIM_TRACKING_SPEED = 5f; // Adjust for how quickly Hunter locks on
+    private const float AIM_TRACKING_SPEED = 5f;
+    private Vector3 _playerAimPoint;
 
     public HunterAimingState(StateMachine stateMachine) : base(stateMachine)
     {
@@ -24,16 +25,16 @@ public class HunterAimingState : State
         if (_hunterAI == null) return;
         Debug.Log($"{_hunterAI.gameObject.name} entering AIMING state.");
 
-        _hunterAI.NavAgent.isStopped = true; // Stop movement
-        _hunterAI.NavAgent.velocity = Vector3.zero; // Ensure no sliding
+        _hunterAI.NavAgent.isStopped = true;
+        _hunterAI.NavAgent.velocity = Vector3.zero;
         _hunterAI.HunterAnimator.SetBool("IsMoving", false);
-        _hunterAI.HunterAnimator.SetBool("IsAiming", true); // Animation for aiming
+        _hunterAI.HunterAnimator.SetBool("IsAiming", true);
 
         _currentAimTime = _hunterAI.AimTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
 
-        // Optional: Play aiming sound cue
         HunterEventBus.HunterStartedAiming();
+        _hunterAI.PlaySound(_hunterAI.StartAimingSound);
     }
 
     public override void Handle()
@@ -47,9 +48,9 @@ public class HunterAimingState : State
 
         // --- Aiming Logic ---
         // Slowly turn towards the player
-        Vector3 playerAimPoint = _hunterAI.PlayerTransform.position + Vector3.up * 1.0f; // Approx player center
-        Vector3 directionToPlayer = (playerAimPoint - _hunterAI.transform.position).normalized;
-        if (directionToPlayer != Vector3.zero) // Avoid LookRotation error if direction is zero
+        _playerAimPoint = _hunterAI.PlayerTransform.position + Vector3.up * 1.0f;
+        Vector3 directionToPlayer = (_playerAimPoint - _hunterAI.EyeLevelTransform.position).normalized; // Aim from eye level
+        if (directionToPlayer != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
             _hunterAI.transform.rotation = Quaternion.Slerp(_hunterAI.transform.rotation, targetRotation, Time.deltaTime * AIM_TRACKING_SPEED);
@@ -77,16 +78,15 @@ public class HunterAimingState : State
         // 2. To SHOOTING: AimTimer expires AND LoS to Player's AimPoint is still clear
         if (_currentAimTime <= 0f)
         {
-            Vector3 finalAimPoint = _hunterAI.PlayerTransform.position + Vector3.up * 1.0f;
-            if (_hunterAI.IsPathToPlayerClearForShot(finalAimPoint)) // Use helper from ThimbleHunterAI
+            if (_hunterAI.IsPathToPlayerClearForShot(_playerAimPoint))
             {
+                _hunterAI.CurrentConfirmedAimTarget = _playerAimPoint; // Confirm the aim target for shooting state
                 SM.TransitToState(_hunterSM.ShootingState);
             }
             else
             {
-                // Path blocked at the last moment (e.g., player ducked, obstacle, water)
-                Debug.Log($"{_hunterAI.gameObject.name} path blocked for shot at last moment.");
-                SM.TransitToState(_hunterSM.ChasingState); // Re-evaluate, try to get clear shot
+                Debug.Log($"{_hunterAI.gameObject.name} path blocked for shot at last moment or player in water.");
+                SM.TransitToState(_hunterSM.ChasingState);
             }
             return;
         }
@@ -95,7 +95,6 @@ public class HunterAimingState : State
     public override void OnExitState()
     {
         if (_hunterAI == null) return;
-        Debug.Log($"{_hunterAI.gameObject.name} exiting AIMING state.");
         _hunterAI.HunterAnimator.SetBool("IsAiming", false);
         _hunterAI.CurrentAimTimer = 0f;
         // NavAgent.isStopped will be handled by the next state if it needs movement.

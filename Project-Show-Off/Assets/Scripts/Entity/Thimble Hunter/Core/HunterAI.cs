@@ -5,7 +5,6 @@ using System.Collections.Generic; // For NodeGraph if it's a List
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AudioSource))]
-// Ensure ThimbleHunterStateMachine is also on this GameObject
 [RequireComponent(typeof(HunterStateMachine))]
 public class HunterAI : MonoBehaviour
 {
@@ -32,13 +31,28 @@ public class HunterAI : MonoBehaviour
     public Transform PlayerTransform;
     public Transform GunMuzzleTransform;
     public Transform EyeLevelTransform;
+
+    [Header("Gameplay Rules")]
+    public float WaterSurfaceYLevel = 0.5f;
     // public HunterNodeGraph NodeGraph; // Assign if you create a HunterNodeGraph component/ScriptableObject
+
+    [Header("VFX/SFX (Assign in Inspector)")]
+    public GameObject MuzzleFlashPrefab;
+    public GameObject BulletImpactPlayerPrefab;
+    public GameObject BulletImpactObstaclePrefab;
+    public GameObject BulletImpactWaterPrefab;
+    public AudioClip GunshotSound;
+    public AudioClip ReloadSound;
+    public AudioClip SpottedPlayerSound;
+    public AudioClip HeardNoiseSound;
+    public AudioClip StartAimingSound;
 
     // --- Component References (public properties for states to access) ---
     public NavMeshAgent NavAgent { get; private set; }
     public HunterNavigation Navigation { get; private set; }
     public Animator HunterAnimator { get; private set; }
     public AudioSource HunterAudioSource { get; private set; }
+    public PlayerStatus TargetPlayerStatus { get; private set; }
 
     // --- Runtime AI Data (public properties for states to access) ---
     public Vector3 LastKnownPlayerPosition { get; set; }
@@ -48,6 +62,7 @@ public class HunterAI : MonoBehaviour
     public float CurrentAimTimer { get; set; }
     public float CurrentReloadTimer { get; set; }
     public Transform CurrentTargetNode { get; set; }
+    public Vector3 CurrentConfirmedAimTarget { get; set; }
 
     void Awake()
     {
@@ -58,19 +73,27 @@ public class HunterAI : MonoBehaviour
         if (PlayerTransform == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) PlayerTransform = playerObj.transform;
-            else Debug.LogError("ThimbleHunterAI: PlayerTransform not assigned and Player not found by tag!", this);
+            if (playerObj != null)
+            {
+                PlayerTransform = playerObj.transform;
+                TargetPlayerStatus = playerObj.GetComponent<PlayerStatus>(); // Get PlayerStatus component
+            }
+            else Debug.LogError("HunterAI: PlayerTransform not assigned and Player not found by tag!", this);
+        }
+        else
+        {
+            TargetPlayerStatus = PlayerTransform.GetComponent<PlayerStatus>();
         }
 
         Navigation = GetComponent<HunterNavigation>();
         if (Navigation == null)
         {
-            Debug.LogError("ThimbleHunterAI requires a HunterNavigation component on the same GameObject!", this);
-            enabled = false; // Or add it automatically: Navigation = gameObject.AddComponent<HunterNavigation>();
+            Debug.LogError("HunterAI requires a HunterNavigation component on the same GameObject!", this);
+            enabled = false;
         }
 
-        if (EyeLevelTransform == null) EyeLevelTransform = transform; // Default to self if not set
-        if (GunMuzzleTransform == null) GunMuzzleTransform = transform; // Default to self if not set
+        if (EyeLevelTransform == null) EyeLevelTransform = transform;
+        if (GunMuzzleTransform == null) GunMuzzleTransform = transform;
     }
 
     void OnEnable()
@@ -85,14 +108,16 @@ public class HunterAI : MonoBehaviour
 
     void OnDestroy()
     {
-        HunterEventBus.OnPlayerShouted -= HandlePlayerShoutEvent;
+        PlayerActionEventBus.OnPlayerShouted -= HandlePlayerShoutEvent;
     }
 
-    // This Update is for continuous sensor processing, not state logic.
-    // The StateMachine's Update will call the current state's Handle().
     void Update()
     {
-        if (PlayerTransform == null) return;
+        if (PlayerTransform == null)
+        {
+            IsPlayerVisible = false;
+            return;
+        }
         ProcessSensors();
     }
 
@@ -101,16 +126,24 @@ public class HunterAI : MonoBehaviour
         IsPlayerVisible = false;
         if (PlayerTransform == null || EyeLevelTransform == null) return;
 
-        Vector3 directionToPlayer = (PlayerTransform.position + Vector3.up * 1.0f) - EyeLevelTransform.position;
+        Vector3 playerTargetPoint = PlayerTransform.position + Vector3.up * 1.0f;
+        Vector3 directionToPlayer = playerTargetPoint - EyeLevelTransform.position;
         float distanceToPlayer = directionToPlayer.magnitude;
 
         if (distanceToPlayer <= VisionConeRange)
         {
             if (Vector3.Angle(EyeLevelTransform.forward, directionToPlayer.normalized) <= VisionConeAngle / 2f)
             {
+                // Optional: Tall Grass / Crouch check
+                // if (TargetPlayerStatus != null && TargetPlayerStatus.IsCrouching && TargetPlayerStatus.IsInTallGrassZone) {
+                //    IsPlayerVisible = false; // Player is hidden
+                //    return;
+                // }
+
                 RaycastHit hit;
                 int hunterLayer = LayerMask.NameToLayer("Hunter");
                 LayerMask ignoreHunterMask = ~(1 << hunterLayer);
+
                 if (Physics.Raycast(EyeLevelTransform.position, directionToPlayer.normalized, out hit, VisionConeRange, ignoreHunterMask, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.collider.CompareTag("Player"))
@@ -125,7 +158,7 @@ public class HunterAI : MonoBehaviour
 
     private void HandlePlayerShoutEvent(Vector3 shoutPosition)
     {
-        if (this == null || !enabled || !gameObject.activeInHierarchy) return; // Safety check
+        if (this == null || !enabled || !gameObject.activeInHierarchy) return;
 
         if (Vector3.Distance(transform.position, shoutPosition) <= AuditoryDetectionRange)
         {
@@ -145,22 +178,103 @@ public class HunterAI : MonoBehaviour
         Debug.Log($"{gameObject.name} acknowledged player alert. CanHearPlayerAlert = false");
     }
 
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && HunterAudioSource != null)
+        {
+            HunterAudioSource.PlayOneShot(clip);
+        }
+    }
+
 
     public void FireGun()
     {
         Debug.Log($"{gameObject.name}: BANG!");
         HunterAnimator.SetTrigger("Shoot");
         HunterEventBus.HunterFiredShot();
-        // Implement actual raycast, damage, VFX, SFX here
+        PlaySound(GunshotSound);
+
+        if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
+        {
+            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform); // Parent to muzzle for lifetime
+        }
+
+        if (PlayerTransform == null || GunMuzzleTransform == null) return;
+
+        Vector3 aimTargetToUse = CurrentConfirmedAimTarget; // Use the target confirmed by AimingState
+        if (aimTargetToUse == Vector3.zero) // Fallback if not set (shouldn't happen in normal flow)
+        {
+            Debug.LogWarning($"{gameObject.name}: CurrentConfirmedAimTarget was zero, using PlayerTransform direct for shot.");
+            aimTargetToUse = PlayerTransform.position + Vector3.up * 1.0f;
+        }
+
+        Vector3 directionToTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
+        float shotDistance = ShootingRange * 1.2f; // Give a little extra range for the raycast
+
+        RaycastHit hit;
+        int hunterLayer = LayerMask.NameToLayer("Hunter");
+        LayerMask shootableMask = ~(1 << hunterLayer); // Don't hit self
+
+        // Check for water impact directly, even if IsPathToPlayerClearForShot passed
+        // This handles if player moved into water at the last micro-second.
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimTargetToUse, WaterSurfaceYLevel))
+        {
+            Debug.Log($"{gameObject.name} SHOT hit water (player submerged).");
+            if (BulletImpactWaterPrefab != null)
+            {
+                // Attempt to find where the bullet would hit the water surface
+                // This is a simplified raycast towards the aim target, capped by water surface
+                Ray waterRay = new Ray(GunMuzzleTransform.position, directionToTarget);
+                Plane waterPlane = new Plane(Vector3.up, new Vector3(0, WaterSurfaceYLevel, 0));
+                if (waterPlane.Raycast(waterRay, out float enterDist))
+                {
+                    if (enterDist <= shotDistance)
+                    {
+                        Instantiate(BulletImpactWaterPrefab, waterRay.GetPoint(enterDist), Quaternion.LookRotation(Vector3.down));
+                    }
+                }
+            }
+            return; // Shot is ineffective
+        }
+
+
+        if (Physics.Raycast(GunMuzzleTransform.position, directionToTarget, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
+        {
+            if (hit.collider.CompareTag("Player"))
+            {
+                Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name}");
+                PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(GunDamage);
+                }
+                if (BulletImpactPlayerPrefab != null)
+                {
+                    Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                }
+            }
+            else
+            {
+                Debug.Log($"{gameObject.name} HIT Obstacle: {hit.collider.name} at {hit.point}");
+                if (BulletImpactObstaclePrefab != null)
+                {
+                    Instantiate(BulletImpactObstaclePrefab, hit.point, Quaternion.LookRotation(hit.normal));
+                }
+            }
+        }
+        else
+        {
+            Debug.Log($"{gameObject.name} SHOT missed (hit nothing within range).");
+        }
     }
 
-    public Transform GetRandomNodeFromGraph()
+    public Transform GetConfiguredRoamNode()
     {
         if (Navigation != null)
         {
             return Navigation.GetNextRoamNode();
         }
-        Debug.LogWarning("GetRandomNodeFromGraph: HunterNavigation component not found.", this);
+        Debug.LogWarning("GetConfiguredRoamNode: HunterNavigation component not found.", this);
         return null;
     }
 
@@ -209,10 +323,20 @@ public class HunterAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, AuditoryDetectionRange);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, ShootingRange);
+        Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Melee Range Gizmo
+        Gizmos.DrawWireSphere(transform.position, MeleeRange);
+
         if (LastKnownPlayerPosition != Vector3.zero)
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(LastKnownPlayerPosition, 0.5f);
+        }
+
+        if (CurrentConfirmedAimTarget != Vector3.zero)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.3f);
+            if (GunMuzzleTransform != null) Gizmos.DrawLine(GunMuzzleTransform.position, CurrentConfirmedAimTarget);
         }
     }
 }
