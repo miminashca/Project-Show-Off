@@ -23,6 +23,13 @@ public class HemannekenAIConfig : ScriptableObject
     public float rotationSpeed = 720f; // Degrees per second
     public float stoppingDistance = 0.2f; // Increased slightly for smoother stops
 
+    [Header("Ground")]
+    public LayerMask groundLayerMask = 1; // Layer(s) considered as ground (e.g., "Default", "Terrain")
+    [Range(0f, 5f)] public float groundOffset = 0.1f;     // How far above the detected ground the agent should be
+    [Range(0f, 20f)] public float groundRaycastMaxDistance = 20f; // Max distance the ray travels down to find ground
+    [Range(0f, 10f)] public float groundRaycastStartHeightOffset = 1f; // How far above a reference Y to start the raycast
+    public bool defaultRoamOnGround = false; // Default roaming behavior (grounded or aerial)
+
     [Header("Wave Path Parameters (for Roaming)")]
     [Tooltip("Max perpendicular distance the wave deviates from the direct path.")]
     [Range(0f, 5f)] public float waveAmplitude = 1.0f;
@@ -30,4 +37,9 @@ public class HemannekenAIConfig : ScriptableObject
     [Range(0.1f, 5f)] public float waveFrequency = 1.0f;
     [Tooltip("Number of points used to define the wave curve between main waypoints. Higher is smoother.")]
     [Range(2, 100)] public int wavePathResolution = 8; // Replaces _intermediatePointsPerRoamSegment for clarity
+    
+    [Header("Runtime Hop Path Tweaks")]
+    public float hopDistance = 2.0f;        // How far to travel in one hop
+    public float hopSpeed = 10.0f;          // Speed during the hop itself (can be different from general speed)
+    public float hopWaitDuration = 1.0f;    // How long to wait after a hop
 }
