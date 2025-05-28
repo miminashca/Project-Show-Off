@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 690366451828252061}
   - component: {fileID: 208148862588002447}
   - component: {fileID: 732082691717806265}
+  - component: {fileID: 5965373550262926463}
   m_Layer: 5
   m_Name: Pick Up Interact Panel
   m_TagString: Untagged
@@ -78,6 +79,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &5965373550262926463
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2494650153971342582}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3863890775295761825
 GameObject:
   m_ObjectHideFlags: 0
@@ -105,8 +118,8 @@ RectTransform:
   m_GameObject: {fileID: 3863890775295761825}
   m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 15.88, y: 15.88, z: 15.88}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 15, y: 10.52, z: 15.88}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 690366451828252061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}

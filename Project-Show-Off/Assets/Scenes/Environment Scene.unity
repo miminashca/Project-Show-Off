@@ -2563,19 +2563,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0.8915418
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 0.11000001
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0.8915418
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0.11000001
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_SizeDelta.x
@@ -2583,7 +2583,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 1335.5
+      value: 1334.5
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2637,10 +2637,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pick Up Interact Panel
       objectReference: {fileID: 0}
-    - target: {fileID: 2494650153971342582, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2654,6 +2650,11 @@ RectTransform:
 --- !u!1 &400000739 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2494650153971342582, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
+  m_PrefabInstance: {fileID: 400000737}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &400000740 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 5965373550262926463, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
   m_PrefabInstance: {fileID: 400000737}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &404892996
@@ -3812,6 +3813,10 @@ PrefabInstance:
       value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 2470203979784429819, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: fadeDuration
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2470203979784429819, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: interactionDotUI
       value: 
       objectReference: {fileID: 1032413454}
@@ -3819,6 +3824,10 @@ PrefabInstance:
       propertyPath: interactionPromptUI
       value: 
       objectReference: {fileID: 400000739}
+    - target: {fileID: 2470203979784429819, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: interactionPromptCanvasGroup
+      value: 
+      objectReference: {fileID: 400000740}
     - target: {fileID: 3828692032376250026, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -4891,34 +4900,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 677103880}
     m_Modifications:
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: moveSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchSpeed
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: playerFootsteps
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: baseFootstepInterval
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchFootstepMultiplier
-      value: 1.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: minMovementSpeedForFootsteps
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 177.461
-      objectReference: {fileID: 0}
     - target: {fileID: 1424622276937907353, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_Name
       value: Clog
@@ -4994,6 +4975,34 @@ PrefabInstance:
     - target: {fileID: 8292596121966006567, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: playerFootsteps
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: baseFootstepInterval
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchFootstepMultiplier
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: minMovementSpeedForFootsteps
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 177.461
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -9027,10 +9036,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Clue Counter (the cool one)
       objectReference: {fileID: 0}
-    - target: {fileID: 2428414455925164502, guid: b51290e862645f4439656db19e0bbf37, type: 3}
-      propertyPath: m_Color.a
-      value: 0.5568628
-      objectReference: {fileID: 0}
     - target: {fileID: 4062254262901903157, guid: b51290e862645f4439656db19e0bbf37, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -9111,14 +9116,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8978393551999542284, guid: b51290e862645f4439656db19e0bbf37, type: 3}
-      propertyPath: m_fontColor.a
-      value: 0.44313726
-      objectReference: {fileID: 0}
-    - target: {fileID: 8978393551999542284, guid: b51290e862645f4439656db19e0bbf37, type: 3}
-      propertyPath: m_fontColor32.rgba
-      value: 1912602623
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -9189,6 +9186,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!225 &1670528754 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 6502743825490684630, guid: b51290e862645f4439656db19e0bbf37, type: 3}
+  m_PrefabInstance: {fileID: 1625814764}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1709001288
 GameObject:
   m_ObjectHideFlags: 0
@@ -9311,6 +9313,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clueCounterText: {fileID: 1625814765}
+  clueCanvasGroup: {fileID: 1670528754}
+  fadeDuration: 0.5
+  visibleDuration: 1.5
 --- !u!1 &1738143875
 GameObject:
   m_ObjectHideFlags: 0
