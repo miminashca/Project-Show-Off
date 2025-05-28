@@ -15,6 +15,17 @@ public class ClueCounterUI : MonoBehaviour
     private Coroutine fadeRoutine;
     //end of new code
 
+    //new code
+    private void Awake()
+    {
+        if (clueCanvasGroup != null)
+        {
+            clueCanvasGroup.alpha = 0f;
+            clueCanvasGroup.gameObject.SetActive(false);
+        }
+    }
+    //end of new code
+
     private void Start()
     {
         if (clueCounterText == null)
@@ -22,14 +33,6 @@ public class ClueCounterUI : MonoBehaviour
             Debug.LogError("ClueCounterUI: TextMeshProUGUI reference is missing!");
             return;
         }
-
-        //new code
-        if (clueCanvasGroup != null)
-        {
-            clueCanvasGroup.alpha = 0f;
-            clueCanvasGroup.gameObject.SetActive(false);
-        }
-        //end of new code
 
         if (InspectionManager.Instance != null)
         {
