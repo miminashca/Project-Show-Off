@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class HemannekenManager : MonoBehaviour
@@ -8,13 +9,14 @@ public class HemannekenManager : MonoBehaviour
     private void Awake()
     {
         spManager = GetComponentInChildren<SpawnPointsManager>();
-        if (spManager) 
+        if (spManager)
         {
-            // If already initialized (e.g. if manager starts after spawn points)
-            if (spManager.SpawnPoints != null && spManager.SpawnPoints.Count > 0)
-            {
-                SpawnHemanneken();
-            }
+            spManager.SpawnPointsInitialized += SpawnHemanneken;
+            // // If already initialized (e.g. if manager starts after spawn points)
+            // if (spManager.SpawnPoints != null && spManager.SpawnPoints.Count > 0)
+            // {
+            //     SpawnHemanneken();
+            // }
         }
         else
         {
@@ -37,11 +39,14 @@ public class HemannekenManager : MonoBehaviour
 
         foreach (SpawnPoint p in spManager.SpawnPoints)
         {
-            HemannekenStateMachine hemanneken = Instantiate(hemannekenPrefab, p.transform.position, Quaternion.identity);
+            HemannekenStateMachine hemanneken = Instantiate(hemannekenPrefab, p.transform);
             hemanneken.IsInitiallyTrueForm = p.isOverWater;
             // The HemannekenStateMachine's Awake will handle setting the form via its Visuals component
         }
     }
 
-    
+    private void OnDestroy()
+    {
+        spManager.SpawnPointsInitialized -= SpawnHemanneken;
+    }
 }

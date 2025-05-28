@@ -46,7 +46,7 @@ public class HemannekenStateMachine : StateMachine
     
         if (spManager == null) Debug.LogWarning("SpawnPointsManager not found for AgentMovement initialization.", this);
 
-        Movement.Initialize(GetComponentInChildren<SpawnPointsManager>(), aiConfig); // Ensure SPManager is found
+        Movement.Initialize(GetComponentInParent<SpawnPointsManager>(), aiConfig); // Ensure SPManager is found
         Visuals.Initialize();
 
         Visuals.SetForm(IsInitiallyTrueForm, transform);

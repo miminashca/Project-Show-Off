@@ -108,9 +108,9 @@ public class PlayerSensor : MonoBehaviour
         if (PlayerTransform == null || _hemannekenTransform == null) return float.MaxValue;
 
         Vector3 myPos = _hemannekenTransform.position;
-        // myPos.y = 0; // Compare on 2D plane
+        myPos.y = 0; // Compare on 2D plane
         Vector3 playerPos = PlayerTransform.position;
-        // playerPos.y = 0;
+        playerPos.y = 0;
         
         return Vector3.Distance(myPos, playerPos);
     }
