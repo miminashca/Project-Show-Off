@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class ObjectInteraction : MonoBehaviour
 {
@@ -11,15 +12,21 @@ public class ObjectInteraction : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject interactionPromptUI;
     [SerializeField] private GameObject interactionDotUI;
+    [SerializeField] private CanvasGroup interactionPromptCanvasGroup;
+
+    //new code
+    [SerializeField] private float fadeDuration = 0.3f;
+    private Coroutine fadeCoroutine;
+    //end of new code
 
     private PlayerInput playerInputActions;
     private ClueObject currentInteractableClue;
     private ClueObject lastHighlightedClue;
 
-
     void Awake()
     {
         playerInputActions = new PlayerInput();
+
         if (cameraTransform == null)
         {
             Camera cam = Camera.main;
@@ -34,6 +41,14 @@ public class ObjectInteraction : MonoBehaviour
 
         if (interactionPromptUI != null) interactionPromptUI.SetActive(false);
         if (interactionDotUI != null) interactionDotUI.SetActive(false);
+
+        //new code
+        if (interactionPromptCanvasGroup != null)
+        {
+            interactionPromptCanvasGroup.alpha = 0f;
+            interactionPromptCanvasGroup.gameObject.SetActive(false);
+        }
+        //end of new code
     }
 
     private void OnEnable()
@@ -52,8 +67,18 @@ public class ObjectInteraction : MonoBehaviour
             lastHighlightedClue.Highlight(false);
             lastHighlightedClue = null;
         }
+
         if (interactionPromptUI != null) interactionPromptUI.SetActive(false);
         if (interactionDotUI != null) interactionDotUI.SetActive(false);
+
+        //new code
+        if (interactionPromptCanvasGroup != null)
+        {
+            interactionPromptCanvasGroup.alpha = 0f;
+            interactionPromptCanvasGroup.gameObject.SetActive(false);
+        }
+        //end of new code
+
         currentInteractableClue = null;
     }
 
@@ -95,17 +120,16 @@ public class ObjectInteraction : MonoBehaviour
                 SetInteractionPrompt(true);
                 foundInteractableThisFrame = true;
             }
-            else // Hit something on layer, but not an interactable clue
+            else
             {
-                ClearCurrentInteractable(); // This will hide prompt and set foundInteractableThisFrame effectively to false
+                ClearCurrentInteractable();
             }
         }
-        else // Raycast hit nothing
+        else
         {
-            ClearCurrentInteractable(); // This will hide prompt
+            ClearCurrentInteractable();
         }
 
-        // Manage dot visibility based on whether an interactable was found THIS FRAME
         if (interactionDotUI != null)
         {
             interactionDotUI.SetActive(foundInteractableThisFrame);
@@ -125,11 +149,9 @@ public class ObjectInteraction : MonoBehaviour
 
     private void TryInitiateInteraction(InputAction.CallbackContext context)
     {
-        // This is called when the player presses the "Interact" key in the world.
-        // If InspectionManager is already inspecting, its own input handling will take over.
         if (InspectionManager.Instance != null && InspectionManager.Instance.IsInspecting())
         {
-            return; // Let InspectionManager handle its inputs
+            return;
         }
 
         if (currentInteractableClue != null)
@@ -138,7 +160,7 @@ public class ObjectInteraction : MonoBehaviour
             if (InspectionManager.Instance != null)
             {
                 InspectionManager.Instance.StartInspection(currentInteractableClue);
-                ClearCurrentInteractable(); // Hide prompt and clear current after starting inspection
+                ClearCurrentInteractable();
             }
             else
             {
@@ -149,9 +171,47 @@ public class ObjectInteraction : MonoBehaviour
 
     private void SetInteractionPrompt(bool show)
     {
-        if (interactionPromptUI != null)
+        //new code
+        if (interactionPromptCanvasGroup != null)
+        {
+            FadeCanvasGroup(interactionPromptCanvasGroup, show);
+        }
+        else if (interactionPromptUI != null)
         {
             interactionPromptUI.SetActive(show);
         }
+        //end of new code
     }
+
+    //new code
+    private void FadeCanvasGroup(CanvasGroup canvasGroup, bool fadeIn)
+    {
+        if (fadeCoroutine != null)
+            StopCoroutine(fadeCoroutine);
+
+        fadeCoroutine = StartCoroutine(FadeRoutine(canvasGroup, fadeIn));
+    }
+
+    private IEnumerator FadeRoutine(CanvasGroup canvasGroup, bool fadeIn)
+    {
+        float startAlpha = canvasGroup.alpha;
+        float endAlpha = fadeIn ? 1f : 0f;
+        float elapsed = 0f;
+
+        if (fadeIn) canvasGroup.gameObject.SetActive(true);
+
+        while (elapsed < fadeDuration)
+        {
+            // Ensure consistent time steps and clamp t between 0 and 1
+            elapsed += Mathf.Min(Time.deltaTime, fadeDuration);
+            float t = Mathf.Clamp01(elapsed / fadeDuration);
+            canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+            yield return null;
+        }
+
+        canvasGroup.alpha = endAlpha;
+
+        if (!fadeIn) canvasGroup.gameObject.SetActive(false);
+    }
+    //end of new code
 }

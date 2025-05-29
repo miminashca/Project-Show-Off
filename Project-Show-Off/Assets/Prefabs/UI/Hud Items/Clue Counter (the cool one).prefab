@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4062254262901903157}
   - component: {fileID: 224450663981744583}
   - component: {fileID: 2906528943448379060}
+  - component: {fileID: 6502743825490684630}
   m_Layer: 5
   m_Name: Clue Counter (the cool one)
   m_TagString: Untagged
@@ -78,6 +79,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &6502743825490684630
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1753480504701816024}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &6598169933667434388
 GameObject:
   m_ObjectHideFlags: 0
@@ -211,7 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.5924529, g: 0, b: 0.010579475, a: 1}
+  m_Color: {r: 0.5924529, g: 0, b: 0.010579475, a: 0.5568628}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -302,8 +315,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 1912602623
+  m_fontColor: {r: 1, g: 1, b: 1, a: 0.44313726}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

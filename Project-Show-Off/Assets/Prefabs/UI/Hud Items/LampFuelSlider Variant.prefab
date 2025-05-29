@@ -58,14 +58,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.5803922}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.57254905}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 16227c6b67a85a240a31ce93b6a8dfa9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b47ff7eb96d2e664a97e5d5a40d6b5aa, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -305,6 +305,14 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2622126636498213742, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Color.a
+      value: 0.50980395
+      objectReference: {fileID: 0}
+    - target: {fileID: 2857007943917464538, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Name
+      value: FillBackground
+      objectReference: {fileID: 0}
     - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -336,6 +344,18 @@ PrefabInstance:
     - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
       propertyPath: m_SizeDelta.y
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.65
       objectReference: {fileID: 0}
     - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -385,6 +405,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3594952974927207885, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5078099508200462492, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
       propertyPath: m_Value
       value: 1
@@ -392,6 +416,22 @@ PrefabInstance:
     - target: {fileID: 8428346429351354490, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
       propertyPath: m_Name
       value: LampFuelSlider Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 9115371941061115889, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Color.a
+      value: 0.7372549
+      objectReference: {fileID: 0}
+    - target: {fileID: 9115371941061115889, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9115371941061115889, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9115371941061115889, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -433,7 +473,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FuelBar: {fileID: 8415297179548540702}
-  lanternController: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+  lanternController: {fileID: 0}
 --- !u!114 &8415297179548540702 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5078099508200462492, guid: 8f8153d64432381478a5f9b553a9449e, type: 3}
