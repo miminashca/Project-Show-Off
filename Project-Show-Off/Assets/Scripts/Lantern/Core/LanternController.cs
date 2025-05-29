@@ -128,6 +128,7 @@ public class LanternController : MonoBehaviour
         {
             if (playerInputActions.Player.RaiseLantern.WasPressedThisFrame())
             {
+                Debug.Log("Pressed!");
                 StartRaising();
             }
             else if (playerInputActions.Player.RaiseLantern.WasReleasedThisFrame())
@@ -156,33 +157,35 @@ public class LanternController : MonoBehaviour
                 if (parts == null)
                 {
                     Debug.LogError("LanternController: Lantern prefab is missing the LanternParts script!", currentLanternInstance);
-                    // Handle this critical error, maybe by destroying currentLanternInstance and not proceeding
-                    isEquipped = false; // Revert equip state
+                    isEquipped = false;
                     if (currentLanternInstance != null) Destroy(currentLanternInstance);
                     currentLanternInstance = null;
                     return;
                 }
 
                 currentPhysicsSwayScript = parts.swayScript;
-                lanternLight = parts.lanternLight;
-                lightFlicker = parts.lightFlicker;
+// lanternLight and lightFlicker assignments remain the same
 
                 if (currentPhysicsSwayScript != null)
                 {
-                    currentPhysicsSwayScript.PlayerInputActionsInstance = this.playerInputActions;
                     Camera mainCam = Camera.main;
-                    if (mainCam != null) currentPhysicsSwayScript.playerCameraTransform = mainCam.transform;
-                    else Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
-
-                    currentPhysicsSwayScript.lanternHoldTarget = lanternHandAnchor;
-                    currentPhysicsSwayScript.handleRigidbody = parts.handleRigidbody;
-                    currentPhysicsSwayScript.swingingLanternBodyRB = parts.swingingLanternBodyRB;
-
+                    if (mainCam == null) Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
                     if (parts.handleRigidbody == null) Debug.LogError("LanternParts on prefab has no Handle Rigidbody assigned.", parts);
-                    if (parts.swingingLanternBodyRB == null) Debug.LogError("LanternParts on prefab has no Swinging Lantern Body Rigidbody assigned.", parts);
+                    // if (parts.swingingLanternBodyRB == null) Debug.LogWarning("LanternParts on prefab has no Swinging Lantern Body Rigidbody assigned.", parts); // Less critical
 
-                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero);
-                    currentPhysicsSwayScript.ResetSway(true);
+                    // Call the new InitializeSway method
+                    currentPhysicsSwayScript.InitializeSway(
+                        this.playerInputActions,
+                        mainCam != null ? mainCam.transform : null, // Pass camera transform
+                        lanternHandAnchor,                          // Pass hold target
+                        parts.handleRigidbody,                      // Pass handle Rigidbody
+                        parts.swingingLanternBodyRB                 // Pass swinging body Rigidbody
+                    );
+
+                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero); // Ensure it starts at default local offset
+                    // ResetSway is called by InitializeSway implicitly by setting positions,
+                    // or you can call it explicitly if you need its specific logic again AFTER SetTargetLocalOffsetImmediate.
+                    // currentPhysicsSwayScript.ResetSway(true); // This might be redundant if InitializeSway + SetTargetLocalOffsetImmediate covers it
                 }
                 else Debug.LogError("No PhysicsLanternSway script found on lantern prefab!");
 
@@ -235,7 +238,8 @@ public class LanternController : MonoBehaviour
 
     void StartRaising()
     {
-        if (!isEquipped || isRaised || outOfFuel || lanternLight == null) return;
+        if (!isEquipped || isRaised || outOfFuel) return;
+        //if (!isEquipped || isRaised || outOfFuel || lanternLight == null) return;
 
         isRaised = true;
         SetLightState(true, raisedIntensity, raisedRange);

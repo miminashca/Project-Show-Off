@@ -6,7 +6,7 @@ public class PhysicsLanternSway : MonoBehaviour
     public Transform playerCameraTransform;
     public Transform lanternHoldTarget;
 
-    [Header("Physics Parts (for Reset)")]
+    [Header("Physics Parts")] // Renamed for clarity, these are assigned by controller or prefab
     public Rigidbody handleRigidbody;
     public Rigidbody swingingLanternBodyRB;
 
@@ -14,10 +14,9 @@ public class PhysicsLanternSway : MonoBehaviour
     [Tooltip("The target local offset from the lanternHoldTarget. Set by LanternController.")]
     public Vector3 targetLocalOffset = Vector3.zero;
     [Tooltip("How quickly the lantern animates to the targetLocalOffset (e.g., for raising/lowering).")]
-    public float localOffsetSmoothTime = 0.2f; // This will replace raiseAnimationDuration
+    public float localOffsetSmoothTime = 0.2f;
     private Vector3 currentAppliedLocalOffset;
     private Vector3 localOffsetVelocity;
-
 
     [Header("Overall Positional Sway")]
     public float positionSmoothTime = 0.08f;
@@ -39,36 +38,73 @@ public class PhysicsLanternSway : MonoBehaviour
     private Quaternion currentSwayRotation;
     private Vector3 positionVelocity;
 
-    public PlayerInput PlayerInputActionsInstance { get; set; }
+    public PlayerInput PlayerInputActionsInstance { get; private set; } // Setter can be private if only set via Initialize
 
-    void Start()
+    private bool isInitialized = false;
+
+    // Call this method from LanternController after instantiating and getting references
+    public void InitializeSway(PlayerInput inputActions, Transform camTransform, Transform holdTarget, Rigidbody handleRB, Rigidbody swingRB)
     {
+        PlayerInputActionsInstance = inputActions;
+        playerCameraTransform = camTransform; // Or keep public and let it be set via Inspector/Controller
+        lanternHoldTarget = holdTarget;       // Or keep public
+        handleRigidbody = handleRB;
+        swingingLanternBodyRB = swingRB;
+
         if (PlayerInputActionsInstance == null)
         {
-            Debug.LogError("PhysicsLanternSway: PlayerInputActionsInstance was not assigned! Sway will not react to input correctly.", this);
+            Debug.LogError("PhysicsLanternSway: PlayerInputActionsInstance was not assigned during Initialize! Sway will not react to input correctly.", this);
         }
-
+        if (playerCameraTransform == null)
+        {
+            Debug.LogWarning("PhysicsLanternSway: playerCameraTransform was not assigned during Initialize. Some sway features might be limited if it's needed later and not set.", this);
+        }
         if (!lanternHoldTarget)
         {
-            Debug.LogError("PhysicsLanternSway: LanternHoldTarget not assigned! Disabling script.", this);
-            enabled = false;
+            Debug.LogError("PhysicsLanternSway: LanternHoldTarget not assigned during Initialize! Disabling script.", this);
+            enabled = false; // Or just don't set isInitialized = true
             return;
         }
-        if (handleRigidbody != null) handleRigidbody.isKinematic = true;
 
-        // Initialize currentAppliedLocalOffset to the initial targetLocalOffset
+        if (handleRigidbody != null)
+        {
+            handleRigidbody.isKinematic = true;
+        }
+        else
+        {
+            Debug.LogError("PhysicsLanternSway: handleRigidbody not assigned during Initialize! The lantern handle might not behave correctly.", this);
+        }
+        if (swingingLanternBodyRB == null)
+        {
+            // This RB is mostly for the ResetSway method to clear velocities.
+            // Debug.LogWarning("PhysicsLanternSway: swingingLanternBodyRB not assigned during Initialize.", this);
+        }
+
+        // Initialize currentAppliedLocalOffset to the current targetLocalOffset
+        // targetLocalOffset might have been set by LanternController before calling InitializeSway
+        // or it defaults to Vector3.zero.
         currentAppliedLocalOffset = targetLocalOffset;
+        localOffsetVelocity = Vector3.zero;
 
-        // Initialize State based on the possibly offset position
-        currentSwayPosition = lanternHoldTarget.TransformPoint(currentAppliedLocalOffset);
-        currentSwayRotation = lanternHoldTarget.rotation;
-        transform.SetPositionAndRotation(currentSwayPosition, currentSwayRotation);
+        // Initialize current sway state
+        if (lanternHoldTarget != null) // Check again in case it was null and script wasn't disabled
+        {
+            currentSwayPosition = lanternHoldTarget.TransformPoint(currentAppliedLocalOffset);
+            currentSwayRotation = lanternHoldTarget.rotation;
+            transform.SetPositionAndRotation(currentSwayPosition, currentSwayRotation);
+            positionVelocity = Vector3.zero;
+        }
+        
+        isInitialized = true;
+        if (!enabled) enabled = true; // Ensure script is enabled if it was disabled due to missing lanternHoldTarget initially
     }
+
+    // Removed Start() as initialization is now more controlled by InitializeSway()
+    // If you need Start() for other purposes, ensure it doesn't conflict.
 
     void Update()
     {
-        if (!enabled || !lanternHoldTarget) return;
-        if (PlayerInputActionsInstance == null) return;
+        if (!isInitialized || !enabled || !lanternHoldTarget || PlayerInputActionsInstance == null) return;
 
         // --- 0. Smoothly update the applied local offset towards the target local offset ---
         currentAppliedLocalOffset = Vector3.SmoothDamp(currentAppliedLocalOffset, targetLocalOffset, ref localOffsetVelocity, localOffsetSmoothTime, Mathf.Infinity, Time.deltaTime);
@@ -91,12 +127,9 @@ public class PhysicsLanternSway : MonoBehaviour
         positionalOffset += new Vector3(-lookInput.x * lookPositionSwayAmount, -lookInput.y * lookPositionSwayAmount * 0.5f, 0f);
         positionalOffset += new Vector3(-moveInput.x * movePositionSwayAmount, 0f, -moveInput.y * movePositionSwayAmount * 0.75f);
 
-        // Transform positionalOffset to be relative to the lanternHoldTarget's orientation,
-        // then apply it in world space.
         positionalOffset = lanternHoldTarget.TransformDirection(positionalOffset);
         positionalOffset = Vector3.ClampMagnitude(positionalOffset, maxPositionalSway);
         Vector3 targetPosWithSway = baseTargetPos + positionalOffset;
-
 
         float pitchSway = lookInput.y * lookRotationSwayAmount;
         float yawSway = -lookInput.x * lookRotationSwayAmount * 0.75f;
@@ -110,11 +143,9 @@ public class PhysicsLanternSway : MonoBehaviour
         if (overallGravityInfluence > 0.001f)
         {
             Vector3 currentUp = transform.up;
-            // Calculate target rotation to align 'up' with 'world down'
             Quaternion gravityAlignedTarget = Quaternion.FromToRotation(currentUp, Vector3.down) * transform.rotation;
-
             float inputMagnitude = lookInput.magnitude + moveInput.magnitude;
-            float dynamicInfluence = Mathf.Lerp(overallGravityInfluence, overallGravityInfluence * 0.2f, Mathf.Clamp01(inputMagnitude)); // Reduce influence during fast movement/look
+            float dynamicInfluence = Mathf.Lerp(overallGravityInfluence, overallGravityInfluence * 0.2f, Mathf.Clamp01(inputMagnitude));
             targetRotWithSway = Quaternion.Slerp(targetRotWithSway, gravityAlignedTarget, dynamicInfluence * overallSettlingSpeed * Time.deltaTime);
         }
 
@@ -122,52 +153,47 @@ public class PhysicsLanternSway : MonoBehaviour
 
         // --- 3. Smoothly Update Transform ---
         currentSwayPosition = Vector3.SmoothDamp(currentSwayPosition, targetPosWithSway, ref positionVelocity, positionSmoothTime, Mathf.Infinity, Time.deltaTime);
-        // For rotation, using a Lerp factor derived from rotationSmoothTime provides smoother results than Slerp with a fixed step.
         float rotLerpFactor = (rotationSmoothTime > 0.001f) ? Time.deltaTime / rotationSmoothTime : 1.0f;
         currentSwayRotation = Quaternion.Slerp(currentSwayRotation, targetRotWithSway, rotLerpFactor);
-
 
         transform.SetPositionAndRotation(currentSwayPosition, currentSwayRotation);
     }
 
-    public void ResetSway(bool useTargetOffset = true) // Added parameter
+    public void ResetSway(bool useTargetOffset = true)
     {
-        if (lanternHoldTarget)
+        if (!isInitialized || !lanternHoldTarget) // Don't try to reset if not properly initialized
         {
-            // When resetting, decide if we snap to the current targetLocalOffset or (0,0,0) local.
-            // Typically, we want to respect the current targetOffset (e.g. if raised).
-            currentAppliedLocalOffset = useTargetOffset ? targetLocalOffset : Vector3.zero;
-            localOffsetVelocity = Vector3.zero;
+            // Debug.LogWarning("PhysicsLanternSway: Attempted to ResetSway before initialization or without lanternHoldTarget.");
+            return;
+        }
 
-            currentSwayPosition = lanternHoldTarget.TransformPoint(currentAppliedLocalOffset);
-            currentSwayRotation = lanternHoldTarget.rotation;
-            transform.SetPositionAndRotation(currentSwayPosition, currentSwayRotation);
-            positionVelocity = Vector3.zero;
+        currentAppliedLocalOffset = useTargetOffset ? targetLocalOffset : Vector3.zero;
+        localOffsetVelocity = Vector3.zero;
 
-            if (swingingLanternBodyRB != null)
-            {
-                swingingLanternBodyRB.linearVelocity = Vector3.zero;
-                swingingLanternBodyRB.angularVelocity = Vector3.zero;
-                // If your lantern body is parented and might get an odd initial rotation, reset it too
-                // swingingLanternBodyRB.transform.localRotation = Quaternion.identity;
-            }
-            // Reset handle if it's not purely kinematic or might have gotten an odd rotation
-            // if (handleRigidbody != null) {
-            //    handleRigidbody.transform.localRotation = Quaternion.identity;
-            // }
+        currentSwayPosition = lanternHoldTarget.TransformPoint(currentAppliedLocalOffset);
+        currentSwayRotation = lanternHoldTarget.rotation;
+        transform.SetPositionAndRotation(currentSwayPosition, currentSwayRotation);
+        positionVelocity = Vector3.zero;
+
+        if (swingingLanternBodyRB != null)
+        {
+            swingingLanternBodyRB.linearVelocity = Vector3.zero;
+            swingingLanternBodyRB.angularVelocity = Vector3.zero;
         }
     }
 
-    // Call this to instantly set the local offset without smoothing (e.g., on equip)
     public void SetTargetLocalOffsetImmediate(Vector3 offset)
     {
         targetLocalOffset = offset;
-        currentAppliedLocalOffset = offset;
-        localOffsetVelocity = Vector3.zero; // Reset velocity to prevent overshoot from a previous SmoothDamp
-        // Recalculate currentSwayPosition based on the new immediate offset to prevent a jump
-        if (lanternHoldTarget)
+        // If not initialized yet, InitializeSway will pick up this targetLocalOffset.
+        // If already initialized, update currentAppliedLocalOffset directly.
+        if (isInitialized && lanternHoldTarget) 
         {
+            currentAppliedLocalOffset = offset;
+            localOffsetVelocity = Vector3.zero;
             currentSwayPosition = lanternHoldTarget.TransformPoint(currentAppliedLocalOffset);
+            // No need to immediately snap rotation here, just position based on offset
+            transform.position = currentSwayPosition; // Snap position
         }
     }
 }
