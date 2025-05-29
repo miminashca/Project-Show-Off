@@ -10,14 +10,14 @@ public class HemannekenRoamingState : State
     {
         Debug.Log("Entered Roaming State");
         HSM.Sensor.OnPlayerDetected += HandlePlayerDirectlyDetected; // Direct detection for investigation
+        PlayerActionEventBus.OnPlayerShouted += HandleHeyTriggered;
     }
 
     public override void Handle()
     {
-        HSM.Movement.RoamWaypoints(); // Uses NavMeshAgent to move between waypoints
-        
         if (HSM.Visuals.IsTrueForm)
         { 
+            HSM.Movement.RoamWaypoints(MovementStyle.SplineWave, false); 
             if (HSM.Sensor.IsPlayerInTrueChaseDistance())
             {
                 SM.TransitToState(new HemannekenChasingState(SM));
@@ -26,6 +26,7 @@ public class HemannekenRoamingState : State
         }
         else // Rabbit form
         {
+            HSM.Movement.RoamWaypoints(MovementStyle.Hop, true); 
             if (HSM.Sensor.IsPlayerInRabbitChaseDistance())
             {
                 SM.TransitToState(new HemannekenEnchantixState(SM));
@@ -35,7 +36,7 @@ public class HemannekenRoamingState : State
     }
     
     // Called when global "Hey" event fires (player used "Hey" action)
-    private void HandleHeyTriggered()
+    private void HandleHeyTriggered(Vector3 pos)
     {
         // Check if player is within investigation distance when "Hey" is used
         if (HSM.Sensor.IsPlayerInInvestigateDistance())
@@ -64,6 +65,9 @@ public class HemannekenRoamingState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Roaming State");
+        HSM.Movement.SetGroundRestriction(false);
         HSM.Sensor.OnPlayerDetected -= HandlePlayerDirectlyDetected;
+        PlayerActionEventBus.OnPlayerShouted -= HandleHeyTriggered;
+
     }
 }

@@ -24,8 +24,18 @@ MonoBehaviour:
   transformationDuration: 1
   deathEffectDuration: 2
   defaultSpeed: 1
-  rotationSpeed: 25
+  rotationSpeed: 100
   stoppingDistance: 0.1
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  groundOffset: 0.12
+  groundRaycastMaxDistance: 20
+  groundRaycastStartHeightOffset: 0
+  defaultRoamOnGround: 0
   waveAmplitude: 2.5
   waveFrequency: 1
   wavePathResolution: 50
+  hopDistance: 0.7
+  hopSpeed: 3.23
+  hopWaitDuration: 2.62
