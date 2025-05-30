@@ -97,9 +97,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477377365761190004}
   serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Mass: 3
+  m_Drag: 0.4
+  m_AngularDrag: 0.5
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -126,14 +126,14 @@ HingeJoint:
   serializedVersion: 3
   m_ConnectedBody: {fileID: 406058043998488435}
   m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 39.5, z: 0}
+  m_Anchor: {x: 0, y: 38.6, z: 0}
   m_Axis: {x: 0, y: 0, z: 1}
   m_AutoConfigureConnectedAnchor: 0
-  m_ConnectedAnchor: {x: 0, y: -37, z: 0}
+  m_ConnectedAnchor: {x: 0, y: -36.36, z: 0}
   m_UseSpring: 1
   m_Spring:
-    spring: 4
-    damper: 1
+    spring: 3
+    damper: 0.1
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -144,8 +144,8 @@ HingeJoint:
   m_ExtendedLimits: 0
   m_UseAcceleration: 0
   m_Limits:
-    min: -90
-    max: 90
+    min: -70
+    max: 70
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0
@@ -252,8 +252,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2068294816428798007}
   serializedVersion: 4
-  m_Mass: 0.2
-  m_Drag: 0
+  m_Mass: 0.5
+  m_Drag: 0.2
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -287,8 +287,8 @@ HingeJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_UseSpring: 1
   m_Spring:
-    spring: 4
-    damper: 1
+    spring: 5
+    damper: 0.2
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -664,7 +664,7 @@ Transform:
   m_GameObject: {fileID: 3039826858026935728}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.019, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -759,7 +759,7 @@ MonoBehaviour:
   maxRotationalSway: 0
   lookRotationSwayAmount: 0
   moveRotationSwayAmount: 0
-  overallGravityInfluence: 5
+  overallGravityInfluence: 8
   overallSettlingSpeed: 4
 --- !u!114 &5429876765376644119
 MonoBehaviour:
@@ -1050,27 +1050,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.575
+      value: -0.699
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.98
+      value: -0.904
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.7057027
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.044538654
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: -0.7057027
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: 0.04453864
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1082,7 +1082,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1165999151281690656, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
+      value: 7.223
       objectReference: {fileID: 0}
     - target: {fileID: 1974167219914736282, guid: 07897ad68f79886498719170a19e714c, type: 3}
       propertyPath: m_Name
