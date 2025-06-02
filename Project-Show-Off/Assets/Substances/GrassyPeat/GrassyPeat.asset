@@ -151,11 +151,13 @@ MonoBehaviour:
   CurrentStatePreset: " <sbspreset pkgurl=\"pkg://Grassy_Peat\" label=\"\" >\n  <presetinput
     identifier=\"$outputsize\" uid=\"723145720\" type=\"8\" value=\"10,10\" />\n 
     <presetinput identifier=\"hue\" uid=\"1241921693\" type=\"0\" value=\"0.52\"
-    />\n  <presetinput identifier=\"saturation\" uid=\"1241910237\" type=\"0\" value=\"0.448\"
+    />\n  <presetinput identifier=\"saturation\" uid=\"1241910237\" type=\"0\" value=\"0.539\"
+    />\n  <presetinput identifier=\"luminosity\" uid=\"1241911131\" type=\"0\" value=\"0.591\"
     />\n  <presetinput identifier=\"Position\" uid=\"1242715512\" type=\"0\" value=\"0.798\"
     />\n  <presetinput identifier=\"hue_1\" uid=\"1242702805\" type=\"0\" value=\"0.487\"
     />\n  <presetinput identifier=\"saturation_1\" uid=\"1242701876\" type=\"0\"
-    value=\"0.519\" />\n </sbspreset>\n"
+    value=\"0.519\" />\n  <presetinput identifier=\"luminosity_1\" uid=\"1242701859\"
+    type=\"0\" value=\"0.61\" />\n </sbspreset>\n"
   IsRuntimeOnly: 0
   GenerateAllOutputs: 1
   GenerateAllMipmaps: 1
@@ -264,7 +266,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.448
+        Data: 0.539
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
@@ -284,7 +286,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.5
+        Data: 0.591
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
@@ -384,7 +386,7 @@ MonoBehaviour:
           GuiDescription: 
           Type: 0
           WidgetType: 1
-        Data: 0.5
+        Data: 0.61
         NumericalDescription:
           DefaultValue: 0.5
           MinValue: 0
