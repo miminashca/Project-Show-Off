@@ -16,7 +16,8 @@ public class HemannekenAIConfig : ScriptableObject
     public float stunEffectDuration = 5f;
     public float lanternStunHoldDuration = 2f;
     public float transformationDuration = 1f;
-    public float deathEffectDuration = 2f;
+    public float deathEffectDuration = 5f;
+    public float waterDeathThreshold = 2f;
 
     [Header("Custom Roaming Movement")]
     public float defaultSpeed = 3.5f;

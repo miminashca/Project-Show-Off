@@ -11,8 +11,8 @@ public class HemannekenDeathState : State
         Debug.Log("Entered Death State");
         HSM.Movement.StopAgentCompletely(); // Stop all movement
         //HSM.Movement.EnableAgent(false); // Disable agent
-
-        HSM.Visuals.PlayDeathEffects();
+        
+        HSM.Visuals.StartCoroutine(HSM.Visuals.PlayDeathEffects(HSM.aiConfig.deathEffectDuration));
         HSM.DestroySelfAfterDelay(HSM.aiConfig.deathEffectDuration);
     }
 

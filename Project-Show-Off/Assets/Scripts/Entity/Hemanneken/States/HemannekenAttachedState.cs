@@ -6,37 +6,29 @@ public class HemannekenAttachedState : State
 
     public HemannekenAttachedState(StateMachine pSM) : base(pSM) { }
 
+    private WaterSensor playerWaterSensor;
+
     public override void OnEnterState()
     {
         Debug.Log("Entered Attached State");
+
+        playerWaterSensor = HSM.Sensor.PlayerTransform.gameObject.GetComponent<WaterSensor>();
         
         HSM.PerformAttachmentToPlayer(); // Handles parenting, positioning, visual hiding, agent disabling
         
         HemannekenEventBus.AttachHemanneken(); // Global game event
-        HemannekenEventBus.OnWaterTouch += HandleWaterTouch;
     }
 
     public override void Handle()
     {
-        // Position is now managed by being parented to the player via PerformAttachmentToPlayer
-        // If specific relative movement or updates are needed while attached, do them here.
-        // For example, ensuring rotation matches player or a fixed offset.
-        // For now, HSM.PerformAttachmentToPlayer already set a localPosition.
+        if(playerWaterSensor.GetTimeUnderwater()>=HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
     }
 
     public override void OnExitState()
     {
         Debug.Log("Exited Attached State");
         HSM.PerformDetachmentFromPlayer(); // Handles unparenting, visual restoring
-        
         HemannekenEventBus.DetachHemanneken(); // Global game event
-        HemannekenEventBus.OnWaterTouch -= HandleWaterTouch;
-        // The next state will handle enabling the agent if necessary.
     }
 
-    private void HandleWaterTouch()
-    {
-        Debug.Log("Attached Hemanneken detected water touch.");
-        HSM.TransitToState(new HemannekenDeathState(HSM));
-    }
 }

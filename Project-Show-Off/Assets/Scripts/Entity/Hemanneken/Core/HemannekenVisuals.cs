@@ -6,12 +6,10 @@ public class HemannekenVisuals : MonoBehaviour
     [Header("Models")]
     [SerializeField] private GameObject _hemannekenTrueModelPrefab;
     [SerializeField] private GameObject _hemannekenRabbitModelPrefab;
-    
-    // Existing variables (example)
-    //[Header("Effects")]
-    private ParticleSystem _particleSystem; // Assign in Inspector
 
-    // --- ADD THESE NEW VARIABLES FOR STUN RETREAT ---
+    // Particle system for general effects, initialized in Initialize()
+    private ParticleSystem _particleSystem;
+
     [Header("Stun Retreat Behavior")]
     [Tooltip("How far the entity will move backwards when stunned.")]
     [SerializeField] private float _stunRetreatDistance = 0.5f;
@@ -19,7 +17,7 @@ public class HemannekenVisuals : MonoBehaviour
     [SerializeField] private float _stunRetreatDuration = 0.3f;
     [Tooltip("Optional: Small upward movement for a 'jump back' feel.")]
     [SerializeField] private float _stunRetreatUpwardOffset = 0.1f;
-    
+
     [Header("Stun Circling Behavior")]
     [Tooltip("Radius of the small circle the entity makes while stunned.")]
     [SerializeField] private float _stunCircleRadius = 0.2f;
@@ -27,18 +25,40 @@ public class HemannekenVisuals : MonoBehaviour
     [SerializeField] private float _stunCircleSpeed = 90.0f; // Degrees per second
     [Tooltip("Amplitude of the vertical movement during circling. Set to 0 for no vertical motion.")]
     [SerializeField] private float _stunVerticalRadius = 0.1f;
-    
+
+    [Header("Death Sequence Behavior")]
+    [Tooltip("Distance the entity moves in front of the player before playing death particles.")]
+    [SerializeField] private float _deathMoveDistanceInFrontOfPlayer = 2.0f;
+    [Tooltip("Should the entity look at the player after moving for death effects?")]
+    [SerializeField] private bool _deathMoveLookAtPlayer = true;
+    // Optional: If you have a specific particle system just for death, you could add:
+    // [SerializeField] private ParticleSystem _deathSpecificParticleSystem;
+
     private Coroutine _activeStunBehaviorCoroutine;
-    private bool _isStunBehaviorActive = false; // Flag to control the coroutine's loops
-    
+    private bool _isStunBehaviorActive = false; // Flag to control the stun coroutine's loops
+
     private GameObject _currentModelInstance;
-    private PlayerSensor _playerSensor; // To manage an ongoing retreat
+    private PlayerSensor _playerSensor; // To get player's transform
     public bool IsTrueForm { get; private set; }
+
+    // --- NEW FLAG FOR DEATH PROCESSING ---
+    private bool _isProcessingDeath = false;
 
     public void Initialize()
     {
         _playerSensor = GetComponent<PlayerSensor>();
+        if (_playerSensor == null)
+        {
+            Debug.LogWarning("HemannekenVisuals: PlayerSensor component not found. Some behaviors might not work as expected.", this);
+        }
+
+        // Get the general particle system.
+        // If you have multiple and need a specific one for death, assign it directly or add _deathSpecificParticleSystem.
         _particleSystem = GetComponentInChildren<ParticleSystem>();
+        if (_particleSystem == null)
+        {
+            Debug.LogWarning("HemannekenVisuals: ParticleSystem component not found in children. Effects might not play.", this);
+        }
     }
 
     public void SetForm(bool isTrue, Transform parentTransform)
@@ -67,21 +87,14 @@ public class HemannekenVisuals : MonoBehaviour
     {
         if (_currentModelInstance != null)
         {
-            // A more robust way would be to iterate through all MeshRenderers in _currentModelInstance
-            // and toggle their enabled state. For simplicity, toggling the parent.
-            // This assumes the model's root contains all renderers or controls them.
             _currentModelInstance.SetActive(visible);
         }
     }
-    
-    // public void PlayStunEffects() 
-    // { 
-    //     Debug.Log("SFX/VFX: Hemanneken Stunned"); 
-    //     if (_particleSystem != null) _particleSystem.Play(); // Example
-    // }
-    // Call this to start the stun visual effects and the retreat/circling behavior
+
     public void StartStunEffectsAndBehavior()
     {
+        if (_isProcessingDeath) return; // Don't start stun if already dying
+
         Debug.Log("SFX/VFX: " + gameObject.name + " Stun Behavior Started");
 
         if (_particleSystem != null)
@@ -173,21 +186,12 @@ public class HemannekenVisuals : MonoBehaviour
             currentCircleAngle += _stunCircleSpeed * Time.deltaTime;
             if (currentCircleAngle >= 360f) currentCircleAngle -= 360f;
 
-            // Calculate horizontal offsets (XZ plane)
             float xOffset = Mathf.Cos(currentCircleAngle * Mathf.Deg2Rad) * _stunCircleRadius;
             float zOffset = Mathf.Sin(currentCircleAngle * Mathf.Deg2Rad) * _stunCircleRadius;
-
-            // --- MODIFIED: Calculate vertical offset (Y axis) ---
-            // Using Sin for vertical to make it potentially out of phase with Cos on X, leading to a more "rolling" circle.
-            // You can use Cos here as well, or use a different angle (e.g., currentCircleAngle + 90)
-            // or apply a _stunVerticalFrequencyMultiplier to currentCircleAngle if you want different speeds.
-            float yOffset = Mathf.Sin(currentCircleAngle * Mathf.Deg2Rad /* * _stunVerticalFrequencyMultiplier (if using) */) * _stunVerticalRadius;
-            // --- END OF MODIFICATION ---
+            float yOffset = Mathf.Sin(currentCircleAngle * Mathf.Deg2Rad) * _stunVerticalRadius;
 
             Vector3 nextCirclePosition = circleCenter + new Vector3(xOffset, yOffset, zOffset);
-
-            transform.position = Vector3.Lerp(transform.position, nextCirclePosition, Time.deltaTime * 10f);
-
+            transform.position = Vector3.Lerp(transform.position, nextCirclePosition, Time.deltaTime * 10f); // Smooth follow
             yield return null;
         }
 
@@ -199,18 +203,95 @@ public class HemannekenVisuals : MonoBehaviour
 
     public void PlayTransformationEffects()
     {
+        if (_isProcessingDeath) return;
         Debug.Log("SFX/VFX: Hemanneken Transforming");
         if (_particleSystem != null) _particleSystem.Play();
     }
-    public void StopTransformationEffects() 
-    { 
-        Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped"); 
+
+    public void StopTransformationEffects()
+    {
+        if (_isProcessingDeath) return;
+        Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped");
         if (_particleSystem != null) _particleSystem.Stop();
     }
 
-    public void PlayDeathEffects()
+    // --- MODIFIED PlayDeathEffects ---
+    // Call this with StartCoroutine(yourHemannekenVisualsInstance.PlayDeathEffects());
+    public IEnumerator PlayDeathEffects(float timer)
     {
-        Debug.Log("SFX/VFX: Hemanneken Dying");
-        if (_particleSystem != null) _particleSystem.Play();
+        if (_isProcessingDeath)
+        {
+            yield break; // Already dying or death sequence started
+        }
+        _isProcessingDeath = true;
+
+        if (_isStunBehaviorActive || _activeStunBehaviorCoroutine != null)
+        {
+            StopStunBehavior(); // This should stop the coroutine and reset flags
+            yield return null;  // Wait a frame to ensure stun coroutine has fully exited
+        }
+
+        Transform playerActualTransform = null;
+        if (_playerSensor != null && _playerSensor.PlayerTransform != null)
+        {
+            playerActualTransform = _playerSensor.PlayerTransform;
+        }
+        else
+        {
+            if (_particleSystem != null)
+            {
+                _particleSystem.Play();
+            }
+            // Optionally destroy after particles. For now, just mark as not processing.
+            // Destroy(gameObject, _particleSystem != null && _particleSystem.main.Is मृत्यु ? _particleSystem.main.duration + _particleSystem.main.startLifetime.constantMax : 2f);
+            _isProcessingDeath = false; // Or handle destruction which makes this irrelevant
+            yield break;
+        }
+
+        // --- 1. Calculate Target Position ---
+        Vector3 targetPosition = playerActualTransform.position + playerActualTransform.forward  * _deathMoveDistanceInFrontOfPlayer;
+        // Optional: Adjust Y position. e.g., to match entity's original height or player's height.
+        // targetPosition.y = transform.position.y; // Maintain entity's Y
+        targetPosition.y += playerActualTransform.GetComponentInChildren<Camera>().transform.position.y; // Align with player's Y
+        
+        Vector3 startPosition = transform.position;
+        float elapsedTime = 0f;
+
+        // --- 2. Move Entity ---
+        // Optional: Hide model during the fast move for a "poof" effect if desired
+        // if (_currentModelInstance != null) _currentModelInstance.SetActive(false);
+
+        while (elapsedTime < timer-1f)
+        {
+            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / (timer-1f) );
+            elapsedTime += Time.deltaTime;
+            yield return null; // Wait for the next frame
+        }
+        
+        if (_currentModelInstance != null) _currentModelInstance.SetActive(false);
+
+        transform.position = targetPosition; // Ensure it's exactly at the target position
+
+        // Optional: Show model again if hidden
+        // if (_currentModelInstance != null) _currentModelInstance.SetActive(true);
+        
+        // --- 4. Play Particle System ---
+        Debug.Log("SFX/VFX: Hemanneken Dying (after move)", this.gameObject);
+
+        if (_particleSystem != null)
+        {
+            _particleSystem.Play();
+        }
+
+        // --- 5. Optional: Clean up ---
+        // Usually, after death effects, the GameObject is destroyed.
+        // This can be handled here, by the particle system itself (Stop Action: Destroy), or by a managing script.
+        // Example:
+        // float particleEffectDuration = (systemToPlay != null && systemToPlay.main.duration > 0) ?
+        //                                systemToPlay.main.duration + systemToPlay.main.startLifetime.constantMax :
+        //                                2f; // Default if no particles or duration is zero
+        // Destroy(gameObject, particleEffectDuration);
+        // If not destroying, and the entity could somehow revive, you might set _isProcessingDeath = false;
+        // For a typical death, the object is removed, making _isProcessingDeath reset unnecessary.
     }
 }
