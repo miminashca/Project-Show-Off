@@ -3120,6 +3120,84 @@ Light:
   m_LightUnit: 0
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!1 &388628295
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388628297}
+  - component: {fileID: 388628296}
+  - component: {fileID: 388628298}
+  m_Layer: 0
+  m_Name: AmbientScreamEmitter1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &388628296
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388628295}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 6.88002, y: 18.551224, z: 67.835175}
+  m_Center: {x: 115.23854, y: -8.775612, z: 52.729668}
+--- !u!4 &388628297
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388628295}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.29544526, z: -0, w: 0.9553597}
+  m_LocalPosition: {x: -15.47, y: 11.7, z: -50.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 34.368, z: 0}
+--- !u!114 &388628298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388628295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c442bac0f1451f944aa5c85bcd64faea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fmodEvent:
+    Guid:
+      Data1: 1543173391
+      Data2: 1193315010
+      Data3: 46207932
+      Data4: 316630094
+    Path: event:/Enemies/Ambient Scream 1
+  fmodEventPath: 
+  triggerTag: Player
+  playOnce: 1
+  attachToGameObject: 1
+  hasBeenTriggered: 0
 --- !u!1001 &400000737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4818,6 +4896,93 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 707908384}
   m_Mesh: {fileID: 5302568919011541938, guid: f4d93ea0ee5c1fd42b431fa81f01c9c4, type: 3}
+--- !u!1 &709909254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 709909258}
+  - component: {fileID: 709909257}
+  - component: {fileID: 709909256}
+  - component: {fileID: 709909255}
+  m_Layer: 0
+  m_Name: LowGroanTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &709909255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709909254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c442bac0f1451f944aa5c85bcd64faea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fmodEvent:
+    Guid:
+      Data1: 275087409
+      Data2: 1113980151
+      Data3: 1280981390
+      Data4: -1412069935
+    Path: event:/Environment/Distant Low Groan
+  fmodEventPath: 
+  triggerTag: Player
+  playOnce: 1
+  attachToGameObject: 1
+  hasBeenTriggered: 0
+--- !u!65 &709909256
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709909254}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 45.273438, y: 37.158054, z: 189.52344}
+  m_Center: {x: 111.37668, y: -7.7296734, z: -8.871}
+--- !u!33 &709909257
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709909254}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &709909258
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 709909254}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.39214817, z: -0, w: 0.9199021}
+  m_LocalPosition: {x: -162.1, y: -0.9429884, z: -9.799999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1542339429}
+  m_LocalEulerAnglesHint: {x: 0, y: 46.176, z: 0}
 --- !u!1001 &712757155
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5671,7 +5836,7 @@ MonoBehaviour:
     invertFade: 0
     distanceFadeStart: 10
     distanceFadeEnd: 100
-    textureOffset: {x: 0, y: 0, z: 0}
+    textureOffset: {x: -0, y: -0, z: -0}
     falloffMode: 1
     maskMode: 1
     materialMask: {fileID: 2100000, guid: 52c3536abd1f4904aad22e08127885d5, type: 2}
@@ -10273,6 +10438,7 @@ Transform:
   - {fileID: 932005515}
   - {fileID: 782847618}
   - {fileID: 1742265148}
+  - {fileID: 709909258}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547130156
@@ -12432,7 +12598,7 @@ MonoBehaviour:
   waterSurfaceLayer:
     serializedVersion: 2
     m_Bits: 256
-  raycastDistance: 3
+  raycastDistance: 7
   underwaterAmbienceEvent:
     Guid:
       Data1: 1526208366
@@ -13377,3 +13543,4 @@ SceneRoots:
   - {fileID: 1910551307}
   - {fileID: 1340453222}
   - {fileID: 2088675547}
+  - {fileID: 388628297}
