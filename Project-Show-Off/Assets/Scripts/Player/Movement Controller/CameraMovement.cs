@@ -4,7 +4,7 @@ public class CameraMovement : MonoBehaviour
 {
     [Header("Camera Settings")]
     [SerializeField, Range(0, 90)] private int verticalLookClamp = 45;
-    [SerializeField, Range(0f, 1f)] private float mouseSensitivity = 0.5f;
+    [SerializeField, Range(0f, 1f)] public float mouseSensitivity = 0.5f;
     [SerializeField, Range(1f, 20f)] private float lookLerpSpeed = 10f;
 
     private float targetYaw;
