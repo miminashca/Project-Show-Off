@@ -1444,7 +1444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3196,7 +3196,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -12.2
+      value: -3.24
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3204,7 +3204,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -43.9
+      value: 73.33
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3858,7 +3858,7 @@ Transform:
   m_GameObject: {fileID: 791540711}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 10.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4002,7 +4002,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!182 &846973641
 WindZone:
   m_ObjectHideFlags: 0
@@ -7774,7 +7774,7 @@ Transform:
   m_GameObject: {fileID: 1600005681}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.44, y: 12.08, z: -15.12}
+  m_LocalPosition: {x: -4.55, y: 10.31, z: 63.33}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7960,6 +7960,11 @@ MonoBehaviour:
   AimTime: 2
   ReloadTime: 3
   InvestigationDuration: 8
+  SuperpositionAttemptCooldown: 10
+  PlayerVisibilityPointOffsetStanding: {x: 0, y: 1.6, z: 0}
+  PlayerVisibilityPointOffsetCrouching: {x: 0, y: 0.9, z: 0}
+  PlayerAimPointOffsetStanding: {x: 0, y: 1, z: 0}
+  PlayerAimPointOffsetCrouching: {x: 0, y: 0.7, z: 0}
   PlayerTransform: {fileID: 1475139043}
   GunMuzzleTransform: {fileID: 8803398155432235945}
   EyeLevelTransform: {fileID: 1405518665}
@@ -8011,7 +8016,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1654926803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10502,6 +10507,6 @@ SceneRoots:
   - {fileID: 1542339429}
   - {fileID: 932005515}
   - {fileID: 782847618}
-  - {fileID: 791540713}
   - {fileID: 1600005685}
   - {fileID: 1037251153}
+  - {fileID: 791540713}

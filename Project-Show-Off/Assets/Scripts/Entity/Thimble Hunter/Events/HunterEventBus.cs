@@ -10,6 +10,7 @@ public static class HunterEventBus
 
     public static void HunterHeardPlayer(Vector3 position) => OnHunterHeardPlayer?.Invoke(position);
     public static void HunterSpottedPlayer(GameObject player) => OnHunterSpottedPlayer?.Invoke(player);
-    public static void HunterFiredShot() => OnHunterFiredShot?.Invoke();
     public static void HunterStartedAiming() => OnHunterStartedAiming?.Invoke();
+    public static void HunterFiredShot() => OnHunterFiredShot?.Invoke();
+
 }

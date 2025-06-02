@@ -1735,7 +1735,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2330,7 +2330,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -2563,7 +2563,7 @@ MonoBehaviour:
   BulletImpactPlayerPrefab: {fileID: 0}
   BulletImpactObstaclePrefab: {fileID: 0}
   BulletImpactWaterPrefab: {fileID: 0}
-  GunshotSound: {fileID: 0}
+  GunshotSound: {fileID: 8300000, guid: 91052395ba93b2845a3a76d4cd163d82, type: 3}
   ReloadSound: {fileID: 0}
   SpottedPlayerSound: {fileID: 0}
   HeardNoiseSound: {fileID: 0}
@@ -4418,6 +4418,10 @@ PrefabInstance:
       value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternPrefab
+      value: 
+      objectReference: {fileID: 4081064393684931713, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: raisedIntensity
       value: 30
       objectReference: {fileID: 0}
@@ -5667,7 +5671,7 @@ MonoBehaviour:
     invertFade: 0
     distanceFadeStart: 10
     distanceFadeEnd: 100
-    textureOffset: {x: -0, y: -0, z: -0}
+    textureOffset: {x: 0, y: 0, z: 0}
     falloffMode: 1
     maskMode: 1
     materialMask: {fileID: 2100000, guid: 52c3536abd1f4904aad22e08127885d5, type: 2}
