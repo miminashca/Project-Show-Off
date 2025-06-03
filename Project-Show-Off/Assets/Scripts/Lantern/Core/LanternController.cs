@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.InputSystem;
 // NEW CHANGE
 using FMODUnity;
+using FMOD.Studio; // Added for EventInstance
 // END CHANGE
 
 public class LanternController : MonoBehaviour
@@ -13,8 +14,8 @@ public class LanternController : MonoBehaviour
 
     private GameObject currentLanternInstance;
     private PhysicsLanternSway currentPhysicsSwayScript;
-    private Light lanternLight;
-    private LightFlicker lightFlicker;
+    private Light lanternLight; // Assuming this is assigned from LanternParts
+    private LightFlicker lightFlicker; // Assuming this is assigned from LanternParts
 
     [Header("State")]
     public bool isEquipped = false;
@@ -53,6 +54,10 @@ public class LanternController : MonoBehaviour
     private EventReference lanternPullOutSoundEvent;
     [SerializeField]
     private EventReference lanternPutAwaySoundEvent;
+    [SerializeField]
+    private EventReference lanternGasBurnLoopEvent; // Event for the looping gas burn sound
+
+    private EventInstance gasBurnSoundInstance; // Instance for the looping sound
     // END CHANGE
 
     private void Awake()
@@ -109,11 +114,22 @@ public class LanternController : MonoBehaviour
             playerInputActions.Player.Disable();
         }
 
+        // NEW CHANGE
+        StopGasBurnLoop();
+        // END CHANGE
+
         if (isEquipped)
         {
             ToggleEquip();
         }
     }
+
+    // NEW CHANGE
+    private void OnDestroy()
+    {
+        StopGasBurnLoop();
+    }
+    // END CHANGE
 
     void HandleInput()
     {
@@ -136,7 +152,7 @@ public class LanternController : MonoBehaviour
                 StopRaising();
             }
         }
-        else if (isRaised && playerInputActions.Player.RaiseLantern.WasReleasedThisFrame()) // Allow lowering even if out of fuel
+        else if (isRaised && playerInputActions.Player.RaiseLantern.WasReleasedThisFrame())
         {
             StopRaising();
         }
@@ -163,42 +179,44 @@ public class LanternController : MonoBehaviour
                     return;
                 }
 
+                // Ensure lanternLight and lightFlicker are assigned here from 'parts'
+                // For example:
+                // lanternLight = parts.lanternLightComponent; // If you have a public field on LanternParts
+                // lightFlicker = parts.lightFlickerComponent;
+
                 currentPhysicsSwayScript = parts.swayScript;
-// lanternLight and lightFlicker assignments remain the same
 
                 if (currentPhysicsSwayScript != null)
                 {
                     Camera mainCam = Camera.main;
                     if (mainCam == null) Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
                     if (parts.handleRigidbody == null) Debug.LogError("LanternParts on prefab has no Handle Rigidbody assigned.", parts);
-                    // if (parts.swingingLanternBodyRB == null) Debug.LogWarning("LanternParts on prefab has no Swinging Lantern Body Rigidbody assigned.", parts); // Less critical
 
-                    // Call the new InitializeSway method
                     currentPhysicsSwayScript.InitializeSway(
                         this.playerInputActions,
-                        mainCam != null ? mainCam.transform : null, // Pass camera transform
-                        lanternHandAnchor,                          // Pass hold target
-                        parts.handleRigidbody,                      // Pass handle Rigidbody
-                        parts.swingingLanternBodyRB                 // Pass swinging body Rigidbody
+                        mainCam != null ? mainCam.transform : null,
+                        lanternHandAnchor,
+                        parts.handleRigidbody,
+                        parts.swingingLanternBodyRB
                     );
-
-                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero); // Ensure it starts at default local offset
-                    // ResetSway is called by InitializeSway implicitly by setting positions,
-                    // or you can call it explicitly if you need its specific logic again AFTER SetTargetLocalOffsetImmediate.
-                    // currentPhysicsSwayScript.ResetSway(true); // This might be redundant if InitializeSway + SetTargetLocalOffsetImmediate covers it
+                    currentPhysicsSwayScript.SetTargetLocalOffsetImmediate(Vector3.zero);
                 }
                 else Debug.LogError("No PhysicsLanternSway script found on lantern prefab!");
 
-                if (lanternLight == null) Debug.LogError("LanternParts on prefab has no Light component assigned!", parts);
+                // Attempt to find Light and LightFlicker if not directly assigned from parts
+                if (lanternLight == null) lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
+                if (lightFlicker == null && lanternLight != null) lightFlicker = lanternLight.GetComponent<LightFlicker>();
+
+                if (lanternLight == null) Debug.LogError("LanternController: Could not find a Light component on the lantern prefab or its children!", currentLanternInstance);
+
             }
 
             currentLanternInstance.SetActive(true);
-            isRaised = false; // Ensure it's not marked as raised
+            isRaised = false;
             outOfFuel = (currentFuel <= 0);
 
             if (currentPhysicsSwayScript != null)
             {
-                // Ensure sway script aims for default position if re-equipping
                 currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
             }
 
@@ -207,31 +225,33 @@ public class LanternController : MonoBehaviour
             Debug.Log("Lantern Equipped");
 
             // NEW CHANGE
-            // Play Lantern Pullout sound when equipped
-            if (lanternPullOutSoundEvent.Guid != System.Guid.Empty) // Changed IsValid() to Guid check
+            if (lanternPullOutSoundEvent.Guid != System.Guid.Empty)
             {
                 RuntimeManager.PlayOneShot(lanternPullOutSoundEvent, transform.position);
+            }
+            if (!outOfFuel)
+            {
+                StartGasBurnLoop();
             }
             // END CHANGE
         }
         else // Unequipping
         {
-            if (isRaised) StopRaising(); // Lower it first if it was raised
+            if (isRaised) StopRaising();
 
             if (lanternLight != null) SetLightState(false);
             if (currentLanternInstance != null)
             {
-                // No need to manage localPosition directly here
                 currentLanternInstance.SetActive(false);
             }
             Debug.Log("Lantern Unequipped");
 
             // NEW CHANGE
-            // Play Lantern Putaway sound when unequipped
-            if (lanternPutAwaySoundEvent.Guid != System.Guid.Empty) // Changed IsValid() to Guid check
+            if (lanternPutAwaySoundEvent.Guid != System.Guid.Empty)
             {
                 RuntimeManager.PlayOneShot(lanternPutAwaySoundEvent, transform.position);
             }
+            StopGasBurnLoop();
             // END CHANGE
         }
     }
@@ -239,7 +259,6 @@ public class LanternController : MonoBehaviour
     void StartRaising()
     {
         if (!isEquipped || isRaised || outOfFuel) return;
-        //if (!isEquipped || isRaised || outOfFuel || lanternLight == null) return;
 
         isRaised = true;
         SetLightState(true, raisedIntensity, raisedRange);
@@ -256,9 +275,9 @@ public class LanternController : MonoBehaviour
 
     void StopRaising()
     {
-        if (!isRaised && !(isEquipped && outOfFuel)) return; // Only proceed if it was raised or if it's being forced down due to fuel
+        if (!isRaised && !(isEquipped && outOfFuel)) return;
 
-        bool wasActuallyRaised = isRaised; // Store if it was in the "raised" state for light logic
+        bool wasActuallyRaised = isRaised;
         isRaised = false;
 
         if (lanternLight != null)
@@ -297,9 +316,13 @@ public class LanternController : MonoBehaviour
         outOfFuel = true;
         if (lanternLight != null) SetLightState(false);
 
-        if (isRaised) // If it was raised, force it to lower
+        // NEW CHANGE
+        StopGasBurnLoop();
+        // END CHANGE
+
+        if (isRaised)
         {
-            StopRaising(); // This will also set targetLocalOffset to zero
+            StopRaising();
         }
     }
 
@@ -309,23 +332,17 @@ public class LanternController : MonoBehaviour
         currentFuel = maxFuel;
         outOfFuel = false;
 
-        if (isEquipped && lanternLight != null)
+        if (isEquipped)
         {
-            // If it was raised, it will remain visually raised unless StopRaising is called.
-            // If you want it to reset to lowered position on refill:
-            // if (isRaised)
-            // {
-            //     StopRaising(); // Uncomment to lower on refill
-            // }
-            // else // If not raised, ensure light is at default values
-            // {
-            SetLightState(true, defaultIntensity, defaultRange);
-            // }
+            SetLightState(true, isRaised ? raisedIntensity : defaultIntensity, isRaised ? raisedRange : defaultRange);
 
-            if (currentPhysicsSwayScript != null && !isRaised) // If not raised, ensure it's at default offset
+            if (currentPhysicsSwayScript != null && !isRaised)
             {
                 currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
             }
+            // NEW CHANGE
+            StartGasBurnLoop();
+            // END CHANGE
         }
     }
 
@@ -374,11 +391,38 @@ public class LanternController : MonoBehaviour
         interactionCoroutine = null;
     }
 
+    // NEW CHANGE
+    private void StartGasBurnLoop()
+    {
+        if (isEquipped && !outOfFuel && !lanternGasBurnLoopEvent.IsNull && !gasBurnSoundInstance.isValid())
+        {
+            gasBurnSoundInstance = RuntimeManager.CreateInstance(lanternGasBurnLoopEvent);
+            if (currentLanternInstance != null)
+            {
+                //RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance.transform); // Obsolete
+                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance); // Corrected line
+                gasBurnSoundInstance.start();
+            }
+            else
+            {
+                Debug.LogError("FMOD: Tried to start gas burn loop, but currentLanternInstance is null while isEquipped is true.");
+            }
+        }
+    }
+
+    private void StopGasBurnLoop()
+    {
+        if (gasBurnSoundInstance.isValid())
+        {
+            gasBurnSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            gasBurnSoundInstance.release();
+        }
+    }
+    // END CHANGE
+
+
     void OnDrawGizmosSelected()
     {
-        // Gizmos should be drawn from lanternHandAnchor or player's actual position
-        // depending on what the radii are relative to.
-        // If radii are relative to player:
         Vector3 interactionCenter = lanternHandAnchor != null ? lanternHandAnchor.position : transform.position;
 
         if (isRaised)
@@ -393,9 +437,6 @@ public class LanternController : MonoBehaviour
             Gizmos.color = Color.gray;
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
             Gizmos.DrawWireSphere(interactionCenter, nixieAttractRadius);
-            // NEW CHANGE - Removed extraneous line
-            // ServiceManager.Service<Game>().
-            // END CHANGE
         }
     }
 }
