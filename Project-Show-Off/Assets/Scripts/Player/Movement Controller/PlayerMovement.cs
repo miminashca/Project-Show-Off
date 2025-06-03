@@ -19,39 +19,44 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
 
-    // --- NEW: Footstep Settings (Simple) ---
     [Header("Footstep Settings (Simple)")]
-    [SerializeField] private PlayerFootsteps playerFootsteps; // Assign your PlayerFootsteps script here in the Inspector
-    [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f; // Minimum horizontal speed to trigger footsteps
-    [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f; // Time in seconds between footsteps when walking normally (e.g., 0.5 for 2 steps/sec)
-    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f; // Multiplier for interval when sprinting (e.7 makes steps 30% faster)
-    [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f; // Multiplier for interval when crouching (e.g., 1.5 makes steps 50% slower)
-    // --- END NEW ---
+    [SerializeField] private PlayerFootsteps playerFootsteps;
+    [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f;
+    [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f;
+    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f;
+    [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f;
+
+    [Header("Stamina Settings")]
+    [SerializeField, Range(1f, 200f)] private float maxStamina = 100f;
+    [SerializeField, Range(0.1f, 50f)] private float staminaDrainRate = 15f;
+    [SerializeField, Range(0.1f, 50f)] private float staminaRegenRate = 10f;
+    [SerializeField, Range(0f, 5f)] private float staminaRegenDelay = 2f;
+    [SerializeField, Range(0f, 50f)] private float minStaminaToSprint = 5f;
 
     //const
     private float gravity = -9.81f;
     private float groundCheckDistance = 0.4f;
-    private float headCheckDistance = 0.4f;
+    private float headCheckDistance; // Initialized in Awake based on heights
 
     //intermediate
     [NonSerialized] public bool isMoving = false;
     [NonSerialized] public bool isCrouching = false;
     [NonSerialized] public bool isSprinting = false;
     [NonSerialized] public bool isGrounded = true;
-    private Vector2 move;
     private Vector3 velocity;
     private float finalSpeed;
     private Vector3 currentDirection = Vector3.zero;
-    Vector3 lastPos;
+    private Vector3 lastPosForSignedSpeed; // Renamed for clarity vs previousFramePosition
     private Vector2 rawInput;
-    private Vector3 inputDirection;
     private float targetSpeed;
-    private float signedSpeed;
+    private float signedSpeedFromController; // Renamed for clarity
     [NonSerialized] public float speedModifier = 1;
 
-    // --- NEW: Footstep Timer Variable ---
-    private float timeToNextFootstep; // Counts down to 0 to trigger a step
-    // --- END NEW ---
+    private float timeToNextFootstep;
+
+    private float currentStamina;
+    private float timeSinceStoppedSprinting = 0f;
+    private Vector3 previousFramePosition;
 
     //references
     private CharacterController controller;
@@ -60,18 +65,24 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        //Debug.Log("PlayerMovement Awake: Initializing.");
-        lastPos = transform.position;
-        headCheckDistance = standingHeight - crouchHeight;
+        lastPosForSignedSpeed = transform.position;
+        previousFramePosition = transform.position;
+
+        // Calculate headCheckDistance based on configured heights
+        headCheckDistance = (standingHeight - crouchHeight) * 0.9f; // A bit less to avoid issues
+        if (headCheckDistance < 0.01f) headCheckDistance = 0.01f; // Ensure it's a small positive value
+
+
         finalSpeed = moveSpeed;
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>().transform;
         controller.height = standingHeight;
-        playerCamera.position = new Vector3(playerCamera.transform.position.x, standingHeight, playerCamera.transform.position.z);
+        Vector3 camLocalPos = playerCamera.localPosition;
+        camLocalPos.y = standingHeight;
+        playerCamera.localPosition = camLocalPos;
 
-        // --- NEW: Initialize footstep timer to allow first step quickly ---
         timeToNextFootstep = 0f;
-        // --- END NEW ---
+        currentStamina = maxStamina;
     }
     private void OnEnable()
     {
@@ -82,34 +93,81 @@ public class PlayerMovement : MonoBehaviour
     {
         controls.Disable();
     }
+
     private void Update()
     {
-        Crouch();
-        Gravity();
-        Move(); // This method calculates movement and updates velocity
+        ReadInput();
 
-        // --- NEW: Call the footstep handling logic ---
+        Crouch();
+        
+        HandleStamina();
+        // Debug.Log($"isSprinting after HandleStamina: {isSprinting}, Stamina: {currentStamina}");
+
+        Gravity();
+        Move();
         HandleSimpleFootsteps();
-        // --- END NEW ---
+
+        previousFramePosition = transform.position;
+    }
+
+    private void HandleStamina()
+    {
+        bool sprintInputActive = controls.Player.Sprint.inProgress;
+        bool canPotentiallySprint = sprintInputActive && isMoving && !isCrouching;
+
+         Debug.Log($"HandleStamina - Input: {sprintInputActive}, isMoving: {isMoving}, !isCrouching: {!isCrouching}, CanPotentiallySprint: {canPotentiallySprint}");
+
+        if (isSprinting)
+        {
+            if (canPotentiallySprint && currentStamina > 0)
+            {
+                currentStamina -= staminaDrainRate * Time.deltaTime;
+                currentStamina = Mathf.Max(0, currentStamina);
+                timeSinceStoppedSprinting = 0f;
+            }
+            else
+            {
+                isSprinting = false;
+                // Debug.Log("Stopping sprint: conditions no longer met or stamina depleted.");
+            }
+        }
+        else // Not currently sprinting
+        {
+            if (canPotentiallySprint && currentStamina > minStaminaToSprint)
+            {
+                isSprinting = true;
+                // Debug.Log("Starting sprint.");
+                currentStamina -= staminaDrainRate * Time.deltaTime; // Initial drain for this frame
+                currentStamina = Mathf.Max(0, currentStamina);
+                timeSinceStoppedSprinting = 0f;
+            }
+        }
+
+        if (!isSprinting && currentStamina < maxStamina)
+        {
+            timeSinceStoppedSprinting += Time.deltaTime;
+            if (timeSinceStoppedSprinting >= staminaRegenDelay)
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+                currentStamina = Mathf.Min(currentStamina, maxStamina);
+            }
+        }
     }
 
     private void Move()
     {
-        ReadInput();
         UpdateDirection();
-        CalculateTargetSpeed();
+        CalculateTargetSpeed(); // Uses 'isSprinting' state set by HandleStamina
         SmoothSpeedTransition();
         ApplyMovement();
     }
 
-    // Read the raw Vector2 input and derive movement state
     private void ReadInput()
     {
         rawInput = controls.Player.Move.ReadValue<Vector2>();
         isMoving = rawInput.magnitude > 0.01f;
     }
 
-    // Compute the desired direction vector (normalized)
     private void UpdateDirection()
     {
         Vector3 forwardComponent = rawInput.y * transform.forward;
@@ -121,59 +179,54 @@ public class PlayerMovement : MonoBehaviour
         currentDirection = Vector3.Lerp(currentDirection, targetDir, Time.deltaTime * lerpSpeed);
     }
 
-    // Determine what the target speed should be
+    // --- MODIFIED CalculateTargetSpeed ---
     private void CalculateTargetSpeed()
     {
-        // IMPORTANT CHANGE HERE:
-        // Assume not sprinting at the start of each calculation,
-        // and only set to true if sprinting conditions are met.
-        isSprinting = false;
+        // 'isSprinting' is now definitively set by HandleStamina()
+        // 'isCrouching' is determined by Crouch()
+        // 'isMoving' is determined by ReadInput()
 
-        // Base walk/crouch speed
-        targetSpeed = isCrouching ? crouchSpeed : moveSpeed;
-        signedSpeed = GetSignedMovementSpeed();
+        if (isSprinting)
+        {
+            // If HandleStamina says we are sprinting, we apply sprint speed.
+            // HandleStamina already verified forward movement and stamina.
+            targetSpeed = moveSpeed + sprintSpeedIncrement;
+        }
+        else // Not sprinting
+        {
+            signedSpeedFromController = GetSignedMovementSpeedFromController(); // Calculate for backward check etc.
 
-        // Prioritize sprint condition
-        if (ShouldStartSprinting())
-        {
-            targetSpeed += sprintSpeedIncrement;
-            isSprinting = true; // Set to true only if currently sprinting
+            if (isCrouching)
+            {
+                targetSpeed = crouchSpeed;
+            }
+            else if (isMoving)
+            {
+                if (signedSpeedFromController < -0.05f) // Moving backward (threshold can be adjusted)
+                {
+                    targetSpeed = moveSpeed * 0.5f; // Penalty for backward movement
+                }
+                else // Moving forward or sideways (walking)
+                {
+                    targetSpeed = moveSpeed;
+                }
+            }
+            else // Not moving
+            {
+                targetSpeed = 0f;
+            }
         }
-        // Handle backward movement (no sprinting when moving backward)
-        else if (signedSpeed < -0.1f)
-        {
-            targetSpeed *= 0.5f;
-            // isSprinting remains false
-        }
-        // Handle no movement (no speed, no sprinting)
-        else if (!isMoving)
-        {
-            targetSpeed = 0f;
-            // isSprinting remains false
-        }
-        // If none of the above, it's normal forward walking or crouching,
-        // and isSprinting correctly remains false.
 
         targetSpeed *= speedModifier;
-        //Debug.Log(targetSpeed);
+        // Debug.Log($"CalculateTargetSpeed - isSprinting: {isSprinting}, TargetSpeed: {targetSpeed}, SignedSpeedCtrl: {signedSpeedFromController}");
     }
+    // --- END MODIFIED CalculateTargetSpeed ---
 
-    // Helper to decide sprint conditions
-    private bool ShouldStartSprinting()
-    {
-        return controls.Player.Sprint.inProgress // Check if the sprint action is active
-            && isMoving
-            && !isCrouching
-            && signedSpeed > 0.1f; // Ensure moving forward
-    }
-
-    // Smoothly lerp from current speed to targetSpeed
     private void SmoothSpeedTransition()
     {
         finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveLerpSpeed);
     }
 
-    // Finally apply movement to the character controller
     private void ApplyMovement()
     {
         Vector3 displacement = finalSpeed * Time.deltaTime * currentDirection;
@@ -193,112 +246,105 @@ public class PlayerMovement : MonoBehaviour
     }
     private bool CheckHeadBump()
     {
-        Vector3 checkPoint = transform.position;
-        checkPoint.y += controller.height;
+        // Start ray from slightly inside the current top of the controller to avoid self-collision
+        Vector3 rayStart = transform.position + controller.center + Vector3.up * (controller.height * 0.5f - controller.radius * 0.5f) ;
 
-        int playerLayerMask = 1 << LayerMask.NameToLayer("Player");
-        int maskExcludingPlayer = ~playerLayerMask;
+        // Distance to check upwards is the difference to standing height
+        float checkDist = standingHeight - controller.height;
+        if (checkDist <= controller.skinWidth + 0.01f) return false; // Already standing or very close, or checkDist is too small
 
-        Vector3 dir = checkPoint;
-        dir.y += headCheckDistance;
-        dir -= checkPoint;
-
-        Ray ray = new Ray(checkPoint, dir);
-
-        return Physics.Raycast(ray, headCheckDistance, maskExcludingPlayer, QueryTriggerInteraction.Ignore);
+        // Raycast upwards
+        // Debug.DrawRay(rayStart, Vector3.up * checkDist, Color.red, 2f);
+        return Physics.SphereCast(rayStart, controller.radius * 0.9f, Vector3.up, out RaycastHit hit, checkDist, groundMask, QueryTriggerInteraction.Ignore);
     }
     private void Crouch()
     {
         if (controls.Player.Crouch.triggered)
         {
-            if (isCrouching && CheckHeadBump()) return; //dont uncrouch if head bumps
-
+            if (isCrouching && CheckHeadBump())
+            {
+                // Debug.Log("Head bump detected, cannot stand.");
+                return;
+            }
             isCrouching = !isCrouching;
-            controller.height = isCrouching ? crouchHeight : standingHeight;
-            Vector3 controllerCenter = controller.center;
-            controllerCenter.y = controller.height * 0.5f;
-            controller.center = controllerCenter;
+            if (isCrouching) isSprinting = false; // Cannot sprint while crouching, ensure isSprinting is false if we start crouching
         }
-        SmoothCameraHeight();
+
+        float targetHeightCurrent = isCrouching ? crouchHeight : standingHeight;
+        controller.height = Mathf.Lerp(controller.height, targetHeightCurrent, Time.deltaTime * crouchLerpSpeed);
+
+        Vector3 controllerCenter = controller.center;
+        controllerCenter.y = controller.height * 0.5f;
+        controller.center = controllerCenter;
+
+        SmoothCameraHeight(targetHeightCurrent);
     }
-    private void SmoothCameraHeight()
+
+    private void SmoothCameraHeight(float targetPlayerHeight)
     {
         Vector3 camPos = playerCamera.transform.localPosition;
-        camPos.y = Mathf.Lerp(camPos.y, isCrouching ? crouchHeight : standingHeight, Time.deltaTime * crouchLerpSpeed);
+        float targetCamY = targetPlayerHeight; // Adjust if camera pivot is different
+        
+        camPos.y = Mathf.Lerp(camPos.y, targetCamY, Time.deltaTime * crouchLerpSpeed);
         playerCamera.transform.localPosition = camPos;
     }
 
-    public float GetMovementSpeed()
+    public float GetHorizontalMovementSpeed() // Renamed for clarity
     {
-        Vector3 v = controller.velocity;
-        v.y = 0f; // Ignore vertical speed for footsteps
-        //Debug.Log(v.magnitude);
-        return v.magnitude;
+        Vector3 horizontalVelocity = controller.velocity;
+        horizontalVelocity.y = 0f;
+        return horizontalVelocity.magnitude;
     }
 
-    public float GetSignedMovementSpeed()
+    public float GetSignedMovementSpeedFromController() // Renamed for clarity
     {
-        Vector3 delta = transform.position - lastPos;
-        float signedSpeed = Vector3.Dot(delta / Time.deltaTime, transform.forward);
-        lastPos = transform.position;
-        return signedSpeed;
+        if (Time.deltaTime == 0) return 0f;
+        // This measures speed based on displacement since the last call to this specific function
+        Vector3 delta = transform.position - lastPosForSignedSpeed;
+        float speed = Vector3.Dot(delta / Time.deltaTime, transform.forward);
+        lastPosForSignedSpeed = transform.position;
+        return speed;
+    }
+    public float GetMovementSpeed() // This is based on CharacterController.velocity magnitude
+    {
+        Vector3 horizontalVelocity = controller.velocity;
+        horizontalVelocity.y = 0f;
+        return horizontalVelocity.magnitude;
     }
 
-    // --- NEW: Simple Footstep Logic Method (Refined) ---
     private void HandleSimpleFootsteps()
     {
-        if (playerFootsteps == null)
-        {
-            //Debug.LogWarning("PlayerMovement HandleSimpleFootsteps: PlayerFootsteps script NOT assigned! Cannot play footsteps.");
-            return;
-        }
+        if (playerFootsteps == null) return;
 
-        float currentHorizontalSpeed = GetMovementSpeed();
+        float currentHorizontalSpeed = GetHorizontalMovementSpeed();
         bool shouldPlayFootsteps = isGrounded && currentHorizontalSpeed > minMovementSpeedForFootsteps;
 
-        // --- NEW: Determine and set the FMOD MovementState parameter ---
-        float movementStateValue = 0.5f; // Default to walking (0.5)
-        if (isSprinting)
-        {
-            movementStateValue = 1.0f; // Sprinting (1.0)
-        }
-        else if (isCrouching)
-        {
-            movementStateValue = 0.0f; // Crouching (0.0)
-        }
+        float movementStateValue = 0.5f;
+        if (isSprinting) movementStateValue = 1.0f;
+        else if (isCrouching) movementStateValue = 0.0f;
         playerFootsteps.SetMovementState(movementStateValue);
-        // --- END NEW ---
 
         if (shouldPlayFootsteps)
         {
-            // Calculate the desired time interval between footsteps based on current state
             float effectiveFootstepInterval = baseFootstepInterval;
-            if (isSprinting)
-            {
-                effectiveFootstepInterval *= sprintFootstepMultiplier; // Shorter interval (faster steps)
-            }
-            else if (isCrouching)
-            {
-                effectiveFootstepInterval *= crouchFootstepMultiplier; // Longer interval (slower steps)
-            }
+            if (isSprinting) effectiveFootstepInterval *= sprintFootstepMultiplier;
+            else if (isCrouching) effectiveFootstepInterval *= crouchFootstepMultiplier;
 
             timeToNextFootstep -= Time.deltaTime;
 
             if (timeToNextFootstep <= 0f)
             {
-                playerFootsteps.PlayFootstep(); // Trigger the footstep sound
-
+                playerFootsteps.PlayFootstep();
                 timeToNextFootstep += effectiveFootstepInterval;
-                while (timeToNextFootstep <= 0f)
-                {
-                    timeToNextFootstep += effectiveFootstepInterval;
-                }
+                if(timeToNextFootstep < 0) timeToNextFootstep = effectiveFootstepInterval * 0.1f;
             }
         }
-        else // Player is not grounded OR not moving fast enough
+        else
         {
-            timeToNextFootstep = 0f;
+            timeToNextFootstep = baseFootstepInterval * 0.1f;
         }
     }
-    // --- END NEW ---
+
+    public float CurrentStamina => currentStamina;
+    public float MaxStamina => maxStamina;
 }
