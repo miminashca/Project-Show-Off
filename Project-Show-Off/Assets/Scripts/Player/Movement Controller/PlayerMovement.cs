@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("PlayerMovement Awake: Initializing.");
+        //Debug.Log("PlayerMovement Awake: Initializing.");
         lastPos = transform.position;
         headCheckDistance = standingHeight - crouchHeight;
         finalSpeed = moveSpeed;
@@ -155,6 +155,7 @@ public class PlayerMovement : MonoBehaviour
         // and isSprinting correctly remains false.
 
         targetSpeed *= speedModifier;
+        //Debug.Log(targetSpeed);
     }
 
     // Helper to decide sprint conditions

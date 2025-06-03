@@ -11,7 +11,7 @@ public class HemannekenStateMachine : StateMachine
     public PlayerSensor Sensor { get; private set; }
     public AgentMovement Movement { get; private set; }
     public HemannekenVisuals Visuals { get; private set; }
-    public HemannekenInteraction Interactor { get; private set; } // Player interaction (e.g. lantern)
+    public PlayerStateController Interactor { get; private set; } // Player interaction (e.g. lantern)
 
     // Internal state properties, managed by this SM or its components
     public bool IsInitiallyTrueForm { get; set; } // Set by HemannekenManager on spawn
@@ -34,7 +34,7 @@ public class HemannekenStateMachine : StateMachine
         Sensor = GetComponent<PlayerSensor>();
         Movement = GetComponent<AgentMovement>();
         Visuals = GetComponent<HemannekenVisuals>();
-        Interactor = FindFirstObjectByType<HemannekenInteraction>();
+        Interactor = FindFirstObjectByType<PlayerStateController>();
 
         if (Sensor == null) Debug.LogError("PlayerSensor not found!", this);
         else Sensor.Initialize(aiConfig, this.transform);
