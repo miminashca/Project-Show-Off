@@ -97,10 +97,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1477377365761190004}
   serializedVersion: 4
-  m_Mass: 3
-  m_Drag: 0.4
-  m_AngularDrag: 0.5
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_Mass: 7
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: -0.5, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -132,8 +132,8 @@ HingeJoint:
   m_ConnectedAnchor: {x: 0, y: -36.36, z: 0}
   m_UseSpring: 1
   m_Spring:
-    spring: 3
-    damper: 0.1
+    spring: 0
+    damper: 4
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -145,7 +145,7 @@ HingeJoint:
   m_UseAcceleration: 0
   m_Limits:
     min: -70
-    max: 70
+    max: 55.569168
     bounciness: 0
     bounceMinVelocity: 0.2
     contactDistance: 0
@@ -252,10 +252,10 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2068294816428798007}
   serializedVersion: 4
-  m_Mass: 0.5
-  m_Drag: 0.2
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_Mass: 5
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_CenterOfMass: {x: 0, y: -0.5, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -287,8 +287,8 @@ HingeJoint:
   m_ConnectedAnchor: {x: 0, y: 0, z: 0}
   m_UseSpring: 1
   m_Spring:
-    spring: 5
-    damper: 0.2
+    spring: 0
+    damper: 3
     targetPosition: 0
   m_UseMotor: 0
   m_Motor:
@@ -751,11 +751,11 @@ MonoBehaviour:
   swingingLanternBodyRB: {fileID: 406058043998488435}
   targetLocalOffset: {x: 0, y: 0, z: 0}
   localOffsetSmoothTime: 0.3
-  positionSmoothTime: 0.04
+  positionSmoothTime: 0.03
   maxPositionalSway: 0
   lookPositionSwayAmount: 0
   movePositionSwayAmount: 0
-  rotationSmoothTime: 0.1
+  rotationSmoothTime: 0.03
   maxRotationalSway: 0
   lookRotationSwayAmount: 0
   moveRotationSwayAmount: 0
