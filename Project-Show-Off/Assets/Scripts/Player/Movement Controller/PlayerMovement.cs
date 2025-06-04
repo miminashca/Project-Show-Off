@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
         bool sprintInputActive = controls.Player.Sprint.inProgress;
         bool canPotentiallySprint = sprintInputActive && isMoving && !isCrouching;
 
-         Debug.Log($"HandleStamina - Input: {sprintInputActive}, isMoving: {isMoving}, !isCrouching: {!isCrouching}, CanPotentiallySprint: {canPotentiallySprint}");
+        //Debug.Log($"HandleStamina - Input: {sprintInputActive}, isMoving: {isMoving}, !isCrouching: {!isCrouching}, CanPotentiallySprint: {canPotentiallySprint}");
 
         if (isSprinting)
         {

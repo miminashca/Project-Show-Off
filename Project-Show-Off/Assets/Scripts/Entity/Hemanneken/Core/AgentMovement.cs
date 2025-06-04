@@ -107,24 +107,20 @@ public class AgentMovement : MonoBehaviour
         _spManager = spawnPointsManager;
         if (_spManager != null)
         {
-            _spManager.SpawnPointsInitialized += InitMainPatrolPoints;
+            Debug.Log("Found partol points manager for " + gameObject.name + " with " + _spManager.SecondarySpawnPoints.Count + " patrol points.");
             if (_spManager.SecondarySpawnPoints != null && _spManager.SecondarySpawnPoints.Count > 0 && !_patrolPointsInitialized)
             {
-                InitMainPatrolPoints();
+                Debug.Log("Initializing partol points for " + gameObject.name);
+                InitMainPatrolPoints(_spManager.SecondarySpawnPoints);
             }
         }
     }
 
-    private void InitMainPatrolPoints()
+    private void InitMainPatrolPoints(List<SpawnPoint> patrolPoints)
     {
         _mainPatrolPoints.Clear();
-        if (_spManager == null || _spManager.SecondarySpawnPoints == null || _spManager.SecondarySpawnPoints.Count == 0)
-        {
-            _patrolPointsInitialized = false;
-            // Debug.LogWarning(LOG_PREFIX + gameObject.name + ": No secondary spawn points found for patrol routes.");
-            return;
-        }
-        foreach (SpawnPoint p in _spManager.SecondarySpawnPoints)
+       
+        foreach (SpawnPoint p in patrolPoints)
         {
             if (p != null) _mainPatrolPoints.Add(p.transform.position);
         }
@@ -607,11 +603,6 @@ public class AgentMovement : MonoBehaviour
         _currentFullPathPoints.Clear();
         _directTargetPosition = Vector3.zero;
         _singleWaypointPauseTimer = 0f;
-    }
-
-    void OnDestroy()
-    {
-        if (_spManager != null) _spManager.SpawnPointsInitialized -= InitMainPatrolPoints;
     }
 
     void OnDrawGizmosSelected() { 
