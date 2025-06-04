@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerSensor : MonoBehaviour
 {
     public Transform PlayerTransform { get; private set; }
-    public Vector3 PlayerLastKnownPosition { get; private set; }
+    public Vector3 PlayerLastKnownPosition;
     public event Action OnPlayerDetected;
 
     private HemannekenAIConfig _aiConfig;
