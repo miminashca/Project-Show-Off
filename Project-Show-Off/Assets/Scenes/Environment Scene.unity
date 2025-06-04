@@ -439,7 +439,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &24961542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,7 +1052,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &84961012
 GameObject:
   m_ObjectHideFlags: 0
@@ -2374,7 +2386,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &320622975
 GameObject:
   m_ObjectHideFlags: 0
@@ -2571,7 +2589,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &344357118
 GameObject:
   m_ObjectHideFlags: 0
@@ -2625,7 +2649,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &357537927
 GameObject:
   m_ObjectHideFlags: 0
@@ -3257,7 +3287,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &383831733
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3614,11 +3650,11 @@ Transform:
   m_GameObject: {fileID: 388628295}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0.29544526, z: -0, w: 0.9553597}
-  m_LocalPosition: {x: -15.47, y: 11.7, z: -50.8}
+  m_LocalPosition: {x: -239.47, y: -1.7229881, z: -19.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 1542339429}
   m_LocalEulerAnglesHint: {x: 0, y: 34.368, z: 0}
 --- !u!114 &388628298
 MonoBehaviour:
@@ -3638,7 +3674,7 @@ MonoBehaviour:
       Data2: 1193315010
       Data3: 46207932
       Data4: 316630094
-    Path: event:/Enemies/Ambient Scream 1
+    Path: event:/Triggered Ambience/Ambient Scream 1
   fmodEventPath: 
   triggerTag: Player
   playOnce: 1
@@ -3809,7 +3845,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &417816674
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4036,7 +4078,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &476847870
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4740,7 +4788,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &632674202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4794,7 +4848,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &649587247
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5051,12 +5111,32 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternGasBurnLoopEvent.Path
+      value: event:/Player/Lantern Oil Burn Loop
+      objectReference: {fileID: 0}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: lanternPullOutSoundEvent.Path
       value: event:/Player/Lantern Pullout
       objectReference: {fileID: 0}
     - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: lanternPutAwaySoundEvent.Path
       value: event:/Player/Lantern Putaway
+      objectReference: {fileID: 0}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternGasBurnLoopEvent.Guid.Data1
+      value: -1683294699
+      objectReference: {fileID: 0}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternGasBurnLoopEvent.Guid.Data2
+      value: 1116483477
+      objectReference: {fileID: 0}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternGasBurnLoopEvent.Guid.Data3
+      value: -1530707281
+      objectReference: {fileID: 0}
+    - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: lanternGasBurnLoopEvent.Guid.Data4
+      value: -735755451
       objectReference: {fileID: 0}
     - target: {fileID: 818863107724947822, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: lanternPullOutSoundEvent.Guid.Data1
@@ -5140,15 +5220,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 110.24
+      value: 176.19
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.67
+      value: 8.64
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -103.77
+      value: -172.15
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5290,7 +5370,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &694282334
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5494,7 +5580,7 @@ MonoBehaviour:
       Data2: 1113980151
       Data3: 1280981390
       Data4: -1412069935
-    Path: event:/Environment/Distant Low Groan
+    Path: event:/Triggered Ambience/Distant Low Groan
   fmodEventPath: 
   triggerTag: Player
   playOnce: 1
@@ -5519,8 +5605,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 45.273438, y: 37.158054, z: 189.52344}
-  m_Center: {x: 111.37668, y: -7.7296734, z: -8.871}
+  m_Size: {x: 27.842049, y: 37.158054, z: 189.52344}
+  m_Center: {x: 102.66083, y: -7.7296734, z: -8.871179}
 --- !u!33 &709909257
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -6039,7 +6125,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &767372575
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6381,7 +6473,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &826375524
 GameObject:
   m_ObjectHideFlags: 0
@@ -7585,7 +7683,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1014808876
 GameObject:
   m_ObjectHideFlags: 0
@@ -8125,7 +8229,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1111569448
 GameObject:
   m_ObjectHideFlags: 0
@@ -9111,11 +9221,11 @@ PrefabInstance:
       objectReference: {fileID: 686111697}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5064206280045029368, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_Name
@@ -9184,7 +9294,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!4 &1202624578 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4755784065293471028, guid: bb2f1fc40eca99c4c9aba545703d2edf, type: 3}
@@ -9243,7 +9359,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1224173563
 GameObject:
   m_ObjectHideFlags: 0
@@ -10126,7 +10248,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &1423260586
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10777,7 +10905,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1487973822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11262,7 +11390,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1536292897
 GameObject:
   m_ObjectHideFlags: 0
@@ -11367,6 +11501,7 @@ Transform:
   - {fileID: 404892997}
   - {fileID: 1797710065}
   - {fileID: 709909258}
+  - {fileID: 388628297}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547130156
@@ -11757,7 +11892,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1607852106
 GameObject:
   m_ObjectHideFlags: 0
@@ -12061,7 +12202,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1709001289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12551,7 +12692,13 @@ MonoBehaviour:
     Path: event:/Environment/Cicadas
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!4 &1822991510 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6098490813485475400, guid: bb2f1fc40eca99c4c9aba545703d2edf, type: 3}
@@ -13077,7 +13224,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1901280080
 GameObject:
   m_ObjectHideFlags: 0
@@ -13552,7 +13705,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &1951653474 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7650862299324327497, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
@@ -13696,7 +13855,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &2021129317
 GameObject:
   m_ObjectHideFlags: 0
@@ -13750,7 +13915,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1 &2025990521
 GameObject:
   m_ObjectHideFlags: 0
@@ -14340,7 +14511,13 @@ MonoBehaviour:
     Path: event:/Environment/Crickets 3D
   minDelay: 5
   maxDelay: 8
-  quietZoneDistance: 10
+  quietZoneDistancePlayer: 40
+  hunterLayer:
+    serializedVersion: 2
+    m_Bits: 524288
+  hunterDetectionRadius: 50
+  quietZoneDistanceHunter: 30
+  hunterScanInterval: 2
 --- !u!1001 &3312680453762632514
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14569,5 +14746,4 @@ SceneRoots:
   - {fileID: 268289075}
   - {fileID: 1129805817}
   - {fileID: 1043417844}
-  - {fileID: 388628297}
   - {fileID: 1475042968}
