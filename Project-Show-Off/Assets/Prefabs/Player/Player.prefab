@@ -438,6 +438,8 @@ GameObject:
   - component: {fileID: 6220929352804563842}
   - component: {fileID: 3993550361658757861}
   - component: {fileID: 7028059540663029170}
+  - component: {fileID: 2451448375663383542}
+  - component: {fileID: 8721460337746503042}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -665,3 +667,28 @@ MonoBehaviour:
       Data3: 109357979
       Data4: 1375971050
     Path: event:/Player/Footsteps
+--- !u!114 &2451448375663383542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c162ba45d7fdc4ea04440b5aa6b4c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CurrentHealth: 100
+--- !u!114 &8721460337746503042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5169d44cfec22c9499e676be054b9abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
