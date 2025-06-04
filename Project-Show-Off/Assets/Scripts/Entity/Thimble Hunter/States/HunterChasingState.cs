@@ -41,15 +41,19 @@ public class HunterChasingState : State
         _hunterAI.LastKnownPlayerPosition = _hunterAI.PlayerTransform.position;
 
 
-        if (Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.MeleeRange)
+        float distanceToPlayer = Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position);
+        Debug.Log($"CHASING: Dist to player: {distanceToPlayer}, MeleeRange: {_hunterAI.MeleeRange}");
+
+        if (distanceToPlayer <= _hunterAI.MeleeRange)
         {
-            // Optional: Check if player is facing hunter or other conditions for melee
-            Debug.Log($"{_hunterAI.gameObject.name} Player in melee range. Transitioning to CloseKill.");
+            Debug.LogWarning($"{_hunterAI.gameObject.name} Player IN MELEE RANGE. Transitioning to CloseKill."); // Make this stand out
             SM.TransitToState(_hunterSM.CloseKillingState);
             return;
         }
 
-        if (_hunterAI.IsPlayerVisible && Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
+        if (_hunterAI.AimAttemptCooldownTimer <= 0f &&
+            _hunterAI.IsPlayerVisible &&
+            Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
         {
             SM.TransitToState(_hunterSM.AimingState);
             return;
