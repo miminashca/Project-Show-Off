@@ -65,6 +65,7 @@ public class HunterAI : MonoBehaviour
     public bool IsPlayerVisible { get; private set; }
     public bool CanHearPlayerAlert { get; private set; }
     public float CurrentInvestigationTimer { get; set; }
+    public float AimAttemptCooldownTimer { get; private set; }
     public float CurrentAimTimer { get; set; }
     public float CurrentReloadTimer { get; set; }
     public float CurrentSuperpositionCooldownTimer { get; set; }
@@ -127,12 +128,22 @@ public class HunterAI : MonoBehaviour
             CurrentSuperpositionCooldownTimer -= Time.deltaTime;
         }
 
+        if (AimAttemptCooldownTimer > 0)
+        {
+            AimAttemptCooldownTimer -= Time.deltaTime;
+        }
+
         if (PlayerTransform == null)
         {
             IsPlayerVisible = false;
             return;
         }
         ProcessSensors();
+    }
+
+    public void TriggerAimAttemptCooldown(float duration)
+    {
+        AimAttemptCooldownTimer = duration;
     }
 
     public Vector3 GetPlayerVisibilityCheckPoint()
@@ -324,41 +335,69 @@ public class HunterAI : MonoBehaviour
 
     public bool IsPathToPlayerClearForShot(Vector3 aimPoint)
     {
-        if (PlayerTransform == null) return false;
-
-        // 1. Check if the intended aimPoint itself is submerged
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimPoint, WaterSurfaceYLevel))
+        if (PlayerTransform == null)
         {
-            Debug.Log($"{gameObject.name}: Aim point for shot ({aimPoint}) is submerged. Path NOT clear.");
+            Debug.LogWarning($"{gameObject.name}: IsPathClear - PlayerTransform is null.");
             return false;
         }
 
-        if (GunMuzzleTransform == null) return false;
+        // 1. Check if the intended aimPoint itself is submerged (this logic seems fine)
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimPoint, WaterSurfaceYLevel))
+        {
+            Debug.LogWarning($"{gameObject.name}: IsPathClear - Aim point ({aimPoint}) is SUBMERGED. Path NOT clear.");
+            return false;
+        }
+
+        if (GunMuzzleTransform == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: IsPathClear - GunMuzzleTransform is null.");
+            return false;
+        }
 
         Vector3 directionToAimPoint = (aimPoint - GunMuzzleTransform.position).normalized;
         float distanceToAimPoint = Vector3.Distance(GunMuzzleTransform.position, aimPoint);
 
-        // Prevent issues with zero distance/direction
-        if (distanceToAimPoint < 0.01f) return true; // Effectively at the target, assume clear
-
-        int hunterLayer = LayerMask.NameToLayer("Hunter");
-        LayerMask ignoreHunterMask = ~(1 << hunterLayer);
-        RaycastHit hit;
-
-        // 2. Raycast *just short* of the aimPoint to see if anything obstructs the path
-        // We use 0.99f * distance to ensure we don't hit the player target itself with this check
-        if (Physics.Raycast(GunMuzzleTransform.position, directionToAimPoint, out hit, distanceToAimPoint * 0.99f, ignoreHunterMask, QueryTriggerInteraction.Ignore))
+        // Prevent issues with zero distance/direction or aiming at self
+        if (distanceToAimPoint < 0.1f)
         {
-            // If this raycast hits something, it's an obstacle before reaching the player.
-            Debug.Log($"{gameObject.name}: Path to player for shot blocked by obstacle: {hit.collider.name}");
-            return false;
+            // If very close, assume path is clear unless the aimpoint itself is submerged (checked above)
+            // This can happen if Hunter is almost on top of the player.
+            // However, a direct raycast is still good to ensure nothing unexpected is exactly at the muzzle.
         }
 
-        // 3. If no obstacle was hit, the path to (just before) the aimPoint is clear.
-        // The assumption is that aimPoint is accurately on the player.
-        // A final direct check to player can be redundant if aimPoint is trusted, but ensures the very end is clear.
-        // For simplicity now, if the short raycast is clear, we consider the path clear to the aimpoint.
-        return true;
+        int hunterLayer = LayerMask.NameToLayer("Hunter");
+        LayerMask shootableMask = ~(1 << hunterLayer);
+        RaycastHit hit;
+
+        // Visualize this ray!
+        Debug.DrawRay(GunMuzzleTransform.position, directionToAimPoint * distanceToAimPoint, Color.cyan, 1.0f);
+
+        // Raycast the full distance to the aimPoint.
+        if (Physics.Raycast(GunMuzzleTransform.position, directionToAimPoint, out hit, distanceToAimPoint, shootableMask, QueryTriggerInteraction.Ignore))
+        {
+            // We hit something. Now, check WHAT we hit.
+            if (hit.collider.CompareTag("Player"))
+            {
+                // We hit the player. This means the path TO THE PLAYER is clear of other obstacles.
+                Debug.Log($"{gameObject.name}: IsPathClear - Raycast hit PLAYER ({hit.collider.name}). Path to player is clear.");
+                return true;
+            }
+            else
+            {
+                // We hit something ELSE that is NOT the player. This is a genuine obstacle.
+                Debug.LogWarning($"{gameObject.name}: IsPathClear - Path to player for shot BLOCKED by OBSTACLE: {hit.collider.name} at {hit.point}");
+                return false;
+            }
+        }
+        else
+        {
+            // The raycast didn't hit anything up to distanceToAimPoint.
+            // This implies the aimPoint is in open air and the player is not there (e.g., player moved, LoS broken to that specific point).
+            // Or, the aimPoint is slightly beyond the player's collider.
+            // For shooting, this usually means you can't hit the target at that exact aimPoint.
+            Debug.LogWarning($"{gameObject.name}: IsPathClear - Raycast to aimPoint ({aimPoint}) hit NOTHING. Path considered NOT clear (LoS to exact point broken or target not there).");
+            return false;
+        }
     }
 
     void OnDrawGizmosSelected()

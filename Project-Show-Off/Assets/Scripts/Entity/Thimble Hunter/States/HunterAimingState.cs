@@ -41,6 +41,8 @@ public class HunterAimingState : State
             return;
         }
 
+        Debug.Log($"AIMING: Current Aim Time: {_currentAimTime}, Player Visible: {_hunterAI.IsPlayerVisible}, Dist: {Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position)}");
+
         _playerAimPointInternal = _hunterAI.GetPlayerAimPoint(); // Use the getter from HunterAI
         if (_playerAimPointInternal == Vector3.zero) // Player might have disappeared
         {
@@ -74,7 +76,8 @@ public class HunterAimingState : State
             }
             else
             {
-                Debug.Log($"{_hunterAI.gameObject.name} path blocked for shot or target submerged.");
+                Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Path blocked for shot or target submerged. Target: {_playerAimPointInternal}. Transitioning to Chase.");
+                _hunterAI.TriggerAimAttemptCooldown(1.0f);
                 SM.TransitToState(_hunterSM.ChasingState);
             }
             return;

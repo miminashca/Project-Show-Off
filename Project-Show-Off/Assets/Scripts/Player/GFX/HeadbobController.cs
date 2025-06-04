@@ -61,6 +61,7 @@ public class HeadbobController : MonoBehaviour
 
         Vector3 targetBobOffset = Vector3.zero;
         float speed = controller.GetMovementSpeed();
+        //Debug.Log("Speed: " + speed);
 
         if (speed >= toggleSpeed && controller.isGrounded)
         {
