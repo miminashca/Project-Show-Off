@@ -431,13 +431,13 @@ GameObject:
   m_Component:
   - component: {fileID: 7633588495463696774}
   - component: {fileID: 5271307878977179669}
+  - component: {fileID: 3619885651251276535}
   - component: {fileID: 5403460284391899615}
   - component: {fileID: 818863107724947822}
   - component: {fileID: 2470203979784429819}
   - component: {fileID: 6220929352804563842}
   - component: {fileID: 3993550361658757861}
   - component: {fileID: 7028059540663029170}
-  - component: {fileID: 3619885651251276535}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -487,6 +487,29 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!136 &3619885651251276535
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &5403460284391899615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,6 +538,11 @@ MonoBehaviour:
   baseFootstepInterval: 0.5
   sprintFootstepMultiplier: 0.7
   crouchFootstepMultiplier: 1.5
+  maxStamina: 100
+  staminaDrainRate: 15
+  staminaRegenRate: 10
+  staminaRegenDelay: 2
+  minStaminaToSprint: 5
 --- !u!114 &818863107724947822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,6 +578,27 @@ MonoBehaviour:
     m_Bits: 2097152
   interactionCheckInterval: 0.25
   raisedLocalPositionOffset: {x: 0, y: 0.2, z: 0.05}
+  lanternPullOutSoundEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  lanternPutAwaySoundEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  lanternGasBurnLoopEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!114 &2470203979784429819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -569,6 +618,8 @@ MonoBehaviour:
   cameraTransform: {fileID: 4258081052341108069}
   interactionPromptUI: {fileID: 0}
   interactionDotUI: {fileID: 0}
+  interactionPromptCanvasGroup: {fileID: 0}
+  fadeDuration: 0.3
 --- !u!114 &6220929352804563842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,6 +644,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7d1d148e47d14473b84b5c4389132bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hemannekenSpeedDecrease: 0.1
+  waterSpeedDecrease: 0.4
 --- !u!114 &7028059540663029170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -612,26 +665,3 @@ MonoBehaviour:
       Data3: 109357979
       Data4: 1375971050
     Path: event:/Player/Footsteps
---- !u!136 &3619885651251276535
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7650862299324327497}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}

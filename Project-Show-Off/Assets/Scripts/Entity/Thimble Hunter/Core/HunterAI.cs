@@ -148,10 +148,14 @@ public class HunterAI : MonoBehaviour
 
     public Vector3 GetPlayerVisibilityCheckPoint()
     {
-        if (PlayerTransform == null) return Vector3.zero; // Or some invalid position
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsCrouching)
+        if (PlayerTransform == null) return Vector3.zero;
+        if (TargetPlayerStatus != null) // Add a log here
         {
-            return PlayerTransform.position + PlayerVisibilityPointOffsetCrouching;
+            Debug.Log($"GetPlayerVisibilityCheckPoint: Player IsCrouching: {TargetPlayerStatus.IsCrouching}");
+            if (TargetPlayerStatus.IsCrouching)
+            {
+                return PlayerTransform.position + PlayerVisibilityPointOffsetCrouching;
+            }
         }
         return PlayerTransform.position + PlayerVisibilityPointOffsetStanding;
     }
@@ -414,9 +418,12 @@ public class HunterAI : MonoBehaviour
 
             if (PlayerTransform != null)
             {
-                Vector3 currentVisibilityPoint = GetPlayerVisibilityCheckPoint();
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(currentVisibilityPoint, 0.15f);
+                Vector3 currentVisibilityPoint = GetPlayerVisibilityCheckPoint(); // Called ONCE
+
+                // For the Cyan sphere and line indicating visibility check target
+                Gizmos.color = Color.cyan; // Original cyan for this specific gizmo
+                Gizmos.DrawSphere(currentVisibilityPoint, 0.15f); // Original cyan sphere
+
                 if (IsPlayerVisible)
                 {
                     Gizmos.color = Color.green;
@@ -427,8 +434,15 @@ public class HunterAI : MonoBehaviour
                     Gizmos.color = Color.red; // In range but not visible (LoS blocked or angle)
                     Gizmos.DrawLine(EyeLevelTransform.position, currentVisibilityPoint);
                 }
+
+                // For the Magenta sphere to explicitly show the calculated visibility point (which considers crouch)
+                // This one is good for debugging the offset itself.
+                Gizmos.color = Color.magenta; // Your distinct magenta
+                Gizmos.DrawSphere(currentVisibilityPoint, 0.2f); // Your magenta debug sphere
+                                                                 // The line from EyeLevel to currentVisibilityPoint is already drawn above based on IsPlayerVisible status
             }
         }
+
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, AuditoryDetectionRange);
         Gizmos.color = Color.red;

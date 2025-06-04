@@ -62,11 +62,18 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private PlayerInput controls;
     private Transform playerCamera;
+    private PlayerStatus playerStatus;
 
     private void Awake()
     {
         lastPosForSignedSpeed = transform.position;
         previousFramePosition = transform.position;
+
+        playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus == null)
+        {
+            Debug.LogError("PlayerMovement: PlayerStatus component not found on this GameObject!", this);
+        }
 
         // Calculate headCheckDistance based on configured heights
         headCheckDistance = (standingHeight - crouchHeight) * 0.9f; // A bit less to avoid issues
@@ -266,8 +273,12 @@ public class PlayerMovement : MonoBehaviour
                 // Debug.Log("Head bump detected, cannot stand.");
                 return;
             }
-            isCrouching = !isCrouching;
-            if (isCrouching) isSprinting = false; // Cannot sprint while crouching, ensure isSprinting is false if we start crouching
+            isCrouching = !isCrouching; // This is your internal state
+            if (playerStatus != null)
+            {
+                playerStatus.IsCrouching = isCrouching;
+            }
+            if (isCrouching) isSprinting = false;
         }
 
         float targetHeightCurrent = isCrouching ? crouchHeight : standingHeight;

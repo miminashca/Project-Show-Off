@@ -11,10 +11,13 @@ public class HunterInvestigatingState : State
     // For "Look Around" behavior
     private bool _isAtLKP = false;
     private float _lookAroundSubTimer = 0f;
-    private const float LOOK_SWEEP_DURATION = 2.0f; // Time for one sweep (e.g., look left)
-    private const float LOOK_PAUSE_DURATION = 1.0f; // Pause between sweeps
+    [SerializeField]
+    private float LOOK_SWEEP_DURATION = 2.0f; // Time for one sweep (e.g., look left)
+    [SerializeField]
+    private float LOOK_PAUSE_DURATION = 1.0f; // Pause between sweeps
     private int _lookSweepsCompleted = 0;
-    private const int MAX_LOOK_SWEEPS = 2; // e.g., look left, then look right
+    [SerializeField]
+    private int MAX_LOOK_SWEEPS = 2; // e.g., look left, then look right
     private Quaternion _targetLookRotation;
     private enum LookAroundPhase { Sweeping, Pausing }
     private LookAroundPhase _currentLookPhase;
