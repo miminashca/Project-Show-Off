@@ -1,7 +1,7 @@
 // PlayerMovement.cs
 // NEW CHANGE
-using FMODUnity; // Required for FMOD EventReference and RuntimeManager
-using FMOD.Studio; // Required for EventInstance and PLAYBACK_STATE
+using FMODUnity;
+using FMOD.Studio;
 // END CHANGE
 using System;
 using UnityEngine;
@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private EventReference afterSprintingBreathEventPath;
 
     private EventInstance sprintingBreathInstance;
+    private EventInstance afterSprintingBreathInstance; // Instance for the one-shot after-sprint breath
     private bool previousIsSprintingState = false;
     // END CHANGE
 
@@ -77,22 +78,14 @@ public class PlayerMovement : MonoBehaviour
     private CharacterController controller;
     private PlayerInput controls;
     private Transform playerCamera;
-    private PlayerStatus playerStatus;
 
     private void Awake()
     {
         lastPosForSignedSpeed = transform.position;
         previousFramePosition = transform.position;
 
-        playerStatus = GetComponent<PlayerStatus>();
-        if (playerStatus == null)
-        {
-            Debug.LogError("PlayerMovement: PlayerStatus component not found on this GameObject!", this);
-        }
-
-        // Calculate headCheckDistance based on configured heights
-        headCheckDistance = (standingHeight - crouchHeight) * 0.9f; // A bit less to avoid issues
-        if (headCheckDistance < 0.01f) headCheckDistance = 0.01f; // Ensure it's a small positive value
+        headCheckDistance = (standingHeight - crouchHeight) * 0.9f;
+        if (headCheckDistance < 0.01f) headCheckDistance = 0.01f;
 
 
         finalSpeed = moveSpeed;
@@ -110,8 +103,13 @@ public class PlayerMovement : MonoBehaviour
         if (!sprintingBreathEventPath.IsNull)
         {
             sprintingBreathInstance = RuntimeManager.CreateInstance(sprintingBreathEventPath);
-            // RuntimeManager.AttachInstanceToGameObject(sprintingBreathInstance, transform); // OLD LINE
-            RuntimeManager.AttachInstanceToGameObject(sprintingBreathInstance, gameObject); // CORRECTED LINE
+            RuntimeManager.AttachInstanceToGameObject(sprintingBreathInstance, gameObject);
+        }
+        // Initialize FMOD event instance for after-sprinting breath
+        if (!afterSprintingBreathEventPath.IsNull)
+        {
+            afterSprintingBreathInstance = RuntimeManager.CreateInstance(afterSprintingBreathEventPath);
+            RuntimeManager.AttachInstanceToGameObject(afterSprintingBreathInstance, gameObject);
         }
         // END CHANGE
     }
@@ -124,9 +122,14 @@ public class PlayerMovement : MonoBehaviour
     {
         controls.Disable();
         // NEW CHANGE
+        // Stop sounds with fadeout when disabled
         if (sprintingBreathInstance.isValid())
         {
             sprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        }
+        if (afterSprintingBreathInstance.isValid())
+        {
+            afterSprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
         isSprinting = false;
         previousIsSprintingState = false;
@@ -136,10 +139,16 @@ public class PlayerMovement : MonoBehaviour
     // NEW CHANGE
     private void OnDestroy()
     {
+        // Release FMOD event instances
         if (sprintingBreathInstance.isValid())
         {
             sprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             sprintingBreathInstance.release();
+        }
+        if (afterSprintingBreathInstance.isValid())
+        {
+            afterSprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            afterSprintingBreathInstance.release();
         }
     }
     // END CHANGE
@@ -162,32 +171,56 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // NEW CHANGE
+    // Helper method to start an FMOD EventInstance if it's not already playing
+    private void StartEventInstance(EventInstance eventInstance)
+    {
+        if (!eventInstance.isValid()) return;
+
+        PLAYBACK_STATE playbackState;
+        eventInstance.getPlaybackState(out playbackState);
+        if (playbackState != PLAYBACK_STATE.PLAYING && playbackState != PLAYBACK_STATE.STARTING)
+        {
+            eventInstance.start();
+        }
+    }
+
+    // Helper method to stop an FMOD EventInstance
+    private void StopEventInstance(EventInstance eventInstance, FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
+    {
+        if (!eventInstance.isValid()) return;
+
+        // Optional: Check if it's playing before stopping, though stopping a stopped instance is often safe.
+        // PLAYBACK_STATE playbackState;
+        // eventInstance.getPlaybackState(out playbackState);
+        // if (playbackState == PLAYBACK_STATE.PLAYING || playbackState == PLAYBACK_STATE.STARTING)
+        // {
+        eventInstance.stop(stopMode);
+        // }
+    }
+
     private void HandleSprintingAudio()
     {
-        if (isSprinting && !previousIsSprintingState)
-        {
-            if (!sprintingBreathEventPath.IsNull && sprintingBreathInstance.isValid())
-            {
-                PLAYBACK_STATE currentState;
-                sprintingBreathInstance.getPlaybackState(out currentState);
-                if (currentState != PLAYBACK_STATE.PLAYING && currentState != PLAYBACK_STATE.STARTING)
-                {
-                    sprintingBreathInstance.start();
-                }
-            }
-        }
-        else if (!isSprinting && previousIsSprintingState)
-        {
-            if (!sprintingBreathEventPath.IsNull && sprintingBreathInstance.isValid())
-            {
-                sprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            }
+        bool justStartedSprinting = isSprinting && !previousIsSprintingState;
+        bool justStoppedSprinting = !isSprinting && previousIsSprintingState;
 
-            if (!afterSprintingBreathEventPath.IsNull)
-            {
-                RuntimeManager.PlayOneShotAttached(afterSprintingBreathEventPath, gameObject);
-            }
+        if (justStartedSprinting)
+        {
+            // Player started sprinting
+            StartEventInstance(sprintingBreathInstance);
+
+            // Stop the "after sprinting" breath if it was playing
+            StopEventInstance(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Or IMMEDIATE if a hard cut is preferred
         }
+        else if (justStoppedSprinting)
+        {
+            // Player stopped sprinting
+            StopEventInstance(sprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+
+            // Play the one-shot "after sprinting" breath
+            // Ensure the "afterSprintingBreathEventPath" FMOD event is a one-shot (no loop region)
+            StartEventInstance(afterSprintingBreathInstance);
+        }
+
         previousIsSprintingState = isSprinting;
     }
     // END CHANGE
@@ -328,11 +361,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 return;
             }
-            isCrouching = !isCrouching; // This is your internal state
-            if (playerStatus != null)
-            {
-                playerStatus.IsCrouching = isCrouching;
-            }
+            isCrouching = !isCrouching;
             if (isCrouching) isSprinting = false;
         }
 

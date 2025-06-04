@@ -1,71 +1,50 @@
+// PlayerWaterInteraction.cs (Modified for Physics.CheckBox)
 using UnityEngine;
-using FMODUnity; // Required for FMOD event references and RuntimeManager
-using FMOD.Studio; // Required for EventInstance (though less direct management now)
+using FMODUnity;
+using FMOD.Studio;
 
 public class PlayerWaterInteraction : MonoBehaviour
 {
     [Header("Detection Settings")]
-    public Transform headTransform;     // Assign your player's camera or head reference
-    public LayerMask waterSurfaceLayer; // Set this to your "WaterSurface" layer
-    public float raycastDistance = 1.0f; // How far up from the head to check for water
+    public Transform headTransform;
+    public LayerMask waterSurfaceLayer;
+    // public float raycastDistance = 1.0f; // No longer directly used by CheckBox for "am I inside"
 
     [Header("FMOD Events")]
-    [Tooltip("Looping ambience event. Ensure the LPF snapshot is triggered by this event in FMOD Studio.")]
     public EventReference underwaterAmbienceEvent;
     public EventReference submergeSoundEvent;
     public EventReference emergeSoundEvent;
 
     private bool isUnderwater = false;
     private bool wasUnderwaterLastFrame = false;
-
     private EventInstance underwaterAmbienceInstance;
 
     void Start()
     {
-        // --- Essential: Head Transform ---
         if (headTransform == null)
         {
-            if (Camera.main != null)
-            {
-                headTransform = Camera.main.transform;
-                Debug.Log("PlayerWaterInteraction: Head transform automatically set to Main Camera.");
-            }
-            else
-            {
-                Debug.LogError("PlayerWaterInteraction: 'Head Transform' is not assigned, and Main Camera could not be found! Disabling script.");
-                enabled = false; // Disable the script if no head transform
-                return;
-            }
+            if (Camera.main != null) headTransform = Camera.main.transform;
+            else { Debug.LogError("PlayerWaterInteraction: Head Transform not found!"); enabled = false; return; }
         }
 
-        // --- FMOD Setup ---
-        // Validate EventReferences (optional but good practice)
-        if (underwaterAmbienceEvent.IsNull)
-            Debug.LogError("PlayerWaterInteraction: 'Underwater Ambience Event' is not assigned!");
-        if (submergeSoundEvent.IsNull)
-            Debug.LogError("PlayerWaterInteraction: 'Submerge Sound Event' is not assigned!");
-        if (emergeSoundEvent.IsNull)
-            Debug.LogError("PlayerWaterInteraction: 'Emerge Sound Event' is not assigned!");
-
-        // Pre-create the instance for the looping underwater ambience
-        // This allows us to start/stop it and attach it.
         if (!underwaterAmbienceEvent.IsNull)
         {
             underwaterAmbienceInstance = RuntimeManager.CreateInstance(underwaterAmbienceEvent);
-            // Attach the ambience sound to the player (or headTransform) so it moves with them
-            RuntimeManager.AttachInstanceToGameObject(underwaterAmbienceInstance, headTransform.gameObject, GetComponent<Rigidbody>());
-
+            RuntimeManager.AttachInstanceToGameObject(underwaterAmbienceInstance, headTransform.gameObject);
         }
+        else Debug.LogError("PlayerWaterInteraction: 'Underwater Ambience Event' is not assigned!");
+
+        if (submergeSoundEvent.IsNull) Debug.LogError("PlayerWaterInteraction: 'Submerge Sound Event' is not assigned!");
+        if (emergeSoundEvent.IsNull) Debug.LogError("PlayerWaterInteraction: 'Emerge Sound Event' is not assigned!");
     }
 
     void Update()
     {
-        if (headTransform == null) return; // Should be caught by Start, but good for safety
+        if (headTransform == null) return;
 
         wasUnderwaterLastFrame = isUnderwater;
-        CheckIfUnderwater();
+        CheckIfUnderwater(); // Now uses Physics.CheckBox
 
-        // --- Handle State Transitions ---
         if (isUnderwater && !wasUnderwaterLastFrame)
         {
             OnEnterWater();
@@ -78,28 +57,47 @@ public class PlayerWaterInteraction : MonoBehaviour
 
     void CheckIfUnderwater()
     {
-        // Shoot a raycast upwards from the headTransform's position
-        // It checks if it hits anything on the 'waterSurfaceLayer' within 'raycastDistance'
-        isUnderwater = Physics.Raycast(headTransform.position, Vector3.up, raycastDistance, waterSurfaceLayer);
+        // Define the size of the small box/point to check.
+        Vector3 checkHalfExtents = new Vector3(0.01f, 0.01f, 0.01f);
 
-        // --- Optional: Visualize the Raycast in Scene View ---
+        // --- NEW CHANGE: Offset the check position ---
+        // You need to decide how high above the 'headTransform.position' (camera's position)
+        // the water level needs to be for the player to be considered "fully submerged".
+        // This 'submergePointOffset' is in local space relative to the headTransform's UP direction.
+        // Adjust this value based on your player model's head height or desired submersion point.
+        // For example, 0.1f to 0.3f might be a good starting range if headTransform is at eye level.
+        float submergePointVerticalOffset = 0.6f; // Example: 20cm above the camera's origin
+
+        // Calculate the actual world-space position for the CheckBox
+        // We take the headTransform's position and add an offset along its local UP vector.
+        // Using headTransform.up ensures the offset is always "above the head" regardless of player orientation.
+        Vector3 checkPosition = headTransform.position + (headTransform.up * submergePointVerticalOffset);
+        // --- END CHANGE ---
+
+        isUnderwater = Physics.CheckBox(checkPosition, checkHalfExtents, Quaternion.identity, waterSurfaceLayer, QueryTriggerInteraction.Collide);
+
 #if UNITY_EDITOR
-        Color rayColor = isUnderwater ? Color.cyan : Color.yellow;
-        Debug.DrawRay(headTransform.position, Vector3.up * raycastDistance, rayColor);
+        // Visualize the actual checkPosition
+        Color debugColor = isUnderwater ? Color.blue : Color.yellow;
+        Debug.DrawRay(checkPosition, Vector3.up * 0.1f, debugColor, 0.1f); // Draw a small ray at the checkPosition
+        if (isUnderwater)
+        {
+            // Debug.Log($"PlayerWaterInteraction: CheckBox at {checkPosition} - IS UNDERWATER.");
+        }
+        else
+        {
+            // Debug.Log($"PlayerWaterInteraction: CheckBox at {checkPosition} - NOT underwater.");
+        }
 #endif
     }
 
     void OnEnterWater()
     {
-        Debug.Log("Player SUBMERGED");
-
-        // Play the one-shot submerge sound
+        Debug.Log("Player SUBMERGED (CheckBox Detection)");
         if (!submergeSoundEvent.IsNull)
         {
-            RuntimeManager.PlayOneShotAttached(submergeSoundEvent, gameObject);
+            RuntimeManager.PlayOneShotAttached(submergeSoundEvent, headTransform.gameObject);
         }
-
-        // Start the looping underwater ambience (which should trigger the LPF snapshot in FMOD)
         if (underwaterAmbienceInstance.isValid())
         {
             underwaterAmbienceInstance.start();
@@ -108,28 +106,21 @@ public class PlayerWaterInteraction : MonoBehaviour
 
     void OnExitWater()
     {
-        Debug.Log("Player EMERGED");
-
-        // Play the one-shot emerge sound
+        Debug.Log("Player EMERGED (CheckBox Detection)");
         if (!emergeSoundEvent.IsNull)
         {
-            RuntimeManager.PlayOneShotAttached(emergeSoundEvent, gameObject);
+            RuntimeManager.PlayOneShotAttached(emergeSoundEvent, headTransform.gameObject);
         }
-
-        // Stop the looping underwater ambience (which should stop the LPF snapshot's influence)
         if (underwaterAmbienceInstance.isValid())
         {
-            // Allow FMOD's AHDSR envelope to fade out the sound and snapshot naturally
             underwaterAmbienceInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
     }
 
     void OnDestroy()
     {
-        // --- Clean up FMOD instances when this GameObject is destroyed ---
         if (underwaterAmbienceInstance.isValid())
         {
-            // Stop immediately and release resources
             underwaterAmbienceInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             underwaterAmbienceInstance.release();
         }
