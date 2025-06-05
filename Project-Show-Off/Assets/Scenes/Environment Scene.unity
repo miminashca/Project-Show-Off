@@ -1797,7 +1797,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2766,7 +2766,14 @@ MonoBehaviour:
   ShootingRange: 10
   MeleeRange: 1.5
   GunDamage: 100
-  weaponSpreadAngle: 2.5
+  AimCatchUpSpeed: 2
+  MaxAimSwayAngle: 1.5
+  AimSwaySpeed: 1
+  WeaponSpreadAngle: 2.5
+  TimeToMaxConfidence: 1.5
+  ShotConfidenceThreshold: 0.75
+  MinAngleForShotConfidence: 5
+  BodyTurnSpeedInAim: 10
   MovementSpeedRoaming: 3
   MovementSpeedInvestigating: 5
   MovementSpeedChasing: 5
@@ -4715,9 +4722,17 @@ PrefabInstance:
       propertyPath: interactionPromptCanvasGroup
       value: 
       objectReference: {fileID: 400000740}
+    - target: {fileID: 7028059540663029170, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: raycastOriginOffset.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7028059540663029170, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: groundLayerMask.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 114.5
+      value: 181.3
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4725,7 +4740,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.1
+      value: -176.62
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -10403,7 +10418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1487973822
 MonoBehaviour:
   m_ObjectHideFlags: 0
