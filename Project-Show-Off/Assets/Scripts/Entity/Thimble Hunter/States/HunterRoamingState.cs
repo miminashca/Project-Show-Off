@@ -27,7 +27,7 @@ public class HunterRoamingState : State
     {
         if (_hunterAI == null) return;
 
-        if (_hunterAI.IsPlayerVisible)
+        if (_hunterAI.IsPlayerFullySpotted)
         {
             SM.TransitToState(_hunterSM.ChasingState);
             return;

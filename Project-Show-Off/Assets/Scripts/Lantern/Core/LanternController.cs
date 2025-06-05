@@ -14,8 +14,8 @@ public class LanternController : MonoBehaviour
 
     private GameObject currentLanternInstance;
     private PhysicsLanternSway currentPhysicsSwayScript;
-    private Light lanternLight; // Assuming this is assigned from LanternParts
-    private LightFlicker lightFlicker; // Assuming this is assigned from LanternParts
+    private Light lanternLight;
+    private LightFlicker lightFlicker;
 
     [Header("State")]
     public bool isEquipped = false;
@@ -46,7 +46,9 @@ public class LanternController : MonoBehaviour
     public Vector3 raisedLocalPositionOffset = new Vector3(0, 0.2f, 0.05f);
 
     private Coroutine interactionCoroutine;
+
     private PlayerInput playerInputActions;
+    private PlayerStatus playerStatus;
 
     // NEW CHANGE
     [Header("FMOD Sounds")]
@@ -67,10 +69,15 @@ public class LanternController : MonoBehaviour
             playerInputActions = new PlayerInput();
         }
 
+        playerStatus = GetComponentInParent<PlayerStatus>();
+        if (playerStatus == null) Debug.LogError("LanternController needs PlayerStatus component on player object hierarchy!");
+
         if (lanternHandAnchor == null)
         {
             Debug.LogError("LanternController: lanternHandAnchor is not assigned!", this);
         }
+
+
     }
 
     void Start()
@@ -115,7 +122,7 @@ public class LanternController : MonoBehaviour
         }
 
         // NEW CHANGE
-        StopGasBurnLoop();
+        StartGasBurnLoopSFX();
         // END CHANGE
 
         if (isEquipped)
@@ -127,7 +134,7 @@ public class LanternController : MonoBehaviour
     // NEW CHANGE
     private void OnDestroy()
     {
-        StopGasBurnLoop();
+        StartGasBurnLoopSFX();
     }
     // END CHANGE
 
@@ -179,11 +186,6 @@ public class LanternController : MonoBehaviour
                     return;
                 }
 
-                // Ensure lanternLight and lightFlicker are assigned here from 'parts'
-                // For example:
-                // lanternLight = parts.lanternLightComponent; // If you have a public field on LanternParts
-                // lightFlicker = parts.lightFlickerComponent;
-
                 currentPhysicsSwayScript = parts.swayScript;
 
                 if (currentPhysicsSwayScript != null)
@@ -233,11 +235,13 @@ public class LanternController : MonoBehaviour
             {
                 StartGasBurnLoop();
             }
-            // END CHANGE
+
+            if (playerStatus != null) playerStatus.IsLanternRaised = isRaised;
         }
         else // Unequipping
         {
             if (isRaised) StopRaising();
+            else if (playerStatus != null) playerStatus.IsLanternRaised = false;
 
             if (lanternLight != null) SetLightState(false);
             if (currentLanternInstance != null)
@@ -251,7 +255,7 @@ public class LanternController : MonoBehaviour
             {
                 RuntimeManager.PlayOneShot(lanternPutAwaySoundEvent, transform.position);
             }
-            StopGasBurnLoop();
+            StartGasBurnLoopSFX();
             // END CHANGE
         }
     }
@@ -261,6 +265,7 @@ public class LanternController : MonoBehaviour
         if (!isEquipped || isRaised || outOfFuel) return;
 
         isRaised = true;
+        if (playerStatus != null) playerStatus.IsLanternRaised = true;
         SetLightState(true, raisedIntensity, raisedRange);
         Debug.Log("Lantern Raised");
 
@@ -279,6 +284,7 @@ public class LanternController : MonoBehaviour
 
         bool wasActuallyRaised = isRaised;
         isRaised = false;
+        if (playerStatus != null) playerStatus.IsLanternRaised = false;
 
         if (lanternLight != null)
         {
@@ -314,10 +320,11 @@ public class LanternController : MonoBehaviour
     {
         Debug.Log("Lantern Out of Fuel!");
         outOfFuel = true;
+        if (playerStatus != null) playerStatus.IsLanternRaised = false;
         if (lanternLight != null) SetLightState(false);
 
         // NEW CHANGE
-        StopGasBurnLoop();
+        StartGasBurnLoopSFX();
         // END CHANGE
 
         if (isRaised)
@@ -336,12 +343,14 @@ public class LanternController : MonoBehaviour
         {
             SetLightState(true, isRaised ? raisedIntensity : defaultIntensity, isRaised ? raisedRange : defaultRange);
 
+            if (playerStatus != null) playerStatus.IsLanternRaised = isRaised;
+
             if (currentPhysicsSwayScript != null && !isRaised)
             {
                 currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
             }
             // NEW CHANGE
-            StartGasBurnLoop();
+            StartGasBurnLoopSFX();
             // END CHANGE
         }
     }
@@ -410,7 +419,7 @@ public class LanternController : MonoBehaviour
         }
     }
 
-    private void StopGasBurnLoop()
+    private void StartGasBurnLoopSFX()
     {
         if (gasBurnSoundInstance.isValid())
         {

@@ -1,8 +1,5 @@
-// PlayerMovement.cs
-// NEW CHANGE
 using FMODUnity;
 using FMOD.Studio;
-// END CHANGE
 using System;
 using UnityEngine;
 
@@ -23,19 +20,19 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
 
-    [Header("Footstep Settings (Simple)")]
-    [SerializeField] private PlayerFootsteps playerFootsteps;
-    [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f;
-    [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f;
-    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f;
-    [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f;
-
     [Header("Stamina Settings")]
     [SerializeField, Range(1f, 200f)] private float maxStamina = 100f;
     [SerializeField, Range(0.1f, 50f)] private float staminaDrainRate = 15f;
     [SerializeField, Range(0.1f, 50f)] private float staminaRegenRate = 10f;
     [SerializeField, Range(0f, 5f)] private float staminaRegenDelay = 2f;
     [SerializeField, Range(0f, 50f)] private float minStaminaToSprint = 5f;
+
+    [Header("Footstep Settings (Simple)")]
+    [SerializeField] private PlayerFootsteps playerFootsteps;
+    [SerializeField, Range(0.01f, 1.0f)] private float minMovementSpeedForFootsteps = 0.5f;
+    [SerializeField, Range(0.1f, 2.0f)] private float baseFootstepInterval = 0.5f;
+    [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f;
+    [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f;
 
     // NEW CHANGE
     [Header("FMOD Sprinting Sounds")]

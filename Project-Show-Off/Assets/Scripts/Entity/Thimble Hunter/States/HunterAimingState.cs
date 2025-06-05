@@ -139,7 +139,7 @@ public class HunterAimingState : State
         _currentAimTime -= Time.deltaTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
 
-        if (!_hunterAI.IsPlayerVisible || Vector3.Distance(_hunterAI.GunMuzzleTransform.position, _playerAimPointInternal) > _hunterAI.ShootingRange * 1.1f)
+        if (!_hunterAI.IsPlayerFullySpotted || Vector3.Distance(_hunterAI.GunMuzzleTransform.position, _playerAimPointInternal) > _hunterAI.ShootingRange * 1.1f)
         {
             SM.TransitToState(_hunterSM.ChasingState);
             return;

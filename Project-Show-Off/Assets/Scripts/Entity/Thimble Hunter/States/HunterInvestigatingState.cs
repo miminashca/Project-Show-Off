@@ -57,7 +57,7 @@ public class HunterInvestigatingState : State
     {
         if (_hunterAI == null) return;
 
-        if (_hunterAI.IsPlayerVisible)
+        if (_hunterAI.IsPlayerFullySpotted)
         {
             Debug.Log($"{_hunterAI.gameObject.name} (Investigating): Player visible! Transitioning to Chase.");
             SM.TransitToState(_hunterSM.ChasingState);

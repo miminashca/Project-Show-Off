@@ -17,6 +17,32 @@ public class HunterAI : MonoBehaviour
     public float MeleeRange = 1.5f;
     public int GunDamage = 100;
 
+    [Header("Movement Speeds")]
+    public float MovementSpeedRoaming = 2f;
+    public float MovementSpeedInvestigating = 3f;
+    public float MovementSpeedChasing = 4.5f;
+
+    [Header("Detection System")]
+    public float BaseDetectionRate = 0.5f; // Units: progress/second (0 to 1)
+    public float DetectionDecayRate = 0.3f; // Units: progress/second
+    [Range(0f, 1f)]
+    public float DetectionProgress { get; private set; } = 0f;
+    public bool IsPlayerFullySpotted { get; private set; } = false;
+    [Tooltip("Detection progress must drop below this for IsPlayerFullySpotted to become false.")]
+    public float FullySpottedLossThreshold = 0.8f; // e.g., if progress drops below 0.8, no longer "fully spotted"
+
+    [Header("Detection Modifiers")]
+    public float CrouchVisibilityMultiplier = 0.6f;
+    public float MovementVisibilityMultiplier = 1.5f; // Player moving is easier to spot
+    public float StationaryVisibilityMultiplier = 1.0f; // Baseline for not moving
+    public float TallGrassConcealmentMultiplier = 0.4f;
+    public float LanternRaisedVisibilityMultiplier = 2.0f;
+    // Water related multipliers
+    [Tooltip("Multiplier if player's main body/feet are in water but head/visibility point is not.")]
+    public float ShallowWaterConcealmentMultiplier = 0.7f;
+    [Tooltip("Multiplier if player's visibility check point is determined to be underwater.")]
+    public float DeepSubmersionConcealmentMultiplier = 0.05f; // Very hard to detect
+
     [Header("Advanced Aiming System")]
     public float AimCatchUpSpeed = 2.0f; // How quickly the gun tries to catch up to the target point.
     public float MaxAimSwayAngle = 1.5f; // Max random sway in degrees from the "perfect" aim.
@@ -27,11 +53,6 @@ public class HunterAI : MonoBehaviour
     public float MinAngleForShotConfidence = 5.0f; // How close gunDir must be to targetDir to gain confidence (degrees)
     public float BodyTurnSpeedInAim = 10f; // How fast the Hunter's body orients while aiming
     private Vector3 actualFiringDirection;
-
-    [Header("Movement Speeds")]
-    public float MovementSpeedRoaming = 2f;
-    public float MovementSpeedInvestigating = 3f;
-    public float MovementSpeedChasing = 4.5f;
 
     [Header("Timers")]
     public float AimTime = 2.0f;
@@ -45,13 +66,13 @@ public class HunterAI : MonoBehaviour
     public Vector3 PlayerAimPointOffsetStanding = new Vector3(0, 1.0f, 0);  // Approx torso center when standing
     public Vector3 PlayerAimPointOffsetCrouching = new Vector3(0, 0.7f, 0); // Approx torso center when crouching
 
+    [Header("Gameplay Rules")]
+    public float WaterSurfaceYLevel = 0.5f;
+
     [Header("References")]
     public Transform PlayerTransform;
     public Transform GunMuzzleTransform;
     public Transform EyeLevelTransform;
-
-    [Header("Gameplay Rules")]
-    public float WaterSurfaceYLevel = 0.5f;
 
     [Header("VFX/SFX (Assign in Inspector)")]
     public GameObject MuzzleFlashPrefab;
@@ -73,7 +94,6 @@ public class HunterAI : MonoBehaviour
 
     // --- Runtime AI Data (public properties for states to access) ---
     public Vector3 LastKnownPlayerPosition { get; set; }
-    public bool IsPlayerVisible { get; private set; }
     public bool CanHearPlayerAlert { get; private set; }
     public float CurrentInvestigationTimer { get; set; }
     public float AimAttemptCooldownTimer { get; private set; }
@@ -134,22 +154,123 @@ public class HunterAI : MonoBehaviour
 
     void Update()
     {
-        if (CurrentSuperpositionCooldownTimer > 0)
-        {
-            CurrentSuperpositionCooldownTimer -= Time.deltaTime;
-        }
+        if (CurrentSuperpositionCooldownTimer > 0) CurrentSuperpositionCooldownTimer -= Time.deltaTime;
+        if (AimAttemptCooldownTimer > 0) AimAttemptCooldownTimer -= Time.deltaTime;
 
-        if (AimAttemptCooldownTimer > 0)
+        if (PlayerTransform == null || TargetPlayerStatus == null)
         {
-            AimAttemptCooldownTimer -= Time.deltaTime;
-        }
-
-        if (PlayerTransform == null)
-        {
-            IsPlayerVisible = false;
+            // If player doesn't exist, decay detection
+            if (DetectionProgress > 0)
+            {
+                DetectionProgress -= DetectionDecayRate * Time.deltaTime;
+                DetectionProgress = Mathf.Clamp01(DetectionProgress);
+                UpdateFullySpottedStatus();
+            }
             return;
         }
-        ProcessSensors();
+        ProcessSensorsAndDetectionLogic();
+    }
+
+    void ProcessSensorsAndDetectionLogic()
+    {
+        bool hasClearLineOfSightToPlayerPoint = false;
+        Vector3 playerVisibilityPoint = GetPlayerVisibilityCheckPoint();
+
+        // 1. Line of Sight (LoS) Check
+        if (playerVisibilityPoint != Vector3.zero && EyeLevelTransform != null)
+        {
+            // Check if the visibility point itself is submerged (using dynamic water level)
+            bool isVisibilityPointSubmerged = TargetPlayerStatus.IsSubmerged(playerVisibilityPoint);
+
+            if (isVisibilityPointSubmerged)
+            {
+                hasClearLineOfSightToPlayerPoint = false; // Can't see a point that's underwater directly
+            }
+            else
+            {
+                Vector3 directionToPlayer = playerVisibilityPoint - EyeLevelTransform.position;
+                float distanceToPlayer = directionToPlayer.magnitude;
+
+                if (distanceToPlayer <= VisionConeRange)
+                {
+                    if (Vector3.Angle(EyeLevelTransform.forward, directionToPlayer.normalized) <= VisionConeAngle / 2f)
+                    {
+                        RaycastHit hit;
+                        int hunterLayer = LayerMask.NameToLayer("Hunter");
+                        LayerMask ignoreHunterMask = ~(1 << hunterLayer);
+
+                        if (Physics.Raycast(EyeLevelTransform.position, directionToPlayer.normalized, out hit, VisionConeRange, ignoreHunterMask, QueryTriggerInteraction.Ignore))
+                        {
+                            if (hit.collider.CompareTag("Player")) // Or more robust check
+                            {
+                                hasClearLineOfSightToPlayerPoint = true;
+                                LastKnownPlayerPosition = PlayerTransform.position;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Update Detection Progress
+        if (hasClearLineOfSightToPlayerPoint)
+        {
+            float currentRate = BaseDetectionRate;
+
+            // Apply Stance Multiplier
+            currentRate *= TargetPlayerStatus.IsCrouching ? CrouchVisibilityMultiplier : 1.0f;
+
+            // Apply Movement Multiplier
+            currentRate *= TargetPlayerStatus.IsMoving ? MovementVisibilityMultiplier : StationaryVisibilityMultiplier;
+
+            // Apply Tall Grass Multiplier
+            if (TargetPlayerStatus.IsInTallGrass) currentRate *= TallGrassConcealmentMultiplier;
+
+            // Apply Lantern Multiplier
+            if (TargetPlayerStatus.IsLanternRaised) currentRate *= LanternRaisedVisibilityMultiplier;
+
+            // Apply Water Multiplier (if visibility point itself was submerged, this is a stronger effect)
+            if (TargetPlayerStatus.IsSubmerged(playerVisibilityPoint)) // Check specific point's submersion
+            {
+                currentRate *= DeepSubmersionConcealmentMultiplier;
+            }
+            else if (TargetPlayerStatus.CurrentWaterZone != null) // Player is in some water, but vis point is above
+            {
+                currentRate *= ShallowWaterConcealmentMultiplier;
+            }
+
+            DetectionProgress += currentRate * Time.deltaTime;
+        }
+        else
+        {
+            DetectionProgress -= DetectionDecayRate * Time.deltaTime;
+        }
+        DetectionProgress = Mathf.Clamp01(DetectionProgress);
+        UpdateFullySpottedStatus();
+
+        // Debug.Log($"Detection: {DetectionProgress:F2}, Spotted: {IsPlayerFullySpotted}, LoS: {hasClearLineOfSightToPlayerPoint}");
+    }
+
+    private void UpdateFullySpottedStatus()
+    {
+        if (DetectionProgress >= 1.0f)
+        {
+            if (!IsPlayerFullySpotted) // Became fully spotted THIS frame
+            {
+                IsPlayerFullySpotted = true;
+                Debug.Log($"{gameObject.name} Player FULLY SPOTTED! Transitioning to Chasing.");
+                // Consider playing the SpottedPlayerSound here or upon entering ChasingState.
+                // HunterEventBus.HunterSpottedPlayer(PlayerTransform.gameObject); // This event implies "now fully spotted"
+            }
+        }
+        else if (DetectionProgress < FullySpottedLossThreshold) // Check if progress drops below a certain point
+        {
+            if (IsPlayerFullySpotted) // Lost full spotting THIS frame
+            {
+                IsPlayerFullySpotted = false;
+                Debug.Log($"{gameObject.name} Player no longer fully spotted.");
+            }
+        }
     }
 
     public void TriggerAimAttemptCooldown(float duration)
@@ -185,57 +306,23 @@ public class HunterAI : MonoBehaviour
         actualFiringDirection = direction.normalized;
     }
 
-    void ProcessSensors()
-    {
-        IsPlayerVisible = false;
-        if (PlayerTransform == null || EyeLevelTransform == null) return;
-
-        Vector3 playerTargetPoint = GetPlayerVisibilityCheckPoint();
-        if (playerTargetPoint == Vector3.zero) return;
-
-        // Optional: If visibility point itself is underwater, player is not visible from there.
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerTargetPoint, WaterSurfaceYLevel))
-        {
-            // Debug.Log("Player visibility point is submerged.");
-            IsPlayerVisible = false;
-            return;
-        }
-
-        Vector3 directionToPlayer = playerTargetPoint - EyeLevelTransform.position;
-        float distanceToPlayer = directionToPlayer.magnitude;
-
-        if (distanceToPlayer <= VisionConeRange)
-        {
-            if (Vector3.Angle(EyeLevelTransform.forward, directionToPlayer.normalized) <= VisionConeAngle / 2f)
-            {
-                RaycastHit hit;
-                int hunterLayer = LayerMask.NameToLayer("Hunter");
-                LayerMask ignoreHunterMask = ~(1 << hunterLayer);
-
-                if (Physics.Raycast(EyeLevelTransform.position, directionToPlayer.normalized, out hit, VisionConeRange, ignoreHunterMask, QueryTriggerInteraction.Ignore))
-                {
-                    if (hit.collider.CompareTag("Player"))
-                    {
-                        IsPlayerVisible = true;
-                        LastKnownPlayerPosition = PlayerTransform.position; // LKP is player's base position
-                    }
-                }
-            }
-        }
-    }
-
+    // Auditory detection might give a direct boost to DetectionProgress
     private void HandlePlayerShoutEvent(Vector3 shoutPosition)
     {
         if (this == null || !enabled || !gameObject.activeInHierarchy) return;
 
         if (Vector3.Distance(transform.position, shoutPosition) <= AuditoryDetectionRange)
         {
-            CanHearPlayerAlert = true;
+            CanHearPlayerAlert = true; // Still useful for investigating state
             LastKnownPlayerPosition = shoutPosition;
-            Debug.Log($"{gameObject.name} heard player shout at {shoutPosition} (Dist: {Vector3.Distance(transform.position, shoutPosition)}). LKP updated. CanHearPlayerAlert = true");
             PlaySound(HeardNoiseSound);
+
+            // Add a boost to detection based on noise
+            float noiseDetectionBoost = 0.3f; // Example
+            DetectionProgress = Mathf.Clamp01(DetectionProgress + noiseDetectionBoost);
+            UpdateFullySpottedStatus(); // Re-evaluate if this shout made them fully spotted
+            Debug.Log($"{gameObject.name} heard player shout. LKP updated. Detection boosted to {DetectionProgress}. CanHearPlayerAlert = true");
         }
-        // Removed the "too far" debug log for brevity during play
     }
 
     public void AcknowledgePlayerAlert()
@@ -281,7 +368,7 @@ public class HunterAI : MonoBehaviour
         // We are shooting in a general direction. The main concern for water is if the *player* is mostly submerged.
         // Let's use the player's *base* position or a primary visibility point for a quick submergence check.
         Vector3 playerCheckPosForSubmergence = GetPlayerAimPoint();
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerCheckPosForSubmergence, WaterSurfaceYLevel))
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerCheckPosForSubmergence))
         {
             Debug.Log($"{gameObject.name} SHOT FIRED towards generally submerged player area. Impacting water near player.");
             // Logic to spawn water impact near player's surface position
@@ -308,12 +395,13 @@ public class HunterAI : MonoBehaviour
 
         Debug.DrawRay(GunMuzzleTransform.position, finalShotDirection * shotDistance, Color.red, 2.0f); // Visualize actual shot
 
+        // Raycast
         if (Physics.Raycast(GunMuzzleTransform.position, finalShotDirection, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
         {
-            if (hit.collider.transform.IsChildOf(PlayerTransform) || hit.collider.transform == PlayerTransform) // More robust player hit check
+            if (hit.collider.transform.IsChildOf(PlayerTransform) || hit.collider.transform == PlayerTransform)
             {
                 // Check if the *actual hit point on the player* is submerged
-                if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point, WaterSurfaceYLevel))
+                if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point))
                 {
                     Debug.Log($"{gameObject.name} SHOT HIT Player's submerged part at {hit.point}. Impacting water.");
                     if (BulletImpactWaterPrefab != null) Instantiate(BulletImpactWaterPrefab, hit.point, Quaternion.LookRotation(hit.normal));
@@ -367,9 +455,9 @@ public class HunterAI : MonoBehaviour
         }
 
         // 1. Check if the intended aimPoint itself is submerged (this logic seems fine)
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimPoint, WaterSurfaceYLevel))
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimPoint))
         {
-            Debug.LogWarning($"{gameObject.name}: IsPathClear - Aim point ({aimPoint}) is SUBMERGED. Path NOT clear.");
+            Debug.LogWarning($"{gameObject.name}: IsPathClear - Aim point ({aimPoint}) is SUBMERGED (dynamic check). Path NOT clear.");
             return false;
         }
 
@@ -430,7 +518,7 @@ public class HunterAI : MonoBehaviour
         // --- Vision Cone & Sensor Ranges ---
         if (EyeLevelTransform != null)
         {
-            Gizmos.color = IsPlayerVisible ? Color.green : Color.yellow;
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
             Vector3 fovLine1 = Quaternion.AngleAxis(VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
             Vector3 fovLine2 = Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
@@ -439,29 +527,42 @@ public class HunterAI : MonoBehaviour
 
             if (PlayerTransform != null)
             {
-                Vector3 currentVisibilityPoint = GetPlayerVisibilityCheckPoint(); // Called ONCE
+                Vector3 currentVisibilityPoint = GetPlayerVisibilityCheckPoint();
 
-                // For the Cyan sphere and line indicating visibility check target
-                Gizmos.color = Color.cyan; // Original cyan for this specific gizmo
-                Gizmos.DrawSphere(currentVisibilityPoint, 0.15f); // Original cyan sphere
-
-                if (IsPlayerVisible)
+                // Line to player visibility point, colored by detection status
+                if (IsPlayerFullySpotted)
                 {
-                    Gizmos.color = Color.green;
+                    Gizmos.color = Color.red; // Fully spotted = red
                     Gizmos.DrawLine(EyeLevelTransform.position, currentVisibilityPoint);
                 }
-                else if (Vector3.Distance(EyeLevelTransform.position, currentVisibilityPoint) <= VisionConeRange)
+                else if (DetectionProgress > 0)
                 {
-                    Gizmos.color = Color.red; // In range but not visible (LoS blocked or angle)
+                    Gizmos.color = Color.Lerp(Color.yellow, Color.red, DetectionProgress); // Transition from yellow to red as progress increases
                     Gizmos.DrawLine(EyeLevelTransform.position, currentVisibilityPoint);
                 }
+                // No line if detection progress is 0 or LoS is blocked
 
-                // For the Magenta sphere to explicitly show the calculated visibility point (which considers crouch)
-                // This one is good for debugging the offset itself.
-                Gizmos.color = Color.magenta; // Your distinct magenta
-                Gizmos.DrawSphere(currentVisibilityPoint, 0.2f); // Your magenta debug sphere
-                                                                 // The line from EyeLevel to currentVisibilityPoint is already drawn above based on IsPlayerVisible status
+                // Player visibility point sphere (already good)
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawSphere(currentVisibilityPoint, 0.2f);
             }
+        }
+
+        if (Application.isPlaying) // Only show in play mode
+        {
+            float barWidth = 1f;
+            float barHeight = 0.1f;
+            Vector3 barPosition = transform.position + Vector3.up * 2.5f; // Above Hunter's head
+
+            // Background
+            Gizmos.color = Color.grey;
+            Gizmos.DrawCube(barPosition, new Vector3(barWidth, barHeight, 0.01f));
+
+            // Foreground (progress)
+            Gizmos.color = Color.Lerp(Color.green, Color.red, DetectionProgress);
+            float progressWidth = barWidth * DetectionProgress;
+            Vector3 progressPosition = barPosition - Vector3.right * (barWidth / 2f) + Vector3.right * (progressWidth / 2f);
+            Gizmos.DrawCube(progressPosition, new Vector3(progressWidth, barHeight, 0.01f));
         }
 
         Gizmos.color = Color.blue;

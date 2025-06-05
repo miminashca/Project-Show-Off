@@ -63,11 +63,11 @@ public class HunterShootingState : State
             return;
         }
 
-        if (_hunterAI.IsPlayerVisible && Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
+        if (_hunterAI.IsPlayerFullySpotted && Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
         {
             SM.TransitToState(_hunterSM.AimingState);
         }
-        else if (_hunterAI.IsPlayerVisible)
+        else if (_hunterAI.IsPlayerFullySpotted)
         {
             SM.TransitToState(_hunterSM.ChasingState);
         }

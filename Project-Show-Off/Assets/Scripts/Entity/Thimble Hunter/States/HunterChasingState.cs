@@ -52,15 +52,15 @@ public class HunterChasingState : State
         }
 
         if (_hunterAI.AimAttemptCooldownTimer <= 0f &&
-            _hunterAI.IsPlayerVisible &&
+            _hunterAI.IsPlayerFullySpotted &&
             Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
         {
             SM.TransitToState(_hunterSM.AimingState);
             return;
         }
 
-        // 3. To INVESTIGATING: Player breaks LoS (IsPlayerVisible becomes false)
-        if (!_hunterAI.IsPlayerVisible)
+        // 3. To INVESTIGATING: Player breaks LoS
+        if (!_hunterAI.IsPlayerFullySpotted)
         {
             Debug.Log($"{_hunterAI.gameObject.name} lost sight of player during chase.");
             // LKP was updated continuously, so it's the last seen position.
