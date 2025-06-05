@@ -41,6 +41,7 @@ public class HemannekenRoamingState : State
         // Check if player is within investigation distance when "Hey" is used
         if (HSM.Sensor.IsPlayerInInvestigateDistance())
         {
+            HSM.Sensor.PlayerLastKnownPosition = pos;
             // Only true form Hemannekens investigate "Hey" calls, rabbits transform if close.
             if (HSM.Visuals.IsTrueForm) 
             {
