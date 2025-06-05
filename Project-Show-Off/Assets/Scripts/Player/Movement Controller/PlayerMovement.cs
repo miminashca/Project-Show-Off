@@ -177,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
 
     // NEW CHANGE
     // Helper method to start an FMOD EventInstance if it's not already playing
-    private void StartEventInstance(EventInstance eventInstance)
+    private void StartEventInstanceFMOD(EventInstance eventInstance)
     {
         if (!eventInstance.isValid()) return;
 
@@ -190,7 +190,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Helper method to stop an FMOD EventInstance
-    private void StopEventInstance(EventInstance eventInstance, FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
+    private void StopEventInstanceFMOD(EventInstance eventInstance, FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
     {
         if (!eventInstance.isValid()) return;
 
@@ -211,19 +211,19 @@ public class PlayerMovement : MonoBehaviour
         if (justStartedSprinting)
         {
             // Player started sprinting
-            StartEventInstance(sprintingBreathInstance);
+            StartEventInstanceFMOD(sprintingBreathInstance);
 
             // Stop the "after sprinting" breath if it was playing
-            StopEventInstance(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Or IMMEDIATE if a hard cut is preferred
+            StopEventInstanceFMOD(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Or IMMEDIATE if a hard cut is preferred
         }
         else if (justStoppedSprinting)
         {
             // Player stopped sprinting
-            StopEventInstance(sprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            StopEventInstanceFMOD(sprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 
             // Play the one-shot "after sprinting" breath
             // Ensure the "afterSprintingBreathEventPath" FMOD event is a one-shot (no loop region)
-            StartEventInstance(afterSprintingBreathInstance);
+            StartEventInstanceFMOD(afterSprintingBreathInstance);
         }
 
         previousIsSprintingState = isSprinting;
