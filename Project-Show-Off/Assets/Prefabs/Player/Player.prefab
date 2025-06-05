@@ -56,7 +56,7 @@ Transform:
   m_GameObject: {fileID: 994416563900317527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.66, y: 0.372, z: 1}
+  m_LocalPosition: {x: 0.54, y: 0.16, z: 0.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,7 +79,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4033304670268171631
 Transform:
   m_ObjectHideFlags: 0
@@ -214,8 +214,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enable: 1
-  amplitude: 0.0075
-  frequency: 7
+  amplitude: 0.04
+  frequency: 8.2
   bobLerpSpeed: 10
 --- !u!20 &5603431912760654469
 Camera:
@@ -440,6 +440,9 @@ GameObject:
   - component: {fileID: 7028059540663029170}
   - component: {fileID: 2451448375663383542}
   - component: {fileID: 8721460337746503042}
+  - component: {fileID: 2157266342790747539}
+  - component: {fileID: 3811047033570357142}
+  - component: {fileID: 5628067762972521426}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -531,20 +534,34 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   sprintSpeedIncrement: 3
-  crouchSpeed: 10
+  crouchSpeed: 2
   crouchHeight: 1.5
   standingHeight: 2.5
   crouchLerpSpeed: 8
-  playerFootsteps: {fileID: 0}
-  minMovementSpeedForFootsteps: 0.5
-  baseFootstepInterval: 0.5
+  playerFootsteps: {fileID: 7028059540663029170}
+  minMovementSpeedForFootsteps: 1
+  baseFootstepInterval: 0.7
   sprintFootstepMultiplier: 0.7
-  crouchFootstepMultiplier: 1.5
+  crouchFootstepMultiplier: 1.3
   maxStamina: 100
   staminaDrainRate: 15
   staminaRegenRate: 10
   staminaRegenDelay: 2
   minStaminaToSprint: 5
+  sprintingBreathEventPath:
+    Guid:
+      Data1: 1858181766
+      Data2: 1205507081
+      Data3: 1678037138
+      Data4: 2961105
+    Path: event:/Player/Breathing/While Sprinting Breath
+  afterSprintingBreathEventPath:
+    Guid:
+      Data1: 769222642
+      Data2: 1109371496
+      Data3: -1981184342
+      Data4: -1325676451
+    Path: event:/Player/Breathing/Post Sprinting Breath
 --- !u!114 &818863107724947822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -557,14 +574,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6884a92649b8a984fbd481b8d546f758, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lanternPrefab: {fileID: 4722296896312563861, guid: 7671dde4bee52ce4bb5772bec05d2334, type: 3}
+  lanternPrefab: {fileID: 4081064393684931713, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
   lanternHandAnchor: {fileID: 2214964552251006022}
   isEquipped: 0
   isRaised: 0
-  defaultIntensity: 5
-  raisedIntensity: 20
-  defaultRange: 10
-  raisedRange: 20
+  defaultIntensity: 10
+  raisedIntensity: 30
+  defaultRange: 20
+  raisedRange: 40
   lightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   maxFuel: 100
   currentFuel: 0
@@ -582,25 +599,25 @@ MonoBehaviour:
   raisedLocalPositionOffset: {x: 0, y: 0.2, z: 0.05}
   lanternPullOutSoundEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 642126505
+      Data2: 1260089739
+      Data3: -381773939
+      Data4: -1416940500
+    Path: event:/Player/Lantern Pullout
   lanternPutAwaySoundEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1650777875
+      Data2: 1099250014
+      Data3: 1616780168
+      Data4: 1904806862
+    Path: event:/Player/Lantern Putaway
   lanternGasBurnLoopEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1683294699
+      Data2: 1116483477
+      Data3: -1530707281
+      Data4: -735755451
+    Path: event:/Player/Lantern Oil Burn Loop
 --- !u!114 &2470203979784429819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -692,3 +709,82 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5169d44cfec22c9499e676be054b9abf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2157266342790747539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e0af2b27ec3bcb40a36f998d7f8e3ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headTransform: {fileID: 4258081052341108069}
+  waterSurfaceLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  underwaterAmbienceEvent:
+    Guid:
+      Data1: 1526208366
+      Data2: 1253641712
+      Data3: 48335009
+      Data4: -614437337
+    Path: event:/Player/Underwater loop
+  submergeSoundEvent:
+    Guid:
+      Data1: -257142807
+      Data2: 1274067378
+      Data3: 1770932385
+      Data4: 46886066
+    Path: event:/Player/Submerging
+  emergeSoundEvent:
+    Guid:
+      Data1: 831043640
+      Data2: 1192724769
+      Data3: 1602033337
+      Data4: 2008393408
+    Path: event:/Player/Emerging
+--- !u!114 &3811047033570357142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9582385f1944d46a49b3982e552d552f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterMask:
+    serializedVersion: 2
+    m_Bits: 256
+--- !u!54 &5628067762972521426
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862299324327497}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
