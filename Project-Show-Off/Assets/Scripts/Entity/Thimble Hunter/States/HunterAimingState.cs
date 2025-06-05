@@ -6,18 +6,10 @@ public class HunterAimingState : State
     private HunterStateMachine _hunterSM;
 
     private float _currentAimTime;
-    private const float AIM_TRACKING_SPEED = 5f;
     private Vector3 _playerAimPointInternal;
-
-    [SerializeField] private float aimCatchUpSpeed = 2.0f; // How quickly the gun tries to catch up to the target point.
-    [SerializeField] private float maxAimSwayAngle = 1.5f; // Max random sway in degrees from the "perfect" aim.
-    [SerializeField] private float swaySpeed = 1.0f;      // How quickly the sway oscillates.
 
     private Vector3 currentGunDirection; // The actual direction the gun is pointing, smoothed.
     private float timeOnTarget = 0f;
-    [SerializeField] private float timeToMaxConfidence = 1.5f; // Time needed on target for max confidence.
-    [SerializeField] private float shotConfidenceThreshold = 0.75f; // (0 to 1)
-    [SerializeField] private float minAngleForConfidence = 5.0f; // How close gunDir must be to targetDir to gain confidence (degrees)
 
     // For sway
     private float swayOffsetX;
@@ -45,13 +37,17 @@ public class HunterAimingState : State
 
         // Initialize currentGunDirection towards where the player was last seen or is currently.
         Vector3 initialTargetPoint = _hunterAI.GetPlayerAimPoint();
-        if (initialTargetPoint != Vector3.zero)
+        if (initialTargetPoint != Vector3.zero && _hunterAI.GunMuzzleTransform != null) // Added GunMuzzleTransform null check
         {
             currentGunDirection = (initialTargetPoint - _hunterAI.GunMuzzleTransform.position).normalized;
         }
-        else
+        else if (_hunterAI.transform != null) // Added null check for safety
         {
             currentGunDirection = _hunterAI.transform.forward; // Fallback
+        }
+        else
+        {
+            currentGunDirection = Vector3.forward; // Absolute fallback
         }
         timeOnTarget = 0f;
 
@@ -81,14 +77,18 @@ public class HunterAimingState : State
             return;
         }
         Vector3 idealGunDirection = (_playerAimPointInternal - _hunterAI.GunMuzzleTransform.position).normalized;
+        if (idealGunDirection == Vector3.zero) // Avoid issues if player is at muzzle position
+        {
+            idealGunDirection = _hunterAI.transform.forward;
+        }
 
         // 2. Smoothly Lerp/Slerp currentGunDirection towards idealGunDirection
-        currentGunDirection = Vector3.Slerp(currentGunDirection, idealGunDirection, Time.deltaTime * aimCatchUpSpeed);
+        currentGunDirection = Vector3.Slerp(currentGunDirection, idealGunDirection, Time.deltaTime * _hunterAI.AimCatchUpSpeed);
 
         // 3. Apply Aim Sway
         //    This makes the gun not perfectly still even if currentGunDirection matches idealGunDirection.
-        float swayX = (Mathf.PerlinNoise(swayOffsetX + Time.time * swaySpeed, 0f) * 2f - 1f) * maxAimSwayAngle;
-        float swayY = (Mathf.PerlinNoise(0f, swayOffsetY + Time.time * swaySpeed) * 2f - 1f) * maxAimSwayAngle;
+        float swayX = (Mathf.PerlinNoise(swayOffsetX + Time.time * _hunterAI.AimSwaySpeed, 0f) * 2f - 1f) * _hunterAI.MaxAimSwayAngle;
+        float swayY = (Mathf.PerlinNoise(0f, swayOffsetY + Time.time * _hunterAI.AimSwaySpeed) * 2f - 1f) * _hunterAI.MaxAimSwayAngle;
 
         // Create a rotation representing the unswept, lagged gun direction in world space.
         Quaternion unsweptGunWorldRotation = Quaternion.LookRotation(currentGunDirection);
@@ -119,20 +119,19 @@ public class HunterAimingState : State
 
         // 4. Update "Time on Target" & Shot Confidence
         float angleToIdealTarget = Vector3.Angle(finalSwayedGunDirection, idealGunDirection);
-        if (angleToIdealTarget <= minAngleForConfidence) // If aim is "close enough"
+        if (angleToIdealTarget <= _hunterAI.MinAngleForShotConfidence)
         {
             timeOnTarget += Time.deltaTime;
         }
         else
         {
-            timeOnTarget -= Time.deltaTime * 0.5f; // Lose confidence faster if off-target, or just reset/decay
+            timeOnTarget -= Time.deltaTime * 0.5f;
         }
-        timeOnTarget = Mathf.Clamp(timeOnTarget, 0f, timeToMaxConfidence);
-        float currentShotConfidence = timeOnTarget / timeToMaxConfidence; // Normalized 0-1
+        timeOnTarget = Mathf.Clamp(timeOnTarget, 0f, _hunterAI.TimeToMaxConfidence);
+        float currentShotConfidence = (Mathf.Approximately(_hunterAI.TimeToMaxConfidence, 0f)) ? 1f : (timeOnTarget / _hunterAI.TimeToMaxConfidence);
 
         // Debugging
         Debug.Log($"AIMING: AimTimeLeft: {_currentAimTime:F2}, AngleToIdeal: {angleToIdealTarget:F2}, Confidence: {currentShotConfidence:F2}");
-
 
         // 5. Check Exit Conditions (Player not visible, out of range)
         //    This needs to use the new Cone Vision IsPlayerVisible once implemented.
@@ -148,7 +147,7 @@ public class HunterAimingState : State
 
         // 6. Decide to Shoot
         bool shouldTakeShot = false;
-        if (currentShotConfidence >= shotConfidenceThreshold)
+        if (currentShotConfidence >= _hunterAI.ShotConfidenceThreshold)
         {
             shouldTakeShot = true;
         }
@@ -156,7 +155,7 @@ public class HunterAimingState : State
         else if (_currentAimTime <= 0f)
         {
             Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Patience ran out, taking a less confident shot!");
-            shouldTakeShot = true; // Could have a lower confidence requirement here or a different flag
+            shouldTakeShot = true;
         }
 
         if (shouldTakeShot)

@@ -17,9 +17,15 @@ public class HunterAI : MonoBehaviour
     public float MeleeRange = 1.5f;
     public int GunDamage = 100;
 
-    [Header("Shooting Accuracy")]
-    [SerializeField]
-    private float weaponSpreadAngle = 2.5f;
+    [Header("Advanced Aiming System")]
+    public float AimCatchUpSpeed = 2.0f; // How quickly the gun tries to catch up to the target point.
+    public float MaxAimSwayAngle = 1.5f; // Max random sway in degrees from the "perfect" aim.
+    public float AimSwaySpeed = 1.0f;      // How quickly the sway oscillates.
+    public float WeaponSpreadAngle = 2.5f;
+    public float TimeToMaxConfidence = 1.5f; // Time needed on target for max confidence.
+    public float ShotConfidenceThreshold = 0.75f; // (0 to 1) Min confidence to take a shot (unless patience runs out)
+    public float MinAngleForShotConfidence = 5.0f; // How close gunDir must be to targetDir to gain confidence (degrees)
+    public float BodyTurnSpeedInAim = 10f; // How fast the Hunter's body orients while aiming
     private Vector3 actualFiringDirection;
 
     [Header("Movement Speeds")]
@@ -156,7 +162,6 @@ public class HunterAI : MonoBehaviour
         if (PlayerTransform == null) return Vector3.zero;
         if (TargetPlayerStatus != null) // Add a log here
         {
-            Debug.Log($"GetPlayerVisibilityCheckPoint: Player IsCrouching: {TargetPlayerStatus.IsCrouching}");
             if (TargetPlayerStatus.IsCrouching)
             {
                 return PlayerTransform.position + PlayerVisibilityPointOffsetCrouching;
@@ -263,8 +268,8 @@ public class HunterAI : MonoBehaviour
 
         // --- Apply Weapon Spread ---
         Quaternion spreadRotation = Quaternion.Euler(
-            Random.Range(-weaponSpreadAngle / 2f, weaponSpreadAngle / 2f),
-            Random.Range(-weaponSpreadAngle / 2f, weaponSpreadAngle / 2f),
+            Random.Range(-WeaponSpreadAngle / 2f, WeaponSpreadAngle / 2f),
+            Random.Range(-WeaponSpreadAngle / 2f, WeaponSpreadAngle / 2f),
             0f
         );
         Vector3 finalShotDirection = spreadRotation * actualFiringDirection; // actualFiringDirection should be world space

@@ -74,10 +74,10 @@ public class PlayerMovement : MonoBehaviour
     private float timeSinceStoppedSprinting = 0f;
     private Vector3 previousFramePosition;
 
-    //references
     private CharacterController controller;
     private PlayerInput controls;
     private Transform playerCamera;
+    private PlayerStatus playerStatus;
 
     private void Awake()
     {
@@ -87,6 +87,11 @@ public class PlayerMovement : MonoBehaviour
         headCheckDistance = (standingHeight - crouchHeight) * 0.9f;
         if (headCheckDistance < 0.01f) headCheckDistance = 0.01f;
 
+        playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus == null)
+        {
+            Debug.LogError("PlayerMovement: PlayerStatus component not found on this GameObject!", this);
+        }
 
         finalSpeed = moveSpeed;
         controller = GetComponent<CharacterController>();
@@ -362,6 +367,10 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
             isCrouching = !isCrouching;
+            if (playerStatus != null)
+            {
+                playerStatus.IsCrouching = isCrouching;
+            }
             if (isCrouching) isSprinting = false;
         }
 
