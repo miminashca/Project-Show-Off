@@ -12,14 +12,13 @@ public class HunterStateMachine : StateMachine
     public HunterShootingState ShootingState { get; private set; }
     public HunterCloseKillingState CloseKillingState { get; private set; }
 
-    // Awake is called before Start
     protected virtual void Awake()
     {
         HunterAI = GetComponent<HunterAI>();
         if (HunterAI == null)
         {
             Debug.LogError("ThimbleHunterStateMachine requires a ThimbleHunterAI component on the same GameObject!", this);
-            enabled = false; // Disable if AI component is missing
+            enabled = false;
             return;
         }
 
@@ -37,14 +36,11 @@ public class HunterStateMachine : StateMachine
     {
         get
         {
-            // Ensure states are initialized before accessing
             if (RoamingState == null)
             {
-                // This case should ideally not happen if Awake runs correctly.
-                // Consider re-initializing states here if necessary, or log an error.
                 Debug.LogError("RoamingState not initialized when InitialState was accessed!", this);
                 // Fallback or force re-initialization if critical
-                Awake(); // Re-run Awake to ensure states are created (use with caution)
+                Awake();
             }
             return RoamingState;
         }
