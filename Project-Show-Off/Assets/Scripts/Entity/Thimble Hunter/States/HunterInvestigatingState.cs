@@ -12,7 +12,7 @@ public class HunterInvestigatingState : State
     private bool _isAtLKP = false;
     private float _lookAroundSubTimer = 0f;
     [SerializeField]
-    private float LOOK_SWEEP_DURATION = 2.0f; // Time for one sweep (e.g., look left)
+    public float LOOK_SWEEP_DURATION = 2.0f; // Time for one sweep (e.g., look left)
     [SerializeField]
     private float LOOK_PAUSE_DURATION = 1.0f; // Pause between sweeps
     private int _lookSweepsCompleted = 0;

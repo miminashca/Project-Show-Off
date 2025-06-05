@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections.Generic; // For NodeGraph if it's a List
+using System.Collections.Generic;
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
@@ -17,6 +17,11 @@ public class HunterAI : MonoBehaviour
     public float MeleeRange = 1.5f;
     public int GunDamage = 100;
 
+    [Header("Shooting Accuracy")]
+    [SerializeField]
+    private float weaponSpreadAngle = 2.5f;
+    private Vector3 actualFiringDirection;
+
     [Header("Movement Speeds")]
     public float MovementSpeedRoaming = 2f;
     public float MovementSpeedInvestigating = 3f;
@@ -31,8 +36,8 @@ public class HunterAI : MonoBehaviour
     [Header("Player Targeting Offsets")]
     public Vector3 PlayerVisibilityPointOffsetStanding = new Vector3(0, 1.6f, 0); // Approx head height when standing
     public Vector3 PlayerVisibilityPointOffsetCrouching = new Vector3(0, 0.9f, 0); // Approx head height when crouching
-    public Vector3 PlayerAimPointOffsetStanding = new Vector3(0, 1.0f, 0);     // Approx torso center when standing
-    public Vector3 PlayerAimPointOffsetCrouching = new Vector3(0, 0.7f, 0);    // Approx torso center when crouching
+    public Vector3 PlayerAimPointOffsetStanding = new Vector3(0, 1.0f, 0);  // Approx torso center when standing
+    public Vector3 PlayerAimPointOffsetCrouching = new Vector3(0, 0.7f, 0); // Approx torso center when crouching
 
     [Header("References")]
     public Transform PlayerTransform;
@@ -170,6 +175,11 @@ public class HunterAI : MonoBehaviour
         return PlayerTransform.position + PlayerAimPointOffsetStanding;
     }
 
+    public void SetActualFiringDirection(Vector3 direction)
+    {
+        actualFiringDirection = direction.normalized;
+    }
+
     void ProcessSensors()
     {
         IsPlayerVisible = false;
@@ -246,52 +256,58 @@ public class HunterAI : MonoBehaviour
 
         if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
         {
-            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform);
+            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, Quaternion.LookRotation(actualFiringDirection), GunMuzzleTransform);
         }
 
         if (PlayerTransform == null || GunMuzzleTransform == null) return;
 
-        Vector3 aimTargetToUse = CurrentConfirmedAimTarget;
-        if (aimTargetToUse == Vector3.zero)
-        {
-            Debug.LogWarning($"{gameObject.name}: CurrentConfirmedAimTarget was zero, using dynamic PlayerAimPoint for shot.");
-            aimTargetToUse = GetPlayerAimPoint(); // Get current best aim point
-            if (aimTargetToUse == Vector3.zero) return; // Player likely gone
-        }
+        // --- Apply Weapon Spread ---
+        Quaternion spreadRotation = Quaternion.Euler(
+            Random.Range(-weaponSpreadAngle / 2f, weaponSpreadAngle / 2f),
+            Random.Range(-weaponSpreadAngle / 2f, weaponSpreadAngle / 2f),
+            0f
+        );
+        Vector3 finalShotDirection = spreadRotation * actualFiringDirection; // actualFiringDirection should be world space
+                                                                             // If actualFiringDirection was relative to hunter's transform, it'd be:
+                                                                             // finalShotDirection = GunMuzzleTransform.rotation * spreadRotation * (Quaternion.LookRotation(actualFiringDirection) * Vector3.forward);
 
-        // Final check: Is this confirmed/derived aim target submerged?
-        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(aimTargetToUse, WaterSurfaceYLevel))
+
+        // --- Submergence Check (for the PLAYER'S general position, not the exact aim point) ---
+        // We are shooting in a general direction. The main concern for water is if the *player* is mostly submerged.
+        // Let's use the player's *base* position or a primary visibility point for a quick submergence check.
+        Vector3 playerCheckPosForSubmergence = GetPlayerAimPoint();
+        if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerCheckPosForSubmergence, WaterSurfaceYLevel))
         {
-            Debug.Log($"{gameObject.name} SHOT aimed at submerged point. Impacting water.");
+            Debug.Log($"{gameObject.name} SHOT FIRED towards generally submerged player area. Impacting water near player.");
+            // Logic to spawn water impact near player's surface position
             if (BulletImpactWaterPrefab != null)
             {
-                Vector3 directionToSubmergedTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
-                Ray waterRay = new Ray(GunMuzzleTransform.position, directionToSubmergedTarget);
                 Plane waterPlane = new Plane(Vector3.up, new Vector3(0, WaterSurfaceYLevel, 0));
-                if (waterPlane.Raycast(waterRay, out float enterDist))
+                Ray waterImpactRay = new Ray(GunMuzzleTransform.position, finalShotDirection); // Use the spread direction
+                if (waterPlane.Raycast(waterImpactRay, out float enterDist))
                 {
-                    if (enterDist <= ShootingRange * 1.2f) // Use shotDistance concept
+                    if (enterDist <= ShootingRange * 1.2f)
                     {
-                        Instantiate(BulletImpactWaterPrefab, waterRay.GetPoint(enterDist), Quaternion.LookRotation(Vector3.down));
+                        Instantiate(BulletImpactWaterPrefab, waterImpactRay.GetPoint(enterDist), Quaternion.LookRotation(waterPlane.normal));
                     }
                 }
             }
-            return; // Shot is ineffective
+            return;
         }
 
-        // Proceed with raycast if aim target is not submerged
-        Vector3 directionToTarget = (aimTargetToUse - GunMuzzleTransform.position).normalized;
+        // --- Raycast with the final spread direction ---
         float shotDistance = ShootingRange * 1.2f;
-
         RaycastHit hit;
         int hunterLayer = LayerMask.NameToLayer("Hunter");
         LayerMask shootableMask = ~(1 << hunterLayer);
 
-        if (Physics.Raycast(GunMuzzleTransform.position, directionToTarget, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
+        Debug.DrawRay(GunMuzzleTransform.position, finalShotDirection * shotDistance, Color.red, 2.0f); // Visualize actual shot
+
+        if (Physics.Raycast(GunMuzzleTransform.position, finalShotDirection, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
         {
-            if (hit.collider.CompareTag("Player"))
+            if (hit.collider.transform.IsChildOf(PlayerTransform) || hit.collider.transform == PlayerTransform) // More robust player hit check
             {
-                // Check if the *actual hit point on the player* is submerged (e.g., shot low, hit legs in water)
+                // Check if the *actual hit point on the player* is submerged
                 if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point, WaterSurfaceYLevel))
                 {
                     Debug.Log($"{gameObject.name} SHOT HIT Player's submerged part at {hit.point}. Impacting water.");
@@ -300,7 +316,7 @@ public class HunterAI : MonoBehaviour
                 else
                 {
                     Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name} at {hit.point}");
-                    PlayerHealth playerHealth = hit.collider.GetComponent<PlayerHealth>();
+                    PlayerHealth playerHealth = hit.collider.GetComponentInParent<PlayerHealth>(); // GetComponentInParent is safer if colliders are on children
                     if (playerHealth != null) playerHealth.TakeDamage(GunDamage);
                     if (BulletImpactPlayerPrefab != null) Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
