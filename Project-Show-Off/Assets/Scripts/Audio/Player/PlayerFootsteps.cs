@@ -2,7 +2,6 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using System.Collections.Generic;
-using System.Linq; // Required for OrderByDescending
 
 public class PlayerFootsteps : MonoBehaviour
 {
@@ -41,7 +40,7 @@ public class PlayerFootsteps : MonoBehaviour
     private float currentMovementState = 0.5f;
 
     private struct FootstepSoundBlend
-    { /* ... (no changes needed here) ... */
+    {
         public float dirt; public float mud; public float wood; public float grass;
         public FootstepSoundBlend(float d, float m, float w, float g) { dirt = d; mud = m; wood = w; grass = g; }
     }
@@ -53,14 +52,21 @@ public class PlayerFootsteps : MonoBehaviour
     private float currentShallowWaterLevel = 0f;
     private float currentDeepWaterLevel = 0f;
 
-    // --- NEW: For multiple water zones ---
     private List<WaterZone> activeWaterZones = new List<WaterZone>();
-    private Transform currentActiveWaterSurface = null; // The surface currently affecting the player
-    // --- END NEW ---
+    private Transform currentActiveWaterSurface = null;
+    private WaterZone currentActiveTypedWaterZone = null;
+
+    private PlayerStatus playerStatus;
 
     void Start()
     {
-        if (footstepsEvent.IsNull) { /* ... error log ... */ }
+        playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus == null)
+        {
+            Debug.LogError("PlayerFootsteps: PlayerStatus component not found on the player!", this);
+        }
+
+        if (footstepsEvent.IsNull) { Debug.LogError("PlayerFootsteps: Footsteps Event is not assigned.", this); }
 
         materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.2f, m: 0.1f, w: 0.0f, g: 0.7f));
         materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.5f));
@@ -70,35 +76,37 @@ public class PlayerFootsteps : MonoBehaviour
         currentGroundBlend = materialBlends["Default"];
 
         if (groundLayerMask == 0) { Debug.LogWarning("PlayerFootsteps: Ground Layer Mask is not set."); }
-        // if (waterSurfaceTransform == null) { Debug.LogWarning("PlayerFootsteps: Water Surface Transform is not assigned."); } // <<< REMOVED THIS WARNING
 
-        // Validate depth settings
-        if (fullShallowDepth < minDepthForShallowEffect) { Debug.LogWarning("..."); fullShallowDepth = minDepthForShallowEffect; }
-        if (fullDeepDepth < fullShallowDepth) { Debug.LogWarning("..."); fullDeepDepth = fullShallowDepth; }
+        if (fullShallowDepth < minDepthForShallowEffect)
+        {
+            Debug.LogWarning("PlayerFootsteps: Full Shallow Depth should be >= Min Depth for Shallow Effect. Adjusting."); fullShallowDepth = minDepthForShallowEffect;
 
-        activeWaterZones = new List<WaterZone>(); // Initialize the list
+        }
+        if (fullDeepDepth < fullShallowDepth)
+        {
+            Debug.LogWarning("PlayerFootsteps: Full Deep Depth should be >= Full Shallow Depth. Adjusting."); fullDeepDepth = fullShallowDepth;
+        }
+
+        activeWaterZones = new List<WaterZone>();
     }
 
     void Update()
     {
-        // Update current active water surface based on zones (if player moved vertically within same zones)
-        // This could be optimized to only run if player Y changed significantly, but for now, every frame is fine.
-        RecalculateActiveWaterSurface();
+        RecalculateActiveWaterSurfaceAndZone();
         UpdateWaterLevels();
     }
 
-    // --- NEW: Trigger methods for Water Zones ---
     void OnTriggerEnter(Collider other)
     {
+        // This now gets the unified WaterZone
         WaterZone zone = other.GetComponent<WaterZone>();
         if (zone != null && zone.waterSurfacePlane != null)
         {
             if (!activeWaterZones.Contains(zone))
             {
                 activeWaterZones.Add(zone);
-                // Debug.Log($"Entered Water Zone: {zone.gameObject.name}, Surface: {zone.waterSurfacePlane.name}");
+                // Debug.Log($"PlayerFootsteps: Entered Water Zone: {zone.gameObject.name}, Surface Y via plane: {zone.SurfaceYLevel}");
             }
-            // RecalculateActiveWaterSurface(); // Called in Update anyway
         }
     }
 
@@ -110,9 +118,8 @@ public class PlayerFootsteps : MonoBehaviour
             if (activeWaterZones.Contains(zone))
             {
                 activeWaterZones.Remove(zone);
-                // Debug.Log($"Exited Water Zone: {zone.gameObject.name}");
+                // Debug.Log($"PlayerFootsteps: Exited Water Zone: {zone.gameObject.name}");
             }
-            // RecalculateActiveWaterSurface(); // Called in Update anyway
         }
     }
 
@@ -120,37 +127,52 @@ public class PlayerFootsteps : MonoBehaviour
     /// Determines the most relevant water surface based on active zones and player position.
     /// Sets currentActiveWaterSurface.
     /// </summary>
-    void RecalculateActiveWaterSurface()
+    void RecalculateActiveWaterSurfaceAndZone() // Renamed and Modified
     {
-        currentActiveWaterSurface = null; // Reset
+        Transform newActiveSurface = null;
+        WaterZone newTypedActiveZone = null; // To store the best WaterZone component
+
         float highestSubmergedSurfaceY = float.MinValue;
         float playerFeetY = transform.position.y + playerFeetYOffset;
 
+        // Filter out zones that might have been destroyed or their plane removed
+        activeWaterZones.RemoveAll(zone => zone == null || zone.waterSurfacePlane == null);
+
         foreach (WaterZone zone in activeWaterZones)
         {
-            if (zone.waterSurfacePlane != null)
+            // zone.SurfaceYLevel now correctly gets zone.waterSurfacePlane.position.y
+            float candidateSurfaceY = zone.SurfaceYLevel;
+
+            if (playerFeetY < candidateSurfaceY) // Player is submerged in this zone's water
             {
-                float candidateSurfaceY = zone.waterSurfacePlane.position.y;
-                // Player is considered submerged if their feet are below this surface
-                if (playerFeetY < candidateSurfaceY)
+                if (candidateSurfaceY > highestSubmergedSurfaceY)
                 {
-                    // If this surface is higher than any other surface the player is also submerged in, it's the new candidate
-                    if (candidateSurfaceY > highestSubmergedSurfaceY)
-                    {
-                        highestSubmergedSurfaceY = candidateSurfaceY;
-                        currentActiveWaterSurface = zone.waterSurfacePlane;
-                    }
+                    highestSubmergedSurfaceY = candidateSurfaceY;
+                    newActiveSurface = zone.waterSurfacePlane;
+                    newTypedActiveZone = zone; // This is the currently dominant water zone
                 }
             }
         }
+
+        currentActiveWaterSurface = newActiveSurface;
+        currentActiveTypedWaterZone = newTypedActiveZone;
+
+        // Update PlayerStatus with the current dominant water zone
+        if (playerStatus != null)
+        {
+            if (playerStatus.CurrentWaterZone != currentActiveTypedWaterZone)
+            {
+                playerStatus.CurrentWaterZone = currentActiveTypedWaterZone;
+                // Debug.Log($"PlayerStatus.CurrentWaterZone updated to: {(currentActiveTypedWaterZone != null ? currentActiveTypedWaterZone.gameObject.name : "null")} by PlayerFootsteps");
+            }
+        }
+
         // if (currentActiveWaterSurface != null) Debug.Log("Active water surface: " + currentActiveWaterSurface.name);
         // else Debug.Log("Not in any relevant water surface");
     }
-    // --- END NEW ---
 
     void UpdateWaterLevels()
     {
-        // --- MODIFIED: Use currentActiveWaterSurface ---
         if (currentActiveWaterSurface == null)
         {
             currentShallowWaterLevel = 0f;
@@ -159,7 +181,6 @@ public class PlayerFootsteps : MonoBehaviour
         }
 
         float waterSurfaceY = currentActiveWaterSurface.position.y;
-        // --- END MODIFIED ---
         float playerFeetY = transform.position.y + playerFeetYOffset;
         float submersionDepth = waterSurfaceY - playerFeetY;
 
@@ -175,7 +196,7 @@ public class PlayerFootsteps : MonoBehaviour
     }
 
     void DetectGroundMaterial()
-    { /* ... (no changes needed here) ... */
+    {
         Vector3 rayOrigin = transform.position + raycastOriginOffset;
         RaycastHit hit;
         string determinedKey = "Default";
@@ -236,7 +257,7 @@ public class PlayerFootsteps : MonoBehaviour
         }
     }
     private string GetDominantTerrainLayerName(Terrain terrain, Vector3 worldPos)
-    { /* ... (no changes needed here) ... */
+    {
         TerrainData terrainData = terrain.terrainData;
         Vector3 terrainPos = terrain.transform.position;
         int mapX = (int)(((worldPos.x - terrainPos.x) / terrainData.size.x) * (terrainData.alphamapWidth - 1));
@@ -263,7 +284,7 @@ public class PlayerFootsteps : MonoBehaviour
     }
 
     public void PlayFootstep()
-    { /* ... (no changes needed here) ... */
+    {
         if (footstepsEvent.IsNull) return;
         DetectGroundMaterial();
         EventInstance currentFootstepInstance = RuntimeManager.CreateInstance(footstepsEvent);
@@ -274,7 +295,7 @@ public class PlayerFootsteps : MonoBehaviour
         currentFootstepInstance.release();
     }
     private void SetEnvironmentParametersForInstance(EventInstance instance)
-    { /* ... (no changes needed here) ... */
+    {
         if (!instance.isValid()) { Debug.LogWarning("..."); return; }
         float groundAttenuation = 1f;
         if (currentDeepWaterLevel > 0.01f) { groundAttenuation = 1f - groundSoundReductionInDeep; }
@@ -288,7 +309,7 @@ public class PlayerFootsteps : MonoBehaviour
         instance.setParameterByName(PARAM_DEEP_WATER, currentDeepWaterLevel);
     }
     private void SetMovementStateParameterForInstance(EventInstance instance)
-    { /* ... (no changes needed here) ... */
+    {
         if (instance.isValid()) { instance.setParameterByName(PARAM_MOVEMENT_STATE, currentMovementState); }
     }
     public void SetMovementState(float stateValue) { currentMovementState = stateValue; }
@@ -299,11 +320,9 @@ public class PlayerFootsteps : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(rayOrigin, rayOrigin + Vector3.down * raycastDistance);
 
-        // --- MODIFIED: Use currentActiveWaterSurface ---
         if (currentActiveWaterSurface != null)
         {
             float waterY = currentActiveWaterSurface.position.y;
-            // --- END MODIFIED ---
             float playerFeetY = transform.position.y + playerFeetYOffset;
             Vector3 playerFeetPos = new Vector3(transform.position.x, playerFeetY, transform.position.z);
 

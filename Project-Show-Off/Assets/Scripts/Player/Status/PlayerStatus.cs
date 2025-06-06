@@ -10,23 +10,6 @@ public class PlayerStatus : MonoBehaviour
     private PlayerMovement _playerMovement;
     public bool IsMoving => _playerMovement != null && _playerMovement.isMoving;
 
-    // For dynamic water level check by Hunter
-    public bool IsSubmerged(Vector3 checkPosition)
-    {
-        if (CurrentWaterZone != null)
-        {
-            return checkPosition.y < CurrentWaterZone.SurfaceYLevel;
-        }
-        return false;
-    }
-
-    public bool IsSubmerged(Vector3 checkPosition, float specificWaterSurfaceY)
-    {
-        bool inAnyWater = (CurrentWaterZone != null) || (GetComponent<WaterSensor>() != null && GetComponent<WaterSensor>().IsPlayerUnderwater());
-        return inAnyWater && checkPosition.y < specificWaterSurfaceY;
-    }
-
-
     void Awake()
     {
         _playerMovement = GetComponent<PlayerMovement>();
@@ -35,4 +18,33 @@ public class PlayerStatus : MonoBehaviour
             Debug.LogError("PlayerStatus: PlayerMovement component not found!", this);
         }
     }
+    public bool IsSubmerged(Vector3 checkPosition)
+    {
+        if (CurrentWaterZone != null)
+        {
+            // Accesses the SurfaceYLevel property of the unified WaterZone
+            return checkPosition.y < CurrentWaterZone.SurfaceYLevel;
+        }
+        return false;
+    }
+
+    public bool IsSubmerged(Vector3 checkPosition, float specificWaterSurfaceY)
+    {
+        bool inAnyManagedWaterSystem = (CurrentWaterZone != null && checkPosition.y < CurrentWaterZone.SurfaceYLevel);
+
+        WaterSensor sensor = GetComponent<WaterSensor>(); // GetComponent can be slow in frequent calls, consider caching if performance is an issue
+        bool inSensorWater = (sensor != null && sensor.IsPlayerUnderwater() && checkPosition.y < specificWaterSurfaceY);
+
+
+        float authoritativeSurfaceY = specificWaterSurfaceY;
+        if (CurrentWaterZone != null)
+        {
+            authoritativeSurfaceY = CurrentWaterZone.SurfaceYLevel;
+        }
+
+        bool inWaterByAnySystem = (CurrentWaterZone != null) || (sensor != null && sensor.IsPlayerUnderwater());
+
+        return inWaterByAnySystem && checkPosition.y < authoritativeSurfaceY;
+    }
+
 }
