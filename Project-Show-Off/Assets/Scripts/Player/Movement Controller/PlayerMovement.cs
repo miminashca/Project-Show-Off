@@ -47,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
     private EventInstance sprintingBreathInstance;
     private EventInstance afterSprintingBreathInstance; // Instance for the one-shot after-sprint breath
     private bool previousIsSprintingState = false;
+    private bool staminaDroppedBelowHalfDuringThisSprint = false; // Flag to track if stamina dropped below half during the current sprint
     // END CHANGE
 
     //const
@@ -116,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
             afterSprintingBreathInstance = RuntimeManager.CreateInstance(afterSprintingBreathEventPath);
             RuntimeManager.AttachInstanceToGameObject(afterSprintingBreathInstance, gameObject);
         }
+        staminaDroppedBelowHalfDuringThisSprint = false; // Explicitly initialize, though default is false
         // END CHANGE
     }
     private void OnEnable()
@@ -138,6 +140,7 @@ public class PlayerMovement : MonoBehaviour
         }
         isSprinting = false;
         previousIsSprintingState = false;
+        staminaDroppedBelowHalfDuringThisSprint = false; // Reset flag on disable
         // END CHANGE
     }
 
@@ -165,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
         HandleStamina();
 
         // NEW CHANGE
-        HandleSprintingAudio();
+        HandleSprintingAudioFMOD(); // Renamed method and it now uses the new logic
         // END CHANGE
 
         Gravity();
@@ -193,17 +196,11 @@ public class PlayerMovement : MonoBehaviour
     private void StopEventInstanceFMOD(EventInstance eventInstance, FMOD.Studio.STOP_MODE stopMode = FMOD.Studio.STOP_MODE.ALLOWFADEOUT)
     {
         if (!eventInstance.isValid()) return;
-
-        // Optional: Check if it's playing before stopping, though stopping a stopped instance is often safe.
-        // PLAYBACK_STATE playbackState;
-        // eventInstance.getPlaybackState(out playbackState);
-        // if (playbackState == PLAYBACK_STATE.PLAYING || playbackState == PLAYBACK_STATE.STARTING)
-        // {
         eventInstance.stop(stopMode);
-        // }
     }
 
-    private void HandleSprintingAudio()
+    // Renamed from HandleSprintingAudio and updated with new logic
+    private void HandleSprintingAudioFMOD()
     {
         bool justStartedSprinting = isSprinting && !previousIsSprintingState;
         bool justStoppedSprinting = !isSprinting && previousIsSprintingState;
@@ -213,17 +210,22 @@ public class PlayerMovement : MonoBehaviour
             // Player started sprinting
             StartEventInstanceFMOD(sprintingBreathInstance);
 
-            // Stop the "after sprinting" breath if it was playing
-            StopEventInstanceFMOD(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Or IMMEDIATE if a hard cut is preferred
+            // Stop the "after sprinting" breath if it was playing (e.g. player quickly stops/starts)
+            StopEventInstanceFMOD(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
         }
         else if (justStoppedSprinting)
         {
             // Player stopped sprinting
             StopEventInstanceFMOD(sprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
 
-            // Play the one-shot "after sprinting" breath
-            // Ensure the "afterSprintingBreathEventPath" FMOD event is a one-shot (no loop region)
-            StartEventInstanceFMOD(afterSprintingBreathInstance);
+            // NEW CHANGE
+            // Play the one-shot "after sprinting" breath ONLY if stamina dropped below half during that sprint
+            if (staminaDroppedBelowHalfDuringThisSprint)
+            {
+                StartEventInstanceFMOD(afterSprintingBreathInstance);
+            }
+            // staminaDroppedBelowHalfDuringThisSprint will be reset by HandleStamina when a new sprint starts.
+            // END CHANGE
         }
 
         previousIsSprintingState = isSprinting;
@@ -235,30 +237,56 @@ public class PlayerMovement : MonoBehaviour
         bool sprintInputActive = controls.Player.Sprint.inProgress;
         bool canPotentiallySprint = sprintInputActive && isMoving && !isCrouching;
 
-        if (isSprinting)
+        if (isSprinting) // Player is currently in a sprinting state
         {
             if (canPotentiallySprint && currentStamina > 0)
             {
                 currentStamina -= staminaDrainRate * Time.deltaTime;
                 currentStamina = Mathf.Max(0, currentStamina);
                 timeSinceStoppedSprinting = 0f;
+
+                // NEW CHANGE
+                // Check if stamina has dropped below half during this sprint session.
+                // Only set to true once per sprint if condition met.
+                if (!staminaDroppedBelowHalfDuringThisSprint && currentStamina <= maxStamina / 2f)
+                {
+                    staminaDroppedBelowHalfDuringThisSprint = true;
+                }
+                // END CHANGE
             }
-            else
+            else // Conditions to continue sprinting are no longer met (e.g., stamina depleted, stopped moving, crouched)
             {
-                isSprinting = false;
+                isSprinting = false; // Stop sprinting
             }
         }
-        else
+        else // Player is not currently in a sprinting state
         {
             if (canPotentiallySprint && currentStamina > minStaminaToSprint)
             {
-                isSprinting = true;
+                isSprinting = true; // Start sprinting
+
+                // NEW CHANGE
+                // This marks the beginning of a new sprint session, so reset the flag.
+                staminaDroppedBelowHalfDuringThisSprint = false;
+                // END CHANGE
+
+                // Drain stamina for the frame sprint starts
                 currentStamina -= staminaDrainRate * Time.deltaTime;
                 currentStamina = Mathf.Max(0, currentStamina);
                 timeSinceStoppedSprinting = 0f;
+
+                // NEW CHANGE
+                // Check if stamina (after initial drain on this frame) is already below half.
+                // This handles cases where starting to sprint immediately pushes stamina below threshold.
+                if (!staminaDroppedBelowHalfDuringThisSprint && currentStamina <= maxStamina / 2f)
+                {
+                    staminaDroppedBelowHalfDuringThisSprint = true;
+                }
+                // END CHANGE
             }
         }
 
+        // Stamina Regeneration
         if (!isSprinting && currentStamina < maxStamina)
         {
             timeSinceStoppedSprinting += Time.deltaTime;
