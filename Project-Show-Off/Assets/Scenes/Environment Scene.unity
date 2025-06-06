@@ -2053,7 +2053,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a462b8df75e6d614c94430806f499c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waterSurfacePlane: {fileID: 164524329}
 --- !u!65 &294858252
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2838,6 +2837,19 @@ MonoBehaviour:
   ShootingRange: 10
   MeleeRange: 1.5
   GunDamage: 100
+  MovementSpeedRoaming: 3
+  MovementSpeedInvestigating: 5
+  MovementSpeedChasing: 5
+  BaseDetectionRate: 0.5
+  DetectionDecayRate: 0.3
+  FullySpottedLossThreshold: 0.8
+  CrouchVisibilityMultiplier: 0.6
+  MovementVisibilityMultiplier: 1.5
+  StationaryVisibilityMultiplier: 1
+  TallGrassConcealmentMultiplier: 0.4
+  LanternRaisedVisibilityMultiplier: 2
+  ShallowWaterConcealmentMultiplier: 0.7
+  DeepSubmersionConcealmentMultiplier: 0.05
   AimCatchUpSpeed: 2
   MaxAimSwayAngle: 1.5
   AimSwaySpeed: 1
@@ -2846,9 +2858,6 @@ MonoBehaviour:
   ShotConfidenceThreshold: 0.75
   MinAngleForShotConfidence: 5
   BodyTurnSpeedInAim: 10
-  MovementSpeedRoaming: 3
-  MovementSpeedInvestigating: 5
-  MovementSpeedChasing: 5
   AimTime: 2
   ReloadTime: 3
   InvestigationDuration: 8
@@ -2857,10 +2866,10 @@ MonoBehaviour:
   PlayerVisibilityPointOffsetCrouching: {x: 0, y: 0.9, z: 0}
   PlayerAimPointOffsetStanding: {x: 0, y: 1, z: 0}
   PlayerAimPointOffsetCrouching: {x: 0, y: 0.7, z: 0}
+  WaterSurfaceYLevel: 0.5
   PlayerTransform: {fileID: 686111683}
   GunMuzzleTransform: {fileID: 737652665}
   EyeLevelTransform: {fileID: 1554438533}
-  WaterSurfaceYLevel: 0.5
   MuzzleFlashPrefab: {fileID: 0}
   BulletImpactPlayerPrefab: {fileID: 0}
   BulletImpactObstaclePrefab: {fileID: 0}
@@ -4824,7 +4833,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -38
+      value: 92.4
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4832,7 +4841,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 80
+      value: 93.5
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -6038,7 +6047,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a462b8df75e6d614c94430806f499c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waterSurfacePlane: {fileID: 1128472228}
 --- !u!65 &799472362
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11556,7 +11564,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a462b8df75e6d614c94430806f499c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waterSurfacePlane: {fileID: 1248161997}
 --- !u!65 &1600285146
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13397,6 +13404,63 @@ MonoBehaviour:
   hunterDetectionRadius: 50
   quietZoneDistanceHunter: 30
   hunterScanInterval: 2
+--- !u!1001 &1951909146
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 80.96
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10.29
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 122.25
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
+      propertyPath: m_Name
+      value: Weeping_Willow_Landmark
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 968ae206380bc874faa9f681fc6ec012, type: 3}
 --- !u!1 &1986879420
 GameObject:
   m_ObjectHideFlags: 0
@@ -14516,3 +14580,4 @@ SceneRoots:
   - {fileID: 357537937}
   - {fileID: 1910551307}
   - {fileID: 851654569}
+  - {fileID: 1951909146}
