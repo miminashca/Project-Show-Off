@@ -357,6 +357,7 @@ public class PlayerMovement : MonoBehaviour
     private void SmoothSpeedTransition()
     {
         finalSpeed = Mathf.Lerp(finalSpeed, targetSpeed, Time.deltaTime * moveLerpSpeed);
+        //Debug.Log("final speed: " + finalSpeed);
     }
 
     private void ApplyMovement()
