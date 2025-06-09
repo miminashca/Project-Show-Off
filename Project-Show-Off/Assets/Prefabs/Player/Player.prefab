@@ -214,8 +214,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enable: 1
-  amplitude: 0.04
-  frequency: 8.2
+  amplitude: 0.015
+  frequency: 7
   bobLerpSpeed: 10
 --- !u!20 &5603431912760654469
 Camera:
@@ -538,16 +538,16 @@ MonoBehaviour:
   crouchHeight: 1.5
   standingHeight: 2.5
   crouchLerpSpeed: 8
-  playerFootsteps: {fileID: 7028059540663029170}
-  minMovementSpeedForFootsteps: 1
-  baseFootstepInterval: 0.7
-  sprintFootstepMultiplier: 0.7
-  crouchFootstepMultiplier: 1.3
   maxStamina: 100
   staminaDrainRate: 15
   staminaRegenRate: 10
   staminaRegenDelay: 2
   minStaminaToSprint: 5
+  playerFootsteps: {fileID: 7028059540663029170}
+  minMovementSpeedForFootsteps: 1
+  baseFootstepInterval: 0.7
+  sprintFootstepMultiplier: 0.7
+  crouchFootstepMultiplier: 1.3
   sprintingBreathEventPath:
     Guid:
       Data1: 1858181766
@@ -684,6 +684,17 @@ MonoBehaviour:
       Data3: 109357979
       Data4: 1375971050
     Path: event:/Player/Footsteps
+  raycastDistance: 1.5
+  raycastOriginOffset: {x: 0, y: 0.5, z: 0}
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  playerFeetYOffset: 0
+  minDepthForShallowEffect: 0.05
+  fullShallowDepth: 0.2
+  fullDeepDepth: 1.5
+  groundSoundReductionInShallow: 0.6
+  groundSoundReductionInDeep: 1
 --- !u!114 &2451448375663383542
 MonoBehaviour:
   m_ObjectHideFlags: 0
