@@ -60,6 +60,7 @@ public class TutorialCrouchPopUp : MonoBehaviour
         {
             cg.interactable = false;
             cg.blocksRaycasts = false;
+            cg.gameObject.SetActive(false);
         }
 
         isFading = false;
