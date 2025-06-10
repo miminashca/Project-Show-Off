@@ -151,6 +151,11 @@ public class InspectionManager : MonoBehaviour
     {
         if (isInspecting)
         {
+            if(inspectionLight) inspectionLight.enabled = false;
+            if (lantern && lanternInitiallyActive)
+            {
+                lantern.SetActive(true);
+            }
             CollectCurrentClue();
         } 
     }
