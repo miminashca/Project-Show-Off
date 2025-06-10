@@ -10,6 +10,11 @@ public class PlayerStatus : MonoBehaviour
     private PlayerMovement _playerMovement;
     public bool IsMoving => _playerMovement != null && _playerMovement.isMoving;
 
+    [Header("AI Visibility")]
+    public Transform HeadVisibilityPoint;
+    public Transform TorsoVisibilityPoint;
+    public Transform FeetVisibilityPoint; // Optional but good for crouching/low cover
+
     void Awake()
     {
         _playerMovement = GetComponent<PlayerMovement>();
@@ -18,6 +23,7 @@ public class PlayerStatus : MonoBehaviour
             Debug.LogError("PlayerStatus: PlayerMovement component not found!", this);
         }
     }
+
     public bool IsSubmerged(Vector3 checkPosition)
     {
         if (CurrentWaterZone != null)
@@ -47,4 +53,11 @@ public class PlayerStatus : MonoBehaviour
         return inWaterByAnySystem && checkPosition.y < authoritativeSurfaceY;
     }
 
+    // A helper property to easily access them
+    public Transform[] GetVisibilityPoints()
+    {
+        // You can add logic here if some points shouldn't be active
+        return new Transform[] { HeadVisibilityPoint, TorsoVisibilityPoint, FeetVisibilityPoint };
+    }
+    
 }

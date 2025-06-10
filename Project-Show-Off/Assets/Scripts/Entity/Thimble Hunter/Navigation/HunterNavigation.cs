@@ -6,6 +6,7 @@ using System.Linq;
 public class HunterNavigation : MonoBehaviour
 {
     private HunterAI _hunterAI;
+    private Camera _playerCamera;
 
     [Header("Roaming Node Graph")]
     public List<Transform> RoamingNodes = new List<Transform>();
@@ -30,6 +31,11 @@ public class HunterNavigation : MonoBehaviour
         {
             Debug.LogError("HunterNavigation requires a ThimbleHunterAI component on the same GameObject!", this);
             enabled = false;
+        }
+
+        if (_hunterAI.PlayerTransform != null)
+        {
+            _playerCamera = Camera.main;
         }
 
         if (RoamingNodes.Count == 0)
@@ -81,10 +87,19 @@ public class HunterNavigation : MonoBehaviour
     public Transform GetSuperpositionNode()
     {
         if (RoamingNodes.Count == 0 || _hunterAI.PlayerTransform == null) return null;
+        if (_playerCamera == null) _playerCamera = Camera.main; // Try to get it again if it was null
+        if (_playerCamera == null)
+        {
+            Debug.LogWarning("Superposition check failed: Player Camera not found!");
+            return GetRandomRoamNode(); // Fallback if no camera
+        }
+
 
         List<Transform> candidateNodes = new List<Transform>();
         Vector3 playerPos = _hunterAI.PlayerTransform.position;
         Vector3 hunterPos = _hunterAI.transform.position;
+        Vector3 playerCamPos = _playerCamera.transform.position;
+        LayerMask obstacleMask = ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Hunter")); // Ignore player and hunter
 
         foreach (Transform node in RoamingNodes)
         {
@@ -93,31 +108,22 @@ public class HunterNavigation : MonoBehaviour
             float distToPlayer = Vector3.Distance(node.position, playerPos);
             float distToHunter = Vector3.Distance(node.position, hunterPos);
 
-            // Basic distance checks
+            // Basic distance checks (same as before)
             if (distToPlayer >= MinSuperpositionDistFromPlayer &&
                 distToPlayer <= MaxSuperpositionDistFromPlayer &&
                 distToHunter >= MinDistFromHunterForSuperposition)
             {
-                // Line of Sight Check from Player to Node (we want it to be NOT visible)
-                // This is a simplified check; a more robust one might involve checking from player's camera.
-                // We want the Hunter to spawn "around a corner" or "out of sight".
-                Vector3 directionToNodeFromPlayer = (node.position - (_hunterAI.PlayerTransform.position + Vector3.up * 1.5f)).normalized; // Player eye level approx
-                RaycastHit hit;
-                // Check if there's an obstacle between player and the node
-                if (Physics.Raycast(_hunterAI.PlayerTransform.position + Vector3.up * 1.5f,
-                                    directionToNodeFromPlayer,
-                                    out hit,
-                                    distToPlayer * 0.95f, // Check slightly less than full distance to avoid node itself blocking
-                                    ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Hunter")), // Ignore player and hunter layers
-                                    QueryTriggerInteraction.Ignore))
+                // --- NEW: Player Line of Sight Check ---
+                // Is the node hidden from the player's view?
+                Vector3 dirToNodeFromPlayer = (node.position - playerCamPos).normalized;
+                float distToNodeFromPlayer = Vector3.Distance(node.position, playerCamPos);
+
+                // If a raycast from the player's camera HITS something before the node, it means the node is obscured.
+                if (Physics.Raycast(playerCamPos, dirToNodeFromPlayer, distToNodeFromPlayer * 0.95f, obstacleMask, QueryTriggerInteraction.Ignore))
                 {
-                    // If something is hit, it means the node is likely obscured from player's current view
+                    // This is a good candidate! It's out of the player's sight.
                     candidateNodes.Add(node);
                 }
-                // If nothing is hit, the path to the node MIGHT be clear. We prefer obscured nodes.
-                // For a simpler start, you can skip the LoS check for superposition,
-                // or invert it if you want nodes the player *could* soon see.
-                // The current logic prefers nodes the player *cannot* currently see directly.
             }
         }
 

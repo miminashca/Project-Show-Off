@@ -173,69 +173,75 @@ public class HunterAI : MonoBehaviour
 
     void ProcessSensorsAndDetectionLogic()
     {
-        bool hasClearLineOfSightToPlayerPoint = false;
-        Vector3 playerVisibilityPoint = GetPlayerVisibilityCheckPoint();
-
-        // 1. Line of Sight (LoS) Check
-        if (playerVisibilityPoint != Vector3.zero && EyeLevelTransform != null)
+        // Exit early if we have no target
+        if (PlayerTransform == null || TargetPlayerStatus == null)
         {
-            // Check if the visibility point itself is submerged (using dynamic water level)
-            bool isVisibilityPointSubmerged = TargetPlayerStatus.IsSubmerged(playerVisibilityPoint);
-
-            if (isVisibilityPointSubmerged)
+            if (DetectionProgress > 0)
             {
-                hasClearLineOfSightToPlayerPoint = false; // Can't see a point that's underwater directly
+                DetectionProgress = Mathf.Clamp01(DetectionProgress - DetectionDecayRate * Time.deltaTime);
+                UpdateFullySpottedStatus();
             }
-            else
+            return;
+        }
+
+        int visiblePoints = 0;
+        Vector3 directionToPlayerCenter = (PlayerTransform.position - EyeLevelTransform.position).normalized;
+        float distanceToPlayer = Vector3.Distance(EyeLevelTransform.position, PlayerTransform.position);
+
+        // --- Broad Phase Check: Is the player even generally in the cone and range? ---
+        // This is a cheap check to see if we should bother with expensive raycasts.
+        if (distanceToPlayer <= VisionConeRange &&
+            Vector3.Angle(EyeLevelTransform.forward, directionToPlayerCenter) <= VisionConeAngle / 2f)
+        {
+            // --- Detailed Volumetric LoS Check ---
+            Transform[] playerVisibilityPoints = TargetPlayerStatus.GetVisibilityPoints();
+            int hunterLayer = LayerMask.NameToLayer("Hunter");
+            LayerMask ignoreHunterMask = ~(1 << hunterLayer);
+
+            foreach (var point in playerVisibilityPoints)
             {
-                Vector3 directionToPlayer = playerVisibilityPoint - EyeLevelTransform.position;
-                float distanceToPlayer = directionToPlayer.magnitude;
-
-                if (distanceToPlayer <= VisionConeRange)
+                // 1. Is the specific point submerged? If so, the hunter can't see it.
+                if (TargetPlayerStatus.IsSubmerged(point.position))
                 {
-                    if (Vector3.Angle(EyeLevelTransform.forward, directionToPlayer.normalized) <= VisionConeAngle / 2f)
-                    {
-                        RaycastHit hit;
-                        int hunterLayer = LayerMask.NameToLayer("Hunter");
-                        LayerMask ignoreHunterMask = ~(1 << hunterLayer);
+                    continue; // Skip to the next point
+                }
 
-                        if (Physics.Raycast(EyeLevelTransform.position, directionToPlayer.normalized, out hit, VisionConeRange, ignoreHunterMask, QueryTriggerInteraction.Ignore))
-                        {
-                            if (hit.collider.CompareTag("Player")) // Or more robust check
-                            {
-                                hasClearLineOfSightToPlayerPoint = true;
-                                LastKnownPlayerPosition = PlayerTransform.position;
-                            }
-                        }
+                // 2. Is there a clear line of sight to this non-submerged point?
+                Vector3 directionToPoint = point.position - EyeLevelTransform.position;
+                float distanceToPoint = directionToPoint.magnitude; // Use distance to the specific point
+
+                if (Physics.Raycast(EyeLevelTransform.position, directionToPoint.normalized, out RaycastHit hit, distanceToPoint + 0.1f, ignoreHunterMask, QueryTriggerInteraction.Ignore))
+                {
+                    // We hit something. Was it the player?
+                    if (hit.transform.IsChildOf(PlayerTransform) || hit.transform == PlayerTransform)
+                    {
+                        visiblePoints++;
                     }
                 }
             }
         }
 
-        // 2. Update Detection Progress
-        if (hasClearLineOfSightToPlayerPoint)
+        // --- Update Detection Progress based on how many points were visible ---
+        if (visiblePoints > 0)
         {
-            float currentRate = BaseDetectionRate;
+            LastKnownPlayerPosition = PlayerTransform.position;
 
-            // Apply Stance Multiplier
+            // The "visibility score" (0 to 1) based on how much of the player is visible
+            float visibilityScore = (float)visiblePoints / (float)TargetPlayerStatus.GetVisibilityPoints().Length;
+            float currentRate = BaseDetectionRate * visibilityScore;
+
+            // --- Apply all concealment/visibility multipliers ---
             currentRate *= TargetPlayerStatus.IsCrouching ? CrouchVisibilityMultiplier : 1.0f;
-
-            // Apply Movement Multiplier
             currentRate *= TargetPlayerStatus.IsMoving ? MovementVisibilityMultiplier : StationaryVisibilityMultiplier;
-
-            // Apply Tall Grass Multiplier
             if (TargetPlayerStatus.IsInTallGrass) currentRate *= TallGrassConcealmentMultiplier;
-
-            // Apply Lantern Multiplier
             if (TargetPlayerStatus.IsLanternRaised) currentRate *= LanternRaisedVisibilityMultiplier;
 
-            // Apply Water Multiplier (if visibility point itself was submerged, this is a stronger effect)
-            if (TargetPlayerStatus.IsSubmerged(playerVisibilityPoint)) // Check specific point's submersion
+            // NEW, SIMPLIFIED WATER LOGIC:
+            // Deep Submersion is now handled automatically because submerged points are not counted as "visible".
+            // We only need to check for the "shallow water" case where the player is in water but points are visible.
+            if (TargetPlayerStatus.CurrentWaterZone != null)
             {
-                currentRate *= DeepSubmersionConcealmentMultiplier;
-            }
-            else if (TargetPlayerStatus.CurrentWaterZone != null) // Player is in some water, but vis point is above
-            {
+                // If player is in a water zone, but we can see some points, it means they are in shallow water.
                 currentRate *= ShallowWaterConcealmentMultiplier;
             }
 
@@ -243,12 +249,12 @@ public class HunterAI : MonoBehaviour
         }
         else
         {
+            // No points are visible, decay detection
             DetectionProgress -= DetectionDecayRate * Time.deltaTime;
         }
+
         DetectionProgress = Mathf.Clamp01(DetectionProgress);
         UpdateFullySpottedStatus();
-
-        // Debug.Log($"Detection: {DetectionProgress:F2}, Spotted: {IsPlayerFullySpotted}, LoS: {hasClearLineOfSightToPlayerPoint}");
     }
 
     private void UpdateFullySpottedStatus()

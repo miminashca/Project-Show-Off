@@ -9,6 +9,7 @@ public class HunterStateMachine : StateMachine
     public HunterInvestigatingState InvestigatingState { get; private set; }
     public HunterChasingState ChasingState { get; private set; }
     public HunterAimingState AimingState { get; private set; }
+    public HunterSuppressingState SuppressingState { get; private set; }
     public HunterShootingState ShootingState { get; private set; }
     public HunterCloseKillingState CloseKillingState { get; private set; }
 
@@ -27,6 +28,7 @@ public class HunterStateMachine : StateMachine
         InvestigatingState = new HunterInvestigatingState(this);
         ChasingState = new HunterChasingState(this);
         AimingState = new HunterAimingState(this);
+        SuppressingState = new HunterSuppressingState(this);
         ShootingState = new HunterShootingState(this);
         CloseKillingState = new HunterCloseKillingState(this);
     }
