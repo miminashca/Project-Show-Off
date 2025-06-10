@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8340328324400211219}
   - component: {fileID: 2708443294297621748}
   - component: {fileID: 557994901436838129}
+  - component: {fileID: 7117139019246828382}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -75,6 +76,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!225 &7117139019246828382
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82563476496516368}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1138011850104143383
 GameObject:
   m_ObjectHideFlags: 0
@@ -369,8 +382,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5809436415731391376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.16569419, y: 0.5}
-  m_AnchorMax: {x: 0.16569419, y: 0.5}
+  m_AnchorMin: {x: 0.14344627, y: 0.5}
+  m_AnchorMax: {x: 0.14344627, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -644,7 +657,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5809436415731391376
 RectTransform:
   m_ObjectHideFlags: 0
@@ -847,10 +860,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 5809436415731391376}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.16569419, y: 0.15251248}
-  m_AnchorMax: {x: 0.16569419, y: 0.15251248}
+  m_AnchorMin: {x: 0.14344627, y: 0.13251248}
+  m_AnchorMax: {x: 0.14344627, y: 0.13251248}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 15.800003, y: 9.2}
+  m_SizeDelta: {x: 51.84, y: 20.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6241167947951127027
 CanvasRenderer:
@@ -907,8 +920,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 5.3
-  m_fontSizeBase: 5.3
+  m_fontSize: 11.17
+  m_fontSizeBase: 11.17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
