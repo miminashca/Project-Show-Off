@@ -29,7 +29,7 @@ public class HunterNavigation : MonoBehaviour
         _hunterAI = GetComponent<HunterAI>();
         if (_hunterAI == null)
         {
-            Debug.LogError("HunterNavigation requires a ThimbleHunterAI component on the same GameObject!", this);
+            Debug.LogError("HunterNavigation requires a HunterAI component on the same GameObject!", this);
             enabled = false;
         }
 
@@ -68,7 +68,6 @@ public class HunterNavigation : MonoBehaviour
                 return RoamingNodes[0]; // Fallback
         }
     }
-
     /// <summary>
     /// Helper to get a purely random roam node.
     /// </summary>
@@ -82,7 +81,7 @@ public class HunterNavigation : MonoBehaviour
     /// <summary>
     /// Selects a "valid" node for superposition.
     /// A good node is within a certain range of the player,
-    /// not in direct line of sight, and not too close to the hunter's current position.
+    /// not in the player's direct line of sight, and not too close to the hunter's current position.
     /// </summary>
     public Transform GetSuperpositionNode()
     {
@@ -99,7 +98,8 @@ public class HunterNavigation : MonoBehaviour
         Vector3 playerPos = _hunterAI.PlayerTransform.position;
         Vector3 hunterPos = _hunterAI.transform.position;
         Vector3 playerCamPos = _playerCamera.transform.position;
-        LayerMask obstacleMask = ~(1 << LayerMask.NameToLayer("Player") | 1 << LayerMask.NameToLayer("Hunter")); // Ignore player and hunter
+        // Create a mask that ignores both the Player and Hunter layers.
+        LayerMask obstacleMask = ~((1 << LayerMask.NameToLayer("Player")) | (1 << LayerMask.NameToLayer("Hunter")));
 
         foreach (Transform node in RoamingNodes)
         {
@@ -108,7 +108,7 @@ public class HunterNavigation : MonoBehaviour
             float distToPlayer = Vector3.Distance(node.position, playerPos);
             float distToHunter = Vector3.Distance(node.position, hunterPos);
 
-            // Basic distance checks (same as before)
+            // Basic distance checks
             if (distToPlayer >= MinSuperpositionDistFromPlayer &&
                 distToPlayer <= MaxSuperpositionDistFromPlayer &&
                 distToHunter >= MinDistFromHunterForSuperposition)
@@ -118,7 +118,7 @@ public class HunterNavigation : MonoBehaviour
                 Vector3 dirToNodeFromPlayer = (node.position - playerCamPos).normalized;
                 float distToNodeFromPlayer = Vector3.Distance(node.position, playerCamPos);
 
-                // If a raycast from the player's camera HITS something before the node, it means the node is obscured.
+                // If a raycast from the player's camera HITS something before the node, it means the node is occluded.
                 if (Physics.Raycast(playerCamPos, dirToNodeFromPlayer, distToNodeFromPlayer * 0.95f, obstacleMask, QueryTriggerInteraction.Ignore))
                 {
                     // This is a good candidate! It's out of the player's sight.
@@ -129,6 +129,7 @@ public class HunterNavigation : MonoBehaviour
 
         if (candidateNodes.Count > 0)
         {
+            Debug.Log($"Found {candidateNodes.Count} ideal (hidden) superposition nodes. Picking one.");
             // Optional: Add further scoring (e.g., nodes in player's general direction of movement)
             return candidateNodes[Random.Range(0, candidateNodes.Count)];
         }
@@ -137,8 +138,9 @@ public class HunterNavigation : MonoBehaviour
             // Fallback: No ideal node found, maybe pick a random one outside immediate player vicinity
             // Or a node far from the hunter but within a broader range of the player.
             // For now, return null or a less optimal random node.
-            Debug.LogWarning("HunterNavigation: Could not find an ideal superposition node. Falling back.");
+            Debug.LogWarning("HunterNavigation: Could not find an ideal superposition node. Falling back to any valid node.");
             List<Transform> fallbackNodes = RoamingNodes.Where(n =>
+                n != null &&
                 Vector3.Distance(n.position, playerPos) > MinSuperpositionDistFromPlayer &&
                 Vector3.Distance(n.position, hunterPos) > MinDistFromHunterForSuperposition
             ).ToList();
@@ -188,7 +190,7 @@ public class HunterNavigation : MonoBehaviour
         // Visualize Superposition Ranges if Player is present
         if (_hunterAI != null && _hunterAI.PlayerTransform != null)
         {
-            Gizmos.color = new Color(0.5f, 0f, 0.5f, 0.3f); // Purpleish
+            Gizmos.color = new Color(0.5f, 0f, 0.5f, 0.3f);
             Gizmos.DrawWireSphere(_hunterAI.PlayerTransform.position, MinSuperpositionDistFromPlayer);
             Gizmos.DrawWireSphere(_hunterAI.PlayerTransform.position, MaxSuperpositionDistFromPlayer);
         }

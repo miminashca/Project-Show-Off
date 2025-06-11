@@ -43,11 +43,17 @@ public class HunterRoamingState : State
 
         // --- Superposition Logic ---
         // Check if cooldown is over AND distance condition is met
-        if (_hunterAI.CurrentSuperpositionCooldownTimer <= 0f && _hunterAI.PlayerTransform != null &&
-            Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) > _hunterAI.MaxSuperpositionDistance)
+        if (_hunterAI.CurrentSuperpositionCooldownTimer <= 0f && _hunterAI.PlayerTransform != null)
         {
-            AttemptSuperposition();
-            _hunterAI.CurrentSuperpositionCooldownTimer = _hunterAI.SuperpositionAttemptCooldown; // Reset cooldown
+            bool isTooFar = Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) > _hunterAI.MaxSuperpositionDistance;
+
+            // --- MODIFIED LOGIC ---
+            // The Hunter will only attempt superposition IF it's too far AND the player is NOT looking at it.
+            if (isTooFar && !_hunterAI.IsVisibleToPlayer())
+            {
+                AttemptSuperposition();
+                _hunterAI.CurrentSuperpositionCooldownTimer = _hunterAI.SuperpositionAttemptCooldown; // Reset cooldown
+            }
         }
 
 
@@ -59,13 +65,13 @@ public class HunterRoamingState : State
 
     private void AttemptSuperposition()
     {
+        // This part remains the same. It calls your already-correct GetSuperpositionNode method.
         Transform superpositionNode = _hunterAI.GetSuperpositionNode();
         if (superpositionNode != null)
         {
-            Debug.Log($"{_hunterAI.gameObject.name}: Superpositioning to {superpositionNode.name}!");
+            Debug.Log($"{_hunterAI.gameObject.name}: Superpositioning to {superpositionNode.name} because player is far and not looking.");
             if (_hunterAI.NavAgent.Warp(superpositionNode.position))
             {
-                // _hunterAI.transform.position = superpositionNode.position; // Warp handles this
                 SetNewRoamDestination();
             }
             else
@@ -89,7 +95,7 @@ public class HunterRoamingState : State
             if (_hunterAI.NavAgent.isOnNavMesh)
             {
                 _hunterAI.NavAgent.SetDestination(_hunterAI.CurrentTargetNode.position);
-                if (!_hunterAI.HunterAnimator.GetBool("IsMoving")) // Ensure animation plays if stopped at node
+                if (!_hunterAI.HunterAnimator.GetBool("IsMoving"))
                     _hunterAI.HunterAnimator.SetBool("IsMoving", true);
             }
             else

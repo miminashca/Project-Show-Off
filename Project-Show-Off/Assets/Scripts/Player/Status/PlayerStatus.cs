@@ -11,9 +11,12 @@ public class PlayerStatus : MonoBehaviour
     public bool IsMoving => _playerMovement != null && _playerMovement.isMoving;
 
     [Header("AI Visibility")]
+    [Tooltip("Assign the 'Head' child transform. PlayerMovement will move it.")]
     public Transform HeadVisibilityPoint;
+    [Tooltip("Assign the 'Torso' child transform. PlayerMovement will move it.")]
     public Transform TorsoVisibilityPoint;
-    public Transform FeetVisibilityPoint; // Optional but good for crouching/low cover
+    [Tooltip("Assign the 'Feet' child transform. This is usually static.")]
+    public Transform FeetVisibilityPoint;
 
     void Awake()
     {
@@ -26,9 +29,10 @@ public class PlayerStatus : MonoBehaviour
 
     public bool IsSubmerged(Vector3 checkPosition)
     {
+        // The logic is simple: if we are not in a water zone, nothing can be submerged.
+        // If we are, we just check the Y-level.
         if (CurrentWaterZone != null)
         {
-            // Accesses the SurfaceYLevel property of the unified WaterZone
             return checkPosition.y < CurrentWaterZone.SurfaceYLevel;
         }
         return false;
@@ -52,6 +56,7 @@ public class PlayerStatus : MonoBehaviour
 
         return inWaterByAnySystem && checkPosition.y < authoritativeSurfaceY;
     }
+
 
     // A helper property to easily access them
     public Transform[] GetVisibilityPoints()

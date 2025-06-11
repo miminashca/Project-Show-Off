@@ -20,6 +20,18 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(1f, 4f)] private float standingHeight = 2f;
     [SerializeField, Range(1f, 10f)] private float crouchLerpSpeed = 8f;
 
+    [Header("Visibility Point Control")]
+    [Tooltip("The transform representing the player's head for AI visibility. Will be moved during crouch.")]
+    [SerializeField] private Transform headTransform;
+    [Tooltip("The transform representing the player's torso for AI visibility. Will be moved during crouch.")]
+    [SerializeField] private Transform torsoTransform;
+    [Tooltip("The Y-position of the head when crouching.")]
+    [SerializeField] private float headCrouchY = 0.8f;
+    [Tooltip("The Y-position of the torso when crouching.")]
+    [SerializeField] private float torsoCrouchY = 0.6f;
+    private Vector3 initialHeadLocalPos;
+    private Vector3 initialTorsoLocalPos;
+
     [Header("Stamina Settings")]
     [SerializeField, Range(1f, 200f)] private float maxStamina = 100f;
     [SerializeField, Range(0.1f, 50f)] private float staminaDrainRate = 15f;
@@ -91,6 +103,12 @@ public class PlayerMovement : MonoBehaviour
             Debug.LogError("PlayerMovement: PlayerStatus component not found on this GameObject!", this);
         }
 
+        if (headTransform != null) initialHeadLocalPos = headTransform.localPosition;
+        else Debug.LogError("PlayerMovement: Head Transform is not assigned!", this);
+
+        if (torsoTransform != null) initialTorsoLocalPos = torsoTransform.localPosition;
+        else Debug.LogError("PlayerMovement: Torso Transform is not assigned!", this);
+
         finalSpeed = moveSpeed;
         controller = GetComponent<CharacterController>();
         playerCamera = GetComponentInChildren<Camera>().transform;
@@ -117,6 +135,7 @@ public class PlayerMovement : MonoBehaviour
         staminaDroppedBelowHalfDuringThisSprint = false; // Explicitly initialize, though default is false
         // END CHANGE
     }
+
     private void OnEnable()
     {
         controls = new PlayerInput();
@@ -162,11 +181,10 @@ public class PlayerMovement : MonoBehaviour
     {
         ReadInput();
         Crouch();
+        UpdateVisibilityPointPositions();
         HandleStamina();
 
-        // NEW CHANGE
-        HandleSprintingAudioFMOD(); // Renamed method and it now uses the new logic
-        // END CHANGE
+        HandleSprintingAudioFMOD();
 
         Gravity();
         Move();
@@ -408,6 +426,19 @@ public class PlayerMovement : MonoBehaviour
         controller.center = controllerCenter;
 
         SmoothCameraHeight(targetHeightCurrent);
+    }
+
+    private void UpdateVisibilityPointPositions()
+    {
+        if (headTransform == null || torsoTransform == null) return;
+
+        // Determine target local positions based on crouch state
+        Vector3 targetHeadPos = isCrouching ? new Vector3(initialHeadLocalPos.x, headCrouchY, initialHeadLocalPos.z) : initialHeadLocalPos;
+        Vector3 targetTorsoPos = isCrouching ? new Vector3(initialTorsoLocalPos.x, torsoCrouchY, initialTorsoLocalPos.z) : initialTorsoLocalPos;
+
+        // Smoothly move the transforms to their target positions
+        headTransform.localPosition = Vector3.Lerp(headTransform.localPosition, targetHeadPos, Time.deltaTime * crouchLerpSpeed);
+        torsoTransform.localPosition = Vector3.Lerp(torsoTransform.localPosition, targetTorsoPos, Time.deltaTime * crouchLerpSpeed);
     }
 
     private void SmoothCameraHeight(float targetPlayerHeight)
