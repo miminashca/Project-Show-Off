@@ -1024,7 +1024,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1773326832
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1442,15 +1442,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5064206280045029368, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_Name
       value: LampFuelSlider
+      objectReference: {fileID: 0}
+    - target: {fileID: 5064206280045029368, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1771,19 +1775,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -141.8428
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2835050351060691974, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_Pivot.x
@@ -1871,39 +1875,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4093940918120583003, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -244.52841
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -347.21402
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
