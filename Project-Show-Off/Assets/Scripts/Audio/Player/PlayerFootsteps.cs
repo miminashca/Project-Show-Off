@@ -68,10 +68,10 @@ public class PlayerFootsteps : MonoBehaviour
 
         if (footstepsEvent.IsNull) { Debug.LogError("PlayerFootsteps: Footsteps Event is not assigned.", this); }
 
-        materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.2f, m: 0.1f, w: 0.0f, g: 0.7f));
-        materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.5f));
-        materialBlends.Add("Pathway", new FootstepSoundBlend(d: 0.8f, m: 0.0f, w: 0.1f, g: 0.1f));
-        materialBlends.Add("Peat", new FootstepSoundBlend(d: 0.2f, m: 0.7f, w: 0.0f, g: 0.1f));
+        materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.3f, w: 0.0f, g: 0.7f));
+        materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.6f));
+        materialBlends.Add("Pathway", new FootstepSoundBlend(d: 0.8f, m: 0.2f, w: 0.0f, g: 0.1f));
+        materialBlends.Add("Peat", new FootstepSoundBlend(d: 0.2f, m: 0.7f, w: 0.0f, g: 0.2f));
         materialBlends.Add("Default", new FootstepSoundBlend(d: 0.6f, m: 0.1f, w: 0.0f, g: 0.1f));
         currentGroundBlend = materialBlends["Default"];
 
