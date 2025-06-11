@@ -23,6 +23,11 @@ public class InspectionManager : MonoBehaviour
     [SerializeField] private CameraMovement cameraMovement;
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private HeadbobController headbobController;
+    
+    [Header("Light")]
+    [SerializeField] private Light inspectionLight;
+    [SerializeField] private GameObject lantern;
+    private bool lanternInitiallyActive = false;
 
     private PlayerInput playerInputActions;
 
@@ -60,6 +65,8 @@ public class InspectionManager : MonoBehaviour
         if (cameraMovement == null) cameraMovement = FindFirstObjectByType<CameraMovement>();
         if (playerMovement == null) playerMovement = FindFirstObjectByType<PlayerMovement>();
         if (headbobController == null) headbobController = FindFirstObjectByType<HeadbobController>(); // << ADD THIS
+        if (inspectionLight) inspectionLight.enabled = false;
+
 
         if (cameraMovement == null) Debug.LogWarning("InspectionManager: CameraMovement script not found! Assign manually or ensure it's in the scene.");
         if (playerMovement == null) Debug.LogWarning("InspectionManager: PlayerMovement script not found! Assign manually or ensure it's in the scene.");
@@ -144,12 +151,23 @@ public class InspectionManager : MonoBehaviour
     {
         if (isInspecting)
         {
+            if(inspectionLight) inspectionLight.enabled = false;
+            if (lantern && lanternInitiallyActive)
+            {
+                lantern.SetActive(true);
+            }
             CollectCurrentClue();
-        }
+        } 
     }
 
     private void OnCancelPerformed(InputAction.CallbackContext context)
     {
+        if(inspectionLight) inspectionLight.enabled = false;
+        if (lantern && lanternInitiallyActive)
+        {
+            lantern.SetActive(true);
+        }
+
         if (isInspecting)
         {
             CancelInspection();
@@ -160,6 +178,13 @@ public class InspectionManager : MonoBehaviour
     {
         if (isInspecting || clueToInspect == null) return;
 
+        if(inspectionLight) inspectionLight.enabled = true;
+        if (lantern)
+        {
+            lanternInitiallyActive = lantern.activeInHierarchy;
+            lantern.SetActive(false);
+        }
+        
         isInspecting = true;
         currentClueData = clueToInspect;
         currentInspectedObject = clueToInspect.gameObject;
