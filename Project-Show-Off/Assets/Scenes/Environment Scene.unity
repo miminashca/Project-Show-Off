@@ -2671,14 +2671,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.23999998
-      objectReference: {fileID: 0}
-    - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.09994999
-      objectReference: {fileID: 0}
-    - target: {fileID: 690366451828252061, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -2729,10 +2721,6 @@ PrefabInstance:
     - target: {fileID: 2494650153971342582, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
       propertyPath: m_Name
       value: Pick Up Interact Panel
-      objectReference: {fileID: 0}
-    - target: {fileID: 2494650153971342582, guid: a7e595ce76204dc4ea7f877a4ea5003b, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5591,6 +5579,10 @@ PrefabInstance:
     - target: {fileID: 5451063250467326289, guid: 2a07677f8e631f6409275acbc9ff92d6, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6823395997463099182, guid: 2a07677f8e631f6409275acbc9ff92d6, type: 3}
+      propertyPath: m_IncludeLayers.m_Bits
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8206106289671697542, guid: 2a07677f8e631f6409275acbc9ff92d6, type: 3}
       propertyPath: m_Name
@@ -10254,6 +10246,38 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1402175456}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1418356073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1418356074}
+  m_Layer: 0
+  m_Name: ------------DECALS-----------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1418356074
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1418356073}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 556.99164, y: -385.06512, z: -391.44128}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2048328843}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1421073579
 GameObject:
   m_ObjectHideFlags: 0
@@ -14933,6 +14957,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4755784066297045462, guid: bb2f1fc40eca99c4c9aba545703d2edf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 4755784066297045463, guid: bb2f1fc40eca99c4c9aba545703d2edf, type: 3}
       propertyPath: m_Layer
       value: 8
@@ -15288,3 +15316,4 @@ SceneRoots:
   - {fileID: 1208731665}
   - {fileID: 257389981}
   - {fileID: 1542339429}
+  - {fileID: 1418356074}
