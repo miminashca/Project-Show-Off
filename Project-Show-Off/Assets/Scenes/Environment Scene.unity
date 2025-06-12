@@ -1281,7 +1281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3727,7 +3727,7 @@ GameObject:
   - component: {fileID: 590247159}
   - component: {fileID: 590247158}
   - component: {fileID: 590247157}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Swamp_T
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6994,7 +6994,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 886124514}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Swamp_Holder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12021,7 +12021,7 @@ GameObject:
   - component: {fileID: 1611244405}
   - component: {fileID: 1611244404}
   - component: {fileID: 1611244403}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Swamp_BR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14840,7 +14840,7 @@ GameObject:
   - component: {fileID: 2072512355}
   - component: {fileID: 2072512354}
   - component: {fileID: 2072512353}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Swamp_BL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15091,6 +15091,122 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 830668399}
+    - target: {fileID: 5032756099168172753, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[0].m_Name
+      value: SizeOverLife
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[0].m_Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Name
+      value: SpawnRate
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Value
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Value
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[1].m_Name
+      value: Flame_VelocityRange_Xpos
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[2].m_Name
+      value: Flame_SizeRange
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Overridden
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[3].m_Overridden
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Name
+      value: Texture
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[1].m_Value.x
+      value: -0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[1].m_Value.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[2].m_Value.x
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[2].m_Value.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Value
+      value: 
+      objectReference: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[0].m_Overridden
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[1].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[2].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
