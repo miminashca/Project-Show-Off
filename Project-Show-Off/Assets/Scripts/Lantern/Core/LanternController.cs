@@ -51,6 +51,8 @@ public class LanternController : MonoBehaviour
     private PlayerInput playerInputActions;
     private PlayerStatus playerStatus;
 
+    private HingeLimitStabilizer hinge;
+
     // NEW CHANGE (FMOD Sounds)
     [Header("FMOD Sounds")]
     [SerializeField]
@@ -88,6 +90,8 @@ public class LanternController : MonoBehaviour
         {
             Debug.LogError("LanternController: lanternHandAnchor is not assigned!", this);
         }
+
+        hinge = GetComponentInChildren<HingeLimitStabilizer>(true);
     }
 
     void Start()
@@ -238,7 +242,11 @@ public class LanternController : MonoBehaviour
 
                 if (lanternLight == null) Debug.LogError("LanternController: Could not find a Light component on the lantern prefab or its children!", currentLanternInstance);
             }
-
+            
+////////////
+            
+            if(hinge) hinge.ResetHinge();
+            
             currentLanternInstance.SetActive(true); // Activate main lantern object
             isRaised = false; // Reset raised state on equip
             outOfFuel = (currentFuel <= 0);
