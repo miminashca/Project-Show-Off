@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class fuelUI : MonoBehaviour
+public class FuelUI : MonoBehaviour
 {
     [Header("UI References")]
     [SerializeField] private Slider FuelBar;
@@ -9,31 +9,44 @@ public class fuelUI : MonoBehaviour
     [Header("References")]
     [SerializeField] private LanternController lanternController;
 
-    void Start()
+    private void OnEnable()
     {
-        if (lanternController == null)
+        // --- This is where the magic happens ---
+        // We subscribe our UpdateFuelBar method to the lantern's OnFuelChanged event.
+        if (lanternController != null)
         {
-            Debug.LogError("LanternController reference not set in fuelUI!", this);
-            enabled = false;
-            return;
+            lanternController.OnFuelChanged += UpdateFuelBar;
         }
-
-        if (FuelBar == null)
-        {
-            Debug.LogError("FuelBar Slider reference not set in fuelUI!", this);
-            enabled = false;
-            return;
-        }
-
-        FuelBar.minValue = 0f;
-        FuelBar.maxValue = lanternController.maxFuel;
     }
 
-    void Update()
+    private void OnDisable()
     {
-        if (lanternController != null && FuelBar != null)
+        // --- Crucial for preventing errors and memory leaks ---
+        // We unsubscribe when this UI object is disabled or destroyed.
+        if (lanternController != null)
         {
-            FuelBar.value = lanternController.currentFuel;
+            lanternController.OnFuelChanged -= UpdateFuelBar;
         }
     }
+
+    /// <summary>
+    /// This method is called automatically by the OnFuelChanged event.
+    /// It updates the slider's max and current values.
+    /// </summary>
+    /// <param name="current">The lantern's current fuel level.</param>
+    /// <param name="max">The lantern's maximum fuel capacity.</param>
+    private void UpdateFuelBar(float current, float max)
+    {
+        if (FuelBar == null) return;
+
+        // Ensure the max value is set correctly, in case it changes.
+        if (FuelBar.maxValue != max)
+        {
+            FuelBar.maxValue = max;
+        }
+
+        FuelBar.value = current;
+    }
+
+    // The Start() and Update() methods are no longer needed for this functionality.
 }

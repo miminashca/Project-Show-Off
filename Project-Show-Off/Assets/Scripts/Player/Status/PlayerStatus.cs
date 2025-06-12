@@ -2,21 +2,25 @@ using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
-    public bool IsCrouching { get; set; } = false; 
+    [Header("State Properties")]
+    public bool IsCrouching { get; set; } = false;
     public bool IsInTallGrass { get; set; } = false;
     public bool IsLanternRaised { get; set; } = false;
     public WaterZone CurrentWaterZone { get; set; }
+
+    public bool IsLanternOn { get; set; } = false;
 
     private PlayerMovement _playerMovement;
     public bool IsMoving => _playerMovement != null && _playerMovement.isMoving;
 
     [Header("AI Visibility")]
-    [Tooltip("Assign the 'Head' child transform. PlayerMovement will move it.")]
+    [Tooltip("Assign the 'Head' child transform.")]
     public Transform HeadVisibilityPoint;
-    [Tooltip("Assign the 'Torso' child transform. PlayerMovement will move it.")]
+    [Tooltip("Assign the 'Torso' child transform.")]
     public Transform TorsoVisibilityPoint;
-    [Tooltip("Assign the 'Feet' child transform. This is usually static.")]
+    [Tooltip("Assign the 'Feet' child transform.")]
     public Transform FeetVisibilityPoint;
+    private Transform[] _visibilityPoints;
 
     void Awake()
     {
@@ -25,12 +29,20 @@ public class PlayerStatus : MonoBehaviour
         {
             Debug.LogError("PlayerStatus: PlayerMovement component not found!", this);
         }
+
+        // Initialize the cached array.
+        _visibilityPoints = new Transform[] { HeadVisibilityPoint, TorsoVisibilityPoint, FeetVisibilityPoint };
     }
 
+    /// <summary>
+    /// Checks if a given world position is below the current water zone's surface.
+    /// </summary>
+    /// <param name="checkPosition">The position to check.</param>
+    /// <returns>True if submerged, false otherwise.</returns>
     public bool IsSubmerged(Vector3 checkPosition)
     {
-        // The logic is simple: if we are not in a water zone, nothing can be submerged.
-        // If we are, we just check the Y-level.
+        // If we are not in a water zone, we cannot be submerged.
+        // If we are, we just check the Y-level against the zone's surface.
         if (CurrentWaterZone != null)
         {
             return checkPosition.y < CurrentWaterZone.SurfaceYLevel;
@@ -38,31 +50,11 @@ public class PlayerStatus : MonoBehaviour
         return false;
     }
 
-    public bool IsSubmerged(Vector3 checkPosition, float specificWaterSurfaceY)
-    {
-        bool inAnyManagedWaterSystem = (CurrentWaterZone != null && checkPosition.y < CurrentWaterZone.SurfaceYLevel);
-
-        WaterSensor sensor = GetComponent<WaterSensor>(); // GetComponent can be slow in frequent calls, consider caching if performance is an issue
-        bool inSensorWater = (sensor != null && sensor.IsPlayerUnderwater() && checkPosition.y < specificWaterSurfaceY);
-
-
-        float authoritativeSurfaceY = specificWaterSurfaceY;
-        if (CurrentWaterZone != null)
-        {
-            authoritativeSurfaceY = CurrentWaterZone.SurfaceYLevel;
-        }
-
-        bool inWaterByAnySystem = (CurrentWaterZone != null) || (sensor != null && sensor.IsPlayerUnderwater());
-
-        return inWaterByAnySystem && checkPosition.y < authoritativeSurfaceY;
-    }
-
-
-    // A helper property to easily access them
+    /// <summary>
+    /// Returns a cached array of visibility points for AI line-of-sight checks.
+    /// </summary>
     public Transform[] GetVisibilityPoints()
     {
-        // You can add logic here if some points shouldn't be active
-        return new Transform[] { HeadVisibilityPoint, TorsoVisibilityPoint, FeetVisibilityPoint };
+        return _visibilityPoints;
     }
-    
 }
