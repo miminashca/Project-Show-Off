@@ -1,11 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
-using UnityEngine.VFX; // Added for VisualEffect
-// NEW CHANGE
+using UnityEngine.VFX;
 using FMODUnity;
-using FMOD.Studio; // Added for EventInstance
-// END CHANGE
+using FMOD.Studio;
 
 public class LanternController : MonoBehaviour
 {
@@ -22,6 +20,7 @@ public class LanternController : MonoBehaviour
     public bool isEquipped = false;
     public bool isRaised = false;
     private bool outOfFuel = false;
+    public bool IsLightOn { get; private set; }
 
     [Header("Light Settings")]
     public float defaultIntensity = 1.5f;
@@ -38,22 +37,12 @@ public class LanternController : MonoBehaviour
 
     [Header("Interaction")]
     public float hemannekenRepelRadius = 7f;
-    public float nixieAttractRadius = 20f;
     public LayerMask hemannekenLayer;
-    public LayerMask nixieLayer;
     public float interactionCheckInterval = 0.25f;
 
     [Header("Raise Animation")]
     public Vector3 raisedLocalPositionOffset = new Vector3(0, 0.2f, 0.05f);
 
-    private Coroutine interactionCoroutine;
-
-    private PlayerInput playerInputActions;
-    private PlayerStatus playerStatus;
-
-    private HingeLimitStabilizer hinge;
-
-    // NEW CHANGE (FMOD Sounds)
     [Header("FMOD Sounds")]
     [SerializeField]
     private EventReference lanternPullOutSoundEvent;
@@ -63,9 +52,7 @@ public class LanternController : MonoBehaviour
     private EventReference lanternGasBurnLoopEvent; // Event for the looping gas burn sound
 
     private EventInstance gasBurnSoundInstance; // Instance for the looping sound
-    // END CHANGE
 
-    // VFX Settings
     [Header("VFX Settings")]
     [Tooltip("Name of the exposed Vector2 property in the VFX Graph for flame size X (min) and Y (max).")]
     public string flameSizeRangePropertyName = "Flame_SizeRange";
@@ -74,7 +61,12 @@ public class LanternController : MonoBehaviour
 
     private GameObject currentLanternVFXHolder;
     private VisualEffect lanternVFXGraph;
-    // END VFX Settings
+    private Coroutine interactionCoroutine;
+
+    private PlayerInput playerInputActions;
+    private PlayerStatus playerStatus;
+
+    private HingeLimitStabilizer hinge;
 
     private void Awake()
     {
@@ -242,11 +234,10 @@ public class LanternController : MonoBehaviour
 
                 if (lanternLight == null) Debug.LogError("LanternController: Could not find a Light component on the lantern prefab or its children!", currentLanternInstance);
             }
-            
-////////////
-            
-            if(hinge) hinge.ResetHinge();
-            
+
+
+            if (hinge) hinge.ResetHinge();
+
             currentLanternInstance.SetActive(true); // Activate main lantern object
             isRaised = false; // Reset raised state on equip
             outOfFuel = (currentFuel <= 0);
@@ -339,6 +330,8 @@ public class LanternController : MonoBehaviour
             StartGasBurnLoopSFX();
             // END CHANGE
         }
+
+        UpdatePlayerStatus();
     }
 
     void StartRaising()
@@ -348,6 +341,7 @@ public class LanternController : MonoBehaviour
         isRaised = true;
         if (playerStatus != null) playerStatus.IsLanternRaised = true;
         SetLightState(true, raisedIntensity, raisedRange);
+        UpdatePlayerStatus();
 
         // Adjust VFX flame size
         if (lanternVFXGraph != null && !outOfFuel) // Ensure VFX graph exists and we have fuel
@@ -380,6 +374,8 @@ public class LanternController : MonoBehaviour
             if (!outOfFuel) SetLightState(true, defaultIntensity, defaultRange);
             else SetLightState(false); // Ensure light is off if out of fuel
         }
+
+        UpdatePlayerStatus();
 
         // Adjust VFX flame size back to default
         if (lanternVFXGraph != null && !outOfFuel) // Ensure VFX graph exists and we have fuel
@@ -419,6 +415,7 @@ public class LanternController : MonoBehaviour
         outOfFuel = true;
         if (playerStatus != null) playerStatus.IsLanternRaised = false; // Update status immediately
         if (lanternLight != null) SetLightState(false);
+        UpdatePlayerStatus();
 
         // Disable VFX
         if (lanternVFXGraph != null)
@@ -449,6 +446,7 @@ public class LanternController : MonoBehaviour
         if (isEquipped)
         {
             SetLightState(true, isRaised ? raisedIntensity : defaultIntensity, isRaised ? raisedRange : defaultRange);
+            UpdatePlayerStatus();
 
             // Re-enable and configure VFX
             if (currentLanternVFXHolder != null && lanternVFXGraph != null) // Ensure references are still valid
@@ -503,25 +501,33 @@ public class LanternController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Updates the central PlayerStatus script with the lantern's current state.
+    /// </summary>
+    private void UpdatePlayerStatus()
+    {
+        if (playerStatus != null)
+        {
+            playerStatus.IsLanternOn = IsLightOn;
+            playerStatus.IsLanternRaised = isRaised;
+        }
+    }
+
     IEnumerator MonsterInteractionCheck()
     {
-        while (isRaised && !outOfFuel) // Condition ensures it only runs when relevant
+        while (isRaised && !outOfFuel)
         {
+            // Repel Hemanneken logic remains
             Collider[] hemannekenCols = Physics.OverlapSphere(transform.position, hemannekenRepelRadius, hemannekenLayer);
             foreach (Collider col in hemannekenCols)
             {
                 HemannekenAI hemanneken = col.GetComponent<HemannekenAI>();
                 if (hemanneken != null) hemanneken.Repel(transform.position);
             }
-            Collider[] nixieCols = Physics.OverlapSphere(transform.position, nixieAttractRadius, nixieLayer);
-            foreach (Collider col in nixieCols)
-            {
-                NixieAI nixie = col.GetComponent<NixieAI>();
-                if (nixie != null) nixie.Attract(transform.position);
-            }
+
             yield return new WaitForSeconds(interactionCheckInterval);
         }
-        interactionCoroutine = null; // Clear coroutine ref when it finishes
+        interactionCoroutine = null;
     }
 
     // NEW CHANGE (FMOD Sound Methods)
@@ -561,18 +567,15 @@ public class LanternController : MonoBehaviour
     {
         Vector3 interactionCenter = lanternHandAnchor != null ? lanternHandAnchor.position : transform.position;
 
-        if (isRaised && isEquipped && !outOfFuel) // Only draw active gizmos if lantern is effectively raised
+        if (isRaised && isEquipped && !outOfFuel)
         {
-            Gizmos.color = Color.red;
+            Gizmos.color = Color.red; // Hemanneken repel radius
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
-            Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(interactionCenter, nixieAttractRadius);
         }
-        else if (isEquipped) // Draw grayed out if equipped but not raised or out of fuel
+        else if (isEquipped)
         {
             Gizmos.color = Color.gray;
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
-            Gizmos.DrawWireSphere(interactionCenter, nixieAttractRadius);
         }
     }
 }
