@@ -14,6 +14,7 @@ public class PlayerFootsteps : MonoBehaviour
     private const string PARAM_DEEP_WATER = "Deep Water";
     private const string PARAM_WOOD = "Wood";
     private const string PARAM_GRASS = "Grass";
+    private const string PARAM_HEAVYNESS = "Heavyness";
     private const string PARAM_MOVEMENT_STATE = "MovementState";
 
     [Header("Ground Detection Settings")]
@@ -41,8 +42,8 @@ public class PlayerFootsteps : MonoBehaviour
 
     private struct FootstepSoundBlend
     {
-        public float dirt; public float mud; public float wood; public float grass;
-        public FootstepSoundBlend(float d, float m, float w, float g) { dirt = d; mud = m; wood = w; grass = g; }
+        public float dirt; public float mud; public float wood; public float grass; public float heavyness;
+        public FootstepSoundBlend(float d, float m, float w, float g, float h) { dirt = d; mud = m; wood = w; grass = g; heavyness = h; }
     }
 
     private Dictionary<string, FootstepSoundBlend> materialBlends = new Dictionary<string, FootstepSoundBlend>();
@@ -68,11 +69,11 @@ public class PlayerFootsteps : MonoBehaviour
 
         if (footstepsEvent.IsNull) { Debug.LogError("PlayerFootsteps: Footsteps Event is not assigned.", this); }
 
-        materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.3f, w: 0.0f, g: 0.7f));
-        materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.6f));
-        materialBlends.Add("Pathway", new FootstepSoundBlend(d: 0.8f, m: 0.2f, w: 0.0f, g: 0.1f));
-        materialBlends.Add("Peat", new FootstepSoundBlend(d: 0.2f, m: 0.7f, w: 0.0f, g: 0.2f));
-        materialBlends.Add("Default", new FootstepSoundBlend(d: 0.6f, m: 0.1f, w: 0.0f, g: 0.1f));
+        materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.3f, w: 0.0f, g: 0.7f, h: 0.25f));
+        materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.6f, h: 0.25f));
+        materialBlends.Add("Pathway", new FootstepSoundBlend(d: 0.8f, m: 0.2f, w: 0.0f, g: 0.1f, h: 0.25f));
+        materialBlends.Add("Peat", new FootstepSoundBlend(d: 0.2f, m: 0.7f, w: 0.0f, g: 0.2f, h: 0.25f));
+        materialBlends.Add("Default", new FootstepSoundBlend(d: 0.6f, m: 0.1f, w: 0.0f, g: 0.1f, h: 0.25f));
         currentGroundBlend = materialBlends["Default"];
 
         if (groundLayerMask == 0) { Debug.LogWarning("PlayerFootsteps: Ground Layer Mask is not set."); }
@@ -305,6 +306,7 @@ public class PlayerFootsteps : MonoBehaviour
         instance.setParameterByName(PARAM_MUD, currentGroundBlend.mud * groundAttenuation);
         instance.setParameterByName(PARAM_WOOD, currentGroundBlend.wood * groundAttenuation);
         instance.setParameterByName(PARAM_GRASS, currentGroundBlend.grass * groundAttenuation);
+        instance.setParameterByName(PARAM_HEAVYNESS, currentGroundBlend.heavyness * groundAttenuation);
         instance.setParameterByName(PARAM_SHALLOW_WATER, currentShallowWaterLevel);
         instance.setParameterByName(PARAM_DEEP_WATER, currentDeepWaterLevel);
     }
