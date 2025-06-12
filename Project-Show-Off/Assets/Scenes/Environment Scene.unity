@@ -1281,7 +1281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15101,15 +15101,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.size
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.size
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.size
@@ -15120,12 +15124,28 @@ PrefabInstance:
       value: SizeOverLife
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[1].m_Name
+      value: SizeOverLive
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[0].m_Value
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[1].m_Value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Name
       value: SpawnRate
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[5].m_Name
+      value: Radius
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[6].m_Name
+      value: Ypos
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
@@ -15140,6 +15160,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[5].m_Value
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[1].m_Name
       value: Flame_VelocityRange_Xpos
       objectReference: {fileID: 0}
@@ -15148,7 +15172,15 @@ PrefabInstance:
       value: Flame_SizeRange
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Name
+      value: ShapeScale
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[1].m_Overridden
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
@@ -15165,6 +15197,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[4].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[5].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[6].m_Overridden
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
@@ -15188,6 +15228,18 @@ PrefabInstance:
       value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.x
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.y
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Value.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_NamedObject.m_Array.Array.data[0].m_Value
       value: 
       objectReference: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
@@ -15201,6 +15253,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[2].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Vector3f.m_Array.Array.data[0].m_Overridden
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7196781402624644484, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
