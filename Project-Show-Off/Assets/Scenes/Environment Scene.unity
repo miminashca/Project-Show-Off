@@ -556,6 +556,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 84961012}
   m_Mesh: {fileID: -9010193167645078742, guid: f4d93ea0ee5c1fd42b431fa81f01c9c4, type: 3}
+--- !u!4 &94725032 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+  m_PrefabInstance: {fileID: 984630464}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &106435249
 GameObject:
   m_ObjectHideFlags: 0
@@ -650,6 +655,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7932184358640101298, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8436433792197494375, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
       propertyPath: m_Name
       value: SunkenBridge (1)
@@ -3887,6 +3896,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4093940918120583003, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
   m_PrefabInstance: {fileID: 872000296}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &630806764 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+  m_PrefabInstance: {fileID: 1458177894}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &632674202
 GameObject:
   m_ObjectHideFlags: 0
@@ -4275,15 +4289,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -32
+      value: 171.68
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.7
+      value: 10.121
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 77
+      value: -164.24
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5289,6 +5303,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7932184358640101298, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8436433792197494375, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
       propertyPath: m_Name
       value: SunkenBridge (2)
@@ -5925,6 +5943,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 390689080735298576, guid: ba90b99eb20efbb42a18cfda94e81959, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 1524237003292807039, guid: ba90b99eb20efbb42a18cfda94e81959, type: 3}
       propertyPath: m_LocalPosition.x
       value: -80.08401
@@ -6727,19 +6749,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1282989697975275051, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -141.83377
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2835050351060691974, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_Pivot.x
@@ -6831,35 +6853,35 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6814993200602683944, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -244.50131
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 400.62006
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7422077393100669569, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -347.16885
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7628,6 +7650,67 @@ Transform:
   - {fileID: 846973642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &984630464
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1418356074}
+    m_Modifications:
+    - target: {fileID: 4533880406833365106, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_Name
+      value: Rubble Projector (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5601093736450750278, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_Size.z
+      value: 0.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -395.931
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 392.151
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 239.769
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9337981
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.25033826
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.19677018
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.16319795
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 32.124
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 19.721
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -14.097
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
 --- !u!1 &991177883
 GameObject:
   m_ObjectHideFlags: 0
@@ -7813,6 +7896,10 @@ PrefabInstance:
     - target: {fileID: 3039826858026935728, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3306699710658875058, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3955072716202717031, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
       propertyPath: m_Layer
@@ -8118,6 +8205,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7506890006482856624, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8299334494401891173, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
       propertyPath: m_Name
       value: Bridge_ver1 (2)
@@ -9122,11 +9213,11 @@ PrefabInstance:
       objectReference: {fileID: 686111697}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2709543904456130830, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5064206280045029368, guid: 3ec21c37f92b3934f8efbf4ac7bf36f1, type: 3}
       propertyPath: m_Name
@@ -10197,6 +10288,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7932184358640101298, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8436433792197494375, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
       propertyPath: m_Name
       value: SunkenBridge (3)
@@ -10538,6 +10633,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4866821137918510065}
+  - {fileID: 94725032}
+  - {fileID: 630806764}
   - {fileID: 2122323719}
   - {fileID: 824397607}
   - {fileID: 771014433}
@@ -10906,6 +11003,67 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4436205949535102198, guid: 9f51c07c2ca617a4daa4b96b848c42b7, type: 3}
   m_PrefabInstance: {fileID: 1454715495}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1458177894
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1418356074}
+    m_Modifications:
+    - target: {fileID: 4533880406833365106, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_Name
+      value: Rubble Projector (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5601093736450750278, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_Size.z
+      value: 0.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -399.474
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 391.486
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 241.133
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.31033975
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.16077295
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6353654
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.68858695
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 77.109
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 50.825
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
 --- !u!1 &1478892625
 GameObject:
   m_ObjectHideFlags: 0
@@ -10966,7 +11124,7 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
@@ -11022,6 +11180,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7506890006482856624, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8299334494401891173, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
       propertyPath: m_Name
       value: Bridge_ver1
@@ -12310,7 +12472,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1709001289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12678,6 +12840,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7932184358640101298, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8436433792197494375, guid: fd08e6641793c9e47ae88392824833d6, type: 3}
       propertyPath: m_Name
       value: SunkenBridge
@@ -13224,6 +13390,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1933809481}
     m_Modifications:
+    - target: {fileID: 7506890006482856624, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 8299334494401891173, guid: a2bb23e93fabba5408e9c27b198281a7, type: 3}
       propertyPath: m_Name
       value: Bridge_ver1 (1)
@@ -15288,6 +15458,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1418356074}
     m_Modifications:
+    - target: {fileID: 1749862294643528728, guid: f1ac3ba9d8854c94885b6eacbcfa8ab5, type: 3}
+      propertyPath: m_DecalLayerMask
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 4661478466420351077, guid: f1ac3ba9d8854c94885b6eacbcfa8ab5, type: 3}
       propertyPath: m_Name
       value: Debris Projector
@@ -15415,6 +15589,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: WoodenShackWithProps
       objectReference: {fileID: 0}
+    - target: {fileID: 1359541791108019789, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
+    - target: {fileID: 2328318966920368064, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 3333806067539828376, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.23
@@ -15467,6 +15649,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -0.577
       objectReference: {fileID: 0}
+    - target: {fileID: 4471830510898718199, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
+      objectReference: {fileID: 0}
     - target: {fileID: 5104288721163007014, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
       propertyPath: m_LocalPosition.x
       value: 1.63
@@ -15490,6 +15676,10 @@ PrefabInstance:
     - target: {fileID: 7948735247000849003, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 8025617163341922005, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
+      propertyPath: m_RenderingLayerMask
+      value: 257
       objectReference: {fileID: 0}
     - target: {fileID: 8059865816705579795, guid: 07987b412bf983b469a03b7b59a0ce87, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15525,13 +15715,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rubble Projector
       objectReference: {fileID: 0}
+    - target: {fileID: 5601093736450750278, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
+      propertyPath: m_DecalLayerMask
+      value: 256
+      objectReference: {fileID: 0}
     - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -657.973
       objectReference: {fileID: 0}
     - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 395.675
+      value: 395.127
       objectReference: {fileID: 0}
     - target: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
       propertyPath: m_LocalPosition.z
