@@ -1281,7 +1281,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3753,8 +3753,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 5, z: 1}
-  m_Center: {x: 0, y: -2, z: 0}
+  m_Size: {x: 0.7076631, y: 5, z: 0.90057117}
+  m_Center: {x: 0.09655565, y: -2, z: -0.049713414}
 --- !u!114 &590247158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3779,11 +3779,11 @@ MonoBehaviour:
   timeMultiplier: 0.3
   scriptInteractions: 0
   cpuEvaluateRipples: 0
-  customMaterial: {fileID: 0}
-  startSmoothness: 1
-  endSmoothness: 0.9000001
-  smoothnessFadeStart: 50
-  smoothnessFadeDistance: 150
+  customMaterial: {fileID: -876546973899608171, guid: 402f710d1a24c52409d579433f217b24, type: 3}
+  startSmoothness: 0.9567903
+  endSmoothness: 0.9358029
+  smoothnessFadeStart: 1000
+  smoothnessFadeDistance: 1000
   tessellation: 0
   maxTessellationFactor: 3
   tessellationFactorFadeStart: 150
@@ -3812,9 +3812,9 @@ MonoBehaviour:
   waterMaskDebugMode: 0
   waterCurrentDebugMode: 0
   currentDebugMultiplier: 1
-  waterFoamDebugMode: 0
+  waterFoamDebugMode: 1
   underWater: 1
-  volumeBounds: {fileID: 590247157}
+  volumeBounds: {fileID: 1611244403}
   volumeDepth: 50
   volumeHeight: 0
   volumePrority: 0
@@ -3823,7 +3823,7 @@ MonoBehaviour:
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
   underWaterRefraction: 0
-  decalRegionSize: {x: 200, y: 200}
+  decalRegionSize: {x: 0.1, y: 0.1}
   decalRegionAnchor: {fileID: 0}
   supportLargeCurrent: 0
   largeCurrentRes: 512
@@ -3843,13 +3843,13 @@ MonoBehaviour:
   deformationRes: 512
   foam: 0
   foamResolution: 512
-  foamPersistenceMultiplier: 0.5
-  foamCurrentInfluence: 0.6
-  foamColor: {r: 1, g: 1, b: 1, a: 1}
-  foamTextureTiling: 0.2
-  foamSmoothness: 0.3
-  simulationFoamAmount: 0.3
-  supportSimulationFoamMask: 0
+  foamPersistenceMultiplier: 0
+  foamCurrentInfluence: 0
+  foamColor: {r: 1, g: 0, b: 0, a: 1}
+  foamTextureTiling: 0
+  foamSmoothness: 0
+  simulationFoamAmount: 0
+  supportSimulationFoamMask: 1
   simulationFoamMask: {fileID: 0}
   simulationFoamMaskExtent: {x: 100, y: 100}
   simulationFoamMaskOffset: {x: 0, y: 0}
@@ -3859,26 +3859,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.2
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -3897,7 +3879,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   repetitionSize: 250
   largeOrientationValue: 0
-  largeWindSpeed: 5
+  largeWindSpeed: 6
   largeChaos: 1
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
@@ -3910,7 +3892,7 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 2
+  ripplesWindSpeed: 3.4
   ripplesChaos: 1
   ripplesFadeMode: 1
   ripplesFadeStart: 50
@@ -4389,7 +4371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 131
+      value: 145.3
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
@@ -4397,7 +4379,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 12
+      value: -144
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12065,8 +12047,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 5, z: 1}
-  m_Center: {x: 0, y: -2, z: 0}
+  m_Size: {x: 0.14469892, y: 5, z: 0.18696697}
+  m_Center: {x: 0.2812726, y: -2, z: -0.043214165}
 --- !u!114 &1611244404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12091,11 +12073,11 @@ MonoBehaviour:
   timeMultiplier: 0.3
   scriptInteractions: 0
   cpuEvaluateRipples: 0
-  customMaterial: {fileID: 0}
-  startSmoothness: 1
-  endSmoothness: 0.9000001
-  smoothnessFadeStart: 50
-  smoothnessFadeDistance: 150
+  customMaterial: {fileID: -876546973899608171, guid: 402f710d1a24c52409d579433f217b24, type: 3}
+  startSmoothness: 0.9567903
+  endSmoothness: 0.9358029
+  smoothnessFadeStart: 1000
+  smoothnessFadeDistance: 1000
   tessellation: 0
   maxTessellationFactor: 3
   tessellationFactorFadeStart: 150
@@ -12124,7 +12106,7 @@ MonoBehaviour:
   waterMaskDebugMode: 0
   waterCurrentDebugMode: 0
   currentDebugMultiplier: 1
-  waterFoamDebugMode: 0
+  waterFoamDebugMode: 1
   underWater: 1
   volumeBounds: {fileID: 1611244403}
   volumeDepth: 50
@@ -12135,7 +12117,7 @@ MonoBehaviour:
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
   underWaterRefraction: 0
-  decalRegionSize: {x: 200, y: 200}
+  decalRegionSize: {x: 0.1, y: 0.1}
   decalRegionAnchor: {fileID: 0}
   supportLargeCurrent: 0
   largeCurrentRes: 512
@@ -12155,13 +12137,13 @@ MonoBehaviour:
   deformationRes: 512
   foam: 0
   foamResolution: 512
-  foamPersistenceMultiplier: 0.5
-  foamCurrentInfluence: 0.6
-  foamColor: {r: 1, g: 1, b: 1, a: 1}
-  foamTextureTiling: 0.2
-  foamSmoothness: 0.3
-  simulationFoamAmount: 0.3
-  supportSimulationFoamMask: 0
+  foamPersistenceMultiplier: 0
+  foamCurrentInfluence: 0
+  foamColor: {r: 1, g: 0, b: 0, a: 1}
+  foamTextureTiling: 0
+  foamSmoothness: 0
+  simulationFoamAmount: 0
+  supportSimulationFoamMask: 1
   simulationFoamMask: {fileID: 0}
   simulationFoamMaskExtent: {x: 100, y: 100}
   simulationFoamMaskOffset: {x: 0, y: 0}
@@ -12171,26 +12153,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.2
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -12209,7 +12173,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   repetitionSize: 250
   largeOrientationValue: 0
-  largeWindSpeed: 5
+  largeWindSpeed: 6
   largeChaos: 1
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
@@ -12222,7 +12186,7 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 2
+  ripplesWindSpeed: 3.4
   ripplesChaos: 1
   ripplesFadeMode: 1
   ripplesFadeStart: 50
@@ -14902,8 +14866,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 5, z: 1}
-  m_Center: {x: 0, y: -2, z: 0}
+  m_Size: {x: 0.7052184, y: 5, z: 0.8169204}
+  m_Center: {x: 0.028522946, y: -2, z: 0.10887467}
 --- !u!114 &2072512354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14928,11 +14892,11 @@ MonoBehaviour:
   timeMultiplier: 0.3
   scriptInteractions: 0
   cpuEvaluateRipples: 0
-  customMaterial: {fileID: 0}
-  startSmoothness: 1
-  endSmoothness: 0.9000001
-  smoothnessFadeStart: 50
-  smoothnessFadeDistance: 150
+  customMaterial: {fileID: -876546973899608171, guid: 402f710d1a24c52409d579433f217b24, type: 3}
+  startSmoothness: 0.9567903
+  endSmoothness: 0.9358029
+  smoothnessFadeStart: 1000
+  smoothnessFadeDistance: 1000
   tessellation: 0
   maxTessellationFactor: 3
   tessellationFactorFadeStart: 150
@@ -14961,9 +14925,9 @@ MonoBehaviour:
   waterMaskDebugMode: 0
   waterCurrentDebugMode: 0
   currentDebugMultiplier: 1
-  waterFoamDebugMode: 0
+  waterFoamDebugMode: 1
   underWater: 1
-  volumeBounds: {fileID: 2072512353}
+  volumeBounds: {fileID: 1611244403}
   volumeDepth: 50
   volumeHeight: 0
   volumePrority: 0
@@ -14972,7 +14936,7 @@ MonoBehaviour:
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
   underWaterRefraction: 0
-  decalRegionSize: {x: 200, y: 200}
+  decalRegionSize: {x: 0.1, y: 0.1}
   decalRegionAnchor: {fileID: 0}
   supportLargeCurrent: 0
   largeCurrentRes: 512
@@ -14992,13 +14956,13 @@ MonoBehaviour:
   deformationRes: 512
   foam: 0
   foamResolution: 512
-  foamPersistenceMultiplier: 0.5
-  foamCurrentInfluence: 0.6
-  foamColor: {r: 1, g: 1, b: 1, a: 1}
-  foamTextureTiling: 0.2
-  foamSmoothness: 0.3
-  simulationFoamAmount: 0.3
-  supportSimulationFoamMask: 0
+  foamPersistenceMultiplier: 0
+  foamCurrentInfluence: 0
+  foamColor: {r: 1, g: 0, b: 0, a: 1}
+  foamTextureTiling: 0
+  foamSmoothness: 0
+  simulationFoamAmount: 0
+  supportSimulationFoamMask: 1
   simulationFoamMask: {fileID: 0}
   simulationFoamMaskExtent: {x: 100, y: 100}
   simulationFoamMaskOffset: {x: 0, y: 0}
@@ -15008,26 +14972,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.2
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.3
-      value: 1
-      inSlope: 0
-      outSlope: 0
+      inSlope: 2
+      outSlope: 2
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
@@ -15046,7 +14992,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   repetitionSize: 250
   largeOrientationValue: 0
-  largeWindSpeed: 5
+  largeWindSpeed: 6
   largeChaos: 1
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
@@ -15059,7 +15005,7 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 2
+  ripplesWindSpeed: 3.4
   ripplesChaos: 1
   ripplesFadeMode: 1
   ripplesFadeStart: 50
@@ -15080,7 +15026,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -139.90475, y: 21.406015, z: 18.561897}
-  m_LocalScale: {x: 261.59567, y: 0.83736, z: 122.946625}
+  m_LocalScale: {x: 261.59567, y: 0.83736, z: 126.659615}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 886124514}
