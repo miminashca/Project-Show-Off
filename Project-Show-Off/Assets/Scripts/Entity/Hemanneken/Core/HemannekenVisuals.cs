@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.VFX; // Added for VisualEffect
 
 public class HemannekenVisuals : MonoBehaviour
 {
@@ -203,15 +204,21 @@ public class HemannekenVisuals : MonoBehaviour
 
     public void PlayTransformationEffects()
     {
-        if (_isProcessingDeath) return;
         Debug.Log("SFX/VFX: Hemanneken Transforming");
+        
+        VisualEffect vfx = GetComponentInChildren<VisualEffect>();
+        if(vfx) vfx.enabled = false;
+        
         if (_particleSystem != null) _particleSystem.Play();
     }
 
     public void StopTransformationEffects()
     {
-        if (_isProcessingDeath) return;
         Debug.Log("SFX/VFX: Hemanneken Transformation Effects Stopped");
+        
+        VisualEffect vfx = GetComponentInChildren<VisualEffect>();
+        if(vfx) vfx.enabled = true;
+        
         if (_particleSystem != null) _particleSystem.Stop();
     }
 
@@ -219,70 +226,69 @@ public class HemannekenVisuals : MonoBehaviour
     // Call this with StartCoroutine(yourHemannekenVisualsInstance.PlayDeathEffects());
     public IEnumerator PlayDeathEffects(float timer)
     {
-        if (_isProcessingDeath)
-        {
-            yield break; // Already dying or death sequence started
-        }
-        _isProcessingDeath = true;
-
-        if (_isStunBehaviorActive || _activeStunBehaviorCoroutine != null)
-        {
-            StopStunBehavior(); // This should stop the coroutine and reset flags
-            yield return null;  // Wait a frame to ensure stun coroutine has fully exited
-        }
-
-        Transform playerActualTransform = null;
-        if (_playerSensor != null && _playerSensor.PlayerTransform != null)
-        {
-            playerActualTransform = _playerSensor.PlayerTransform;
-        }
-        else
-        {
-            if (_particleSystem != null)
-            {
-                _particleSystem.Play();
-            }
-            // Optionally destroy after particles. For now, just mark as not processing.
-            // Destroy(gameObject, _particleSystem != null && _particleSystem.main.Is मृत्यु ? _particleSystem.main.duration + _particleSystem.main.startLifetime.constantMax : 2f);
-            _isProcessingDeath = false; // Or handle destruction which makes this irrelevant
-            yield break;
-        }
-
-        // --- 1. Calculate Target Position ---
-        Vector3 targetPosition = playerActualTransform.position + playerActualTransform.forward  * _deathMoveDistanceInFrontOfPlayer;
-        // Optional: Adjust Y position. e.g., to match entity's original height or player's height.
-        // targetPosition.y = transform.position.y; // Maintain entity's Y
-        targetPosition.y += playerActualTransform.GetComponentInChildren<Camera>().transform.position.y; // Align with player's Y
-        
-        Vector3 startPosition = transform.position;
-        float elapsedTime = 0f;
-
-        // --- 2. Move Entity ---
-        // Optional: Hide model during the fast move for a "poof" effect if desired
+        // if (_isProcessingDeath)
+        // {
+        //     yield break; // Already dying or death sequence started
+        // }
+        // _isProcessingDeath = true;
+        //
+        // if (_isStunBehaviorActive || _activeStunBehaviorCoroutine != null)
+        // {
+        //     StopStunBehavior(); // This should stop the coroutine and reset flags
+        //     yield return null;  // Wait a frame to ensure stun coroutine has fully exited
+        // }
+        //
+        // Transform playerActualTransform = null;
+        // if (_playerSensor != null && _playerSensor.PlayerTransform != null)
+        // {
+        //     playerActualTransform = _playerSensor.PlayerTransform;
+        // }
+        // else
+        // {
+        //     if (_particleSystem != null)
+        //     {
+        //         _particleSystem.Play();
+        //     }
+        //     // Optionally destroy after particles. For now, just mark as not processing.
+        //     // Destroy(gameObject, _particleSystem != null && _particleSystem.main.Is मृत्यु ? _particleSystem.main.duration + _particleSystem.main.startLifetime.constantMax : 2f);
+        //     _isProcessingDeath = false; // Or handle destruction which makes this irrelevant
+        //     yield break;
+        // }
+        //
+        // // --- 1. Calculate Target Position ---
+        // Vector3 targetPosition = playerActualTransform.position + playerActualTransform.forward  * _deathMoveDistanceInFrontOfPlayer;
+        // // Optional: Adjust Y position. e.g., to match entity's original height or player's height.
+        // // targetPosition.y = transform.position.y; // Maintain entity's Y
+        // targetPosition.y += playerActualTransform.GetComponentInChildren<Camera>().transform.position.y; // Align with player's Y
+        //
+        // Vector3 startPosition = transform.position;
+        // float elapsedTime = 0f;
+        //
+        // // --- 2. Move Entity ---
+        // // Optional: Hide model during the fast move for a "poof" effect if desired
+        // // if (_currentModelInstance != null) _currentModelInstance.SetActive(false);
+        //
+        // while (elapsedTime < timer-1f)
+        // {
+        //     transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / (timer-1f) );
+        //     elapsedTime += Time.deltaTime;
+        //     yield return null; // Wait for the next frame
+        // }
+        //
         // if (_currentModelInstance != null) _currentModelInstance.SetActive(false);
-
-        while (elapsedTime < timer-1f)
-        {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / (timer-1f) );
-            elapsedTime += Time.deltaTime;
-            yield return null; // Wait for the next frame
-        }
-        
-        if (_currentModelInstance != null) _currentModelInstance.SetActive(false);
-
-        transform.position = targetPosition; // Ensure it's exactly at the target position
+        //
+        // transform.position = targetPosition; // Ensure it's exactly at the target position
 
         // Optional: Show model again if hidden
         // if (_currentModelInstance != null) _currentModelInstance.SetActive(true);
         
         // --- 4. Play Particle System ---
+
+        
+        PlayTransformationEffects();
+        
         Debug.Log("SFX/VFX: Hemanneken Dying (after move)", this.gameObject);
-
-        if (_particleSystem != null)
-        {
-            _particleSystem.Play();
-        }
-
+        yield break;
         // --- 5. Optional: Clean up ---
         // Usually, after death effects, the GameObject is destroyed.
         // This can be handled here, by the particle system itself (Stop Action: Destroy), or by a managing script.

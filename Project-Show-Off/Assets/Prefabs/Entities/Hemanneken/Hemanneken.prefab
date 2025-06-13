@@ -61,6 +61,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4686a9dcce3124e74998a19328a890b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerLastKnownPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &5403740640629636576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3897870351e8f4f5a8504ba477357fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hemannekenTrueModelPrefab: {fileID: 5591957516352670297, guid: 6def5dae03688428297355db78fff6cd, type: 3}
+  _hemannekenTrueModelPrefab: {fileID: 4795884278783325649, guid: 1793adac6121f954a8b0da591edb82c5, type: 3}
   _hemannekenRabbitModelPrefab: {fileID: 9007076648755751991, guid: e8c77b64b5091ac429d1abdf189f028c, type: 3}
   _stunRetreatDistance: 0.71
   _stunRetreatDuration: 0.3
@@ -99,7 +100,7 @@ MonoBehaviour:
   _stunCircleRadius: 0.23
   _stunCircleSpeed: 90
   _stunVerticalRadius: 0.1
-  _deathMoveDistanceInFrontOfPlayer: 2
+  _deathMoveDistanceInFrontOfPlayer: 0
   _deathMoveLookAtPlayer: 0
 --- !u!1001 &164931640669794013
 PrefabInstance:

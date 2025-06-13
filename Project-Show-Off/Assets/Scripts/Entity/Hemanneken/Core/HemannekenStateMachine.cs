@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(PlayerSensor), typeof(AgentMovement), typeof(HemannekenVisuals))]
 public class HemannekenStateMachine : StateMachine
@@ -66,24 +67,43 @@ public class HemannekenStateMachine : StateMachine
 
     }
 
+    private Vector3 randomOffset;
     // --- High-level Interaction Methods ---
     public void PerformAttachmentToPlayer()
     {
-        _playerTransformForAttachment = Sensor.PlayerTransform; // Cache for detachment
+        _playerTransformForAttachment = Sensor.PlayerTransform;
         if (_playerTransformForAttachment != null)
         {
             Debug.Log("Hemanneken Attached to Player");
-            transform.SetParent(_playerTransformForAttachment);
-            // Define an attachment point or offset on the player, or use a fixed offset
-            transform.localPosition = new Vector3(0, 1, -0.5f); // Example offset
-            Visuals.SetModelVisibility(false); // Hide model as per HemannekenAttachedState logic
-            //Movement.EnableAgent(false); // Ensure agent is fully stopped and disabled
+
+            // --- THIS IS THE KEY CHANGE: DO NOT PARENT THE OBJECT ---
+            // transform.SetParent(_playerTransformForAttachment); // <-- REMOVED
+
+            // 1. Calculate a random offset direction around the player
+            Vector2 randomDirectionXZ = Random.insideUnitCircle.normalized;
+            randomOffset = new Vector3(
+                randomDirectionXZ.x * aiConfig.attachedStateDistance, // Random X position
+                _playerTransformForAttachment.gameObject.GetComponentInChildren<Camera>().transform.localPosition.y,                         // Fixed vertical offset
+                randomDirectionXZ.y * aiConfig.attachedStateDistance  // Random Z position (using Y from the 2D vector)
+            );
+
+            // 2. Set the entity's initial WORLD position
+            transform.position = _playerTransformForAttachment.position + randomOffset;
+            transform.rotation = Quaternion.identity;
+            // Visuals.SetModelVisibility(true); // Ensure model is visible
+            // Movement.EnableAgent(false); // Ensure agent is disabled
         }
         else
         {
             Debug.LogError("Cannot attach: PlayerTransform is null.", this);
         }
     }
+
+    public void HandleAttachment()
+    {
+        transform.position = _playerTransformForAttachment.position + randomOffset;
+    }
+    
 
     public void PerformDetachmentFromPlayer()
     {

@@ -10,6 +10,9 @@ public class HemannekenAIConfig : ScriptableObject
     [Range(0f, 10f)] public float stunDistance = 7f;
     [Range(0f, 100f)] public float investigateDistance = 50f;
     [Range(0f, 100f)] public float attachDistance = 1f;
+    
+    [Range(0f, 5f)] public float attachedStateDistance = 1f;
+
 
     [Header("Timers & Durations")]
     [Range(0, 30)] public int investigationTimerDuration = 10;

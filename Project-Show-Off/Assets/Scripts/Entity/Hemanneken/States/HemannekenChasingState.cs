@@ -17,11 +17,12 @@ public class HemannekenChasingState : State
         _lastChasedPlayerPosition = Vector3.positiveInfinity; // Reset for new chase
         HemannekenEventBus.StartChase();
         // Debug.Log("Entered Chasing State");
+        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = true;
     }
 
     public override void Handle()
     {
-        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = true;
+        // if (HSM.Interactor != null) HSM.Interactor.countLanternTime = true;
 
         if (Time.time >= _nextChaseUpdateTime)
         {
