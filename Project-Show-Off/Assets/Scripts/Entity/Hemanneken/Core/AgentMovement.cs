@@ -460,7 +460,7 @@ public class AgentMovement : MonoBehaviour
         {
             Vector3 pathDirectionNormalizedXZ = pathDirectionXZ.normalized;
             Vector3 perpendicularDirection = Vector3.Cross(pathDirectionNormalizedXZ, Vector3.up).normalized;
-            if (Random.value > 0.5f) perpendicularDirection *= -1f;
+            //if (Random.value > 0.5f) perpendicularDirection *= -1f;
 
             for (int i = 1; i <= wavePathResolution -1; i++)
             {
