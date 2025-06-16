@@ -11,6 +11,7 @@ public class ClueEventManager : MonoBehaviour
 
     public event Action<string> OnClueCollected; // Event for when a specific clue is collected
     public event Action<int> OnClueCountChanged; // Event for when the total count of collected clues changes
+    public event Action OnFuelPickedUp; // Event for when the total count of collected clues changes
 
     void Awake()
     {
@@ -60,6 +61,11 @@ public class ClueEventManager : MonoBehaviour
     public int GetCollectedClueCount()
     {
         return collectedClueIDs.Count;
+    }
+
+    public void PickUpFuel()
+    {
+        OnFuelPickedUp?.Invoke();
     }
 
     // Example of how another script might subscribe:

@@ -100,6 +100,8 @@ public class LanternController : MonoBehaviour
         }
         currentFuel = maxFuel;
         OnFuelChanged?.Invoke(currentFuel, maxFuel); // <<< NEW: Notify UI of initial fuel state.
+
+        ClueEventManager.Instance.OnFuelPickedUp += RefillFuel;
     }
 
     void Update()
@@ -130,6 +132,8 @@ public class LanternController : MonoBehaviour
 
     void OnDisable()
     {
+        ClueEventManager.Instance.OnFuelPickedUp -= RefillFuel;
+
         if (playerInputActions != null)
         {
             playerInputActions.Player.Disable();
