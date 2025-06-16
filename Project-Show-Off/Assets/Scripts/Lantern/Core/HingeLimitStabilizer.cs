@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // Add this script to the same GameObject that has the HingeJoint.
@@ -17,6 +18,16 @@ public class HingeLimitStabilizer : MonoBehaviour
         // This is the "zero" orientation that the hinge limits should be relative to.
         initialLocalRotation = transform.localRotation;
         configured = true;
+    }
+
+    private void OnEnable()
+    {
+        ResetHinge();
+    }
+
+    private void OnDisable()
+    {
+        ResetHinge();
     }
 
     public void ResetHinge()
