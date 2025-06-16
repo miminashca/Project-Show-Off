@@ -110,7 +110,7 @@ MonoBehaviour:
       maxAreaLightsOnScreen: 64
       maxCubeReflectionOnScreen: 32
       maxPlanarReflectionOnScreen: 16
-      maxDecalsOnScreen: 512
+      maxDecalsOnScreen: 30
       maxLightsPerClusterCell: 16
       maxLocalVolumetricFogSize: 32
       maxLocalVolumetricFogOnScreen: 64
@@ -150,9 +150,9 @@ MonoBehaviour:
       maxScreenSpaceShadowSlots: 4
       screenSpaceShadowBufferFormat: 48
     decalSettings:
-      drawDistance: 1000
-      atlasWidth: 2048
-      atlasHeight: 2048
+      drawDistance: 100
+      atlasWidth: 32
+      atlasHeight: 32
       transparentTextureResolution:
         m_Values: 000100000002000000040000
         m_SchemaId:
