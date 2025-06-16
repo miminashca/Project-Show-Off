@@ -17272,13 +17272,21 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 830668399}
+    - target: {fileID: 2954734399820088439, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.size
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.size
@@ -17314,7 +17322,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[2].m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Bool.m_Array.Array.data[3].m_Value
@@ -17325,8 +17333,16 @@ PrefabInstance:
       value: Radius
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Name
+      value: DISAPPEAR
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Value
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Vector2f.m_Array.Array.data[0].m_Name
@@ -17354,6 +17370,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[1].m_Overridden
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4466747205822238146, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
@@ -17388,6 +17408,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 830668399}
+    - target: {fileID: 6741728179587789346, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.053
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
