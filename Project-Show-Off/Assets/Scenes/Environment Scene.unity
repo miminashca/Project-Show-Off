@@ -667,6 +667,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
   m_PrefabInstance: {fileID: 984630464}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &106351370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 106351371}
+  - component: {fileID: 106351372}
+  m_Layer: 21
+  m_Name: PlaceholderNixie
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &106351371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106351370}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -100.6, y: -7.13, z: 142.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1542339429}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &106351372
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106351370}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.18
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &106435249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,7 +1633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4982,6 +5035,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: nixieLayer.m_Bits
+      value: 2097152
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Path
+      value: event:/Enemies/Nixie/UW Nix Kid Laugh
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data1
+      value: 1969112843
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data2
+      value: 1127695310
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data3
+      value: -1673116251
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data4
+      value: 1925351529
+      objectReference: {fileID: 0}
     - target: {fileID: 2470203979784429819, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: interactionDotUI
       value: 
@@ -5032,15 +5109,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 145.3
+      value: 113.32
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.988
+      value: 9.79
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -144
+      value: 74.644
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -13640,6 +13717,7 @@ Transform:
   - {fileID: 477919013}
   - {fileID: 1280175312}
   - {fileID: 1026564377}
+  - {fileID: 106351371}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547130156
