@@ -34,7 +34,7 @@ public class NixieRoamingState : State
     public override void Handle()
     {
         // --- TRANSITION CHECKS (using the new method name and casting) ---
-        if (nixieAI.IsPlayerInWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+        if (nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
         {
             SM.TransitToState(nixieSM.ChasingState);
             return;
@@ -45,11 +45,14 @@ public class NixieRoamingState : State
             return;
         }
 
-        // --- BEHAVIOR LOGIC (no change here) ---
         if (currentPatrolTarget != null && Vector3.Distance(nixieAI.transform.position, currentPatrolTarget.position) < 1f)
         {
             currentPatrolTarget = nixieNav.GetNextPatrolNode();
-            nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed);
+            // Only try to move if the new target is also not null
+            if (currentPatrolTarget != null)
+            {
+                nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed);
+            }
         }
 
         lureTimer -= Time.deltaTime;

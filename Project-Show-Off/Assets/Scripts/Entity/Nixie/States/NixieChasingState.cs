@@ -28,7 +28,7 @@ public class NixieChasingState : State
             return;
         }
 
-        if (!nixieAI.IsPlayerInWater)
+        if (!nixieAI.IsPlayerInMyWater)
         {
             if (nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
             {

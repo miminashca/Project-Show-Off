@@ -18,33 +18,44 @@ public class NixieAI : MonoBehaviour
     [Tooltip("How long the Nixie remains stunned after attacking or being shouted at.")]
     public float StunDuration = 3f;
 
+    [Header("Environment")]
+    [Tooltip("The specific WaterZone this Nixie lives in. It will only react to the player entering this zone.")]
+    public WaterZone MyWaterZone;
+
     [Header("Vocalizations & SFX")]
     public List<AudioClip> LuringVocalizations;
     public AudioClip AttackSound;
 
     // --- Component & Runtime References ---
-    // This is of type NixieStateMachine, so we can access its specific states.
     public NixieStateMachine StateMachine { get; private set; }
-    public NixieNavigation Navigation { get; private set; } // Renamed for consistency from the state machine
+    public NixieNavigation Navigation { get; private set; }
     public AudioSource AudioSource { get; private set; }
     public Transform PlayerTransform { get; private set; }
-    // Note: You will need a script on the player to track these stats.
-    // public PlayerStatus PlayerStatus { get; private set; }
+    public PlayerStatus PlayerStatus { get; private set; }
 
     // --- Runtime Data ---
     public float DistanceToPlayer { get; private set; }
-    public bool IsPlayerInWater { get; set; } // This should be set by a water trigger zone
+
+    // Note: The old IsPlayerInWater property is no longer needed with the zone-specific logic
+    // public bool IsPlayerInWater { get; set; } 
 
     public float CurrentDetectionRadius
     {
         get
         {
-            // Simplified check. Replace with your actual PlayerStatus logic.
-            // if (PlayerStatus != null && PlayerStatus.IsLanternOn)
-            // {
-            //     return DetectionRadiusLantern;
-            // }
+            if (PlayerStatus != null && PlayerStatus.IsLanternOn)
+            {
+                return DetectionRadiusLantern;
+            }
             return DetectionRadiusNormal;
+        }
+    }
+
+    public bool IsPlayerInMyWater
+    {
+        get
+        {
+            return PlayerStatus != null && MyWaterZone != null && PlayerStatus.CurrentWaterZone == MyWaterZone;
         }
     }
 
@@ -54,12 +65,11 @@ public class NixieAI : MonoBehaviour
         Navigation = GetComponent<NixieNavigation>();
         AudioSource = GetComponent<AudioSource>();
 
-        // Find the player in the scene
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
         {
             PlayerTransform = playerObj.transform;
-            // PlayerStatus = playerObj.GetComponent<PlayerStatus>();
+            PlayerStatus = playerObj.GetComponent<PlayerStatus>();
         }
         else
         {
@@ -69,35 +79,32 @@ public class NixieAI : MonoBehaviour
 
     void OnEnable()
     {
-        // Subscribe to the player's "HEY!" shout event
-        // Example: PlayerActionEventBus.OnPlayerShouted += HandlePlayerShout;
+        PlayerActionEventBus.OnPlayerShouted += HandlePlayerShout;
     }
 
     void OnDisable()
     {
-        // Unsubscribe to prevent memory leaks
-        // Example: PlayerActionEventBus.OnPlayerShouted -= HandlePlayerShout;
+        PlayerActionEventBus.OnPlayerShouted -= HandlePlayerShout;
     }
 
     void Update()
     {
         if (PlayerTransform == null) return;
 
-        // Calculate distance to player once per frame for efficiency
         DistanceToPlayer = Vector3.Distance(transform.position, PlayerTransform.position);
     }
 
     /// <summary>
     /// Triggered by the player's "HEY!" shout event.
     /// </summary>
-    private void HandlePlayerShout()
+    // --- THIS IS THE CORRECTED LINE ---
+    private void HandlePlayerShout(Vector3 shoutPosition)
     {
-        // Only get stunned if the shout is within the staring radius
+        // The event sends the shout position, so we must accept the parameter,
+        // even if our current logic only checks the distance.
         if (DistanceToPlayer <= StaringRadius)
         {
             Debug.Log("Nixie was stunned by a shout!");
-            // --- THIS IS THE CORRECTED LINE ---
-            // It now uses TransitToState and accesses the public StuntedState property from NixieStateMachine.
             StateMachine.TransitToState(StateMachine.StuntedState);
         }
     }
@@ -113,5 +120,37 @@ public class NixieAI : MonoBehaviour
     {
         if (AttackSound == null) return;
         AudioSource.PlayOneShot(AttackSound);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        // Gizmos are only drawn for the selected object, which is good for performance.
+        // Staring Radius (Blue)
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, StaringRadius);
+
+        // Attack Range (Red)
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, AttackRange);
+
+        // Draw the current detection radius
+        // We use DrawWireSphere here as well for consistency
+        if (PlayerStatus != null && PlayerStatus.IsLanternOn)
+        {
+            Gizmos.color = new Color(1f, 0.5f, 0f); // Orange
+            Gizmos.DrawWireSphere(transform.position, DetectionRadiusLantern);
+        }
+        else
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, DetectionRadiusNormal);
+        }
+
+        // Line to player for clarity
+        if (PlayerTransform != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, PlayerTransform.position);
+        }
     }
 }

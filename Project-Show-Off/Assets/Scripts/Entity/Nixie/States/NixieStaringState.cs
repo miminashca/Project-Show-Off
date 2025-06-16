@@ -25,7 +25,7 @@ public class NixieStaringState : State
     public override void Handle()
     {
         // --- TRANSITION CHECKS ---
-        if (nixieAI.IsPlayerInWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+        if (nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
         {
             SM.TransitToState(nixieSM.ChasingState);
             return;

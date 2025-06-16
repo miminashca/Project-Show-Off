@@ -4,10 +4,11 @@ using UnityEngine;
 public class PlayerStateController : MonoBehaviour
 {
     private PlayerInput controls;
+    private PlayerStatus playerStatus;
+
     private bool isHoldingLantern = false;
     [NonSerialized] public float lanternTimeCounter = 0;
     [NonSerialized] public bool countLanternTime = false;
-    [NonSerialized] private PlayerMovement playerMovement;
 
     [Header("Speed Modifiers")]
     [Tooltip("How much speed is reduced when Hemanneken is attached (e.g., 0.1 for 10% reduction).")]
@@ -15,7 +16,8 @@ public class PlayerStateController : MonoBehaviour
     [Tooltip("How much speed is reduced when underwater (e.g., 0.4 for 40% reduction).")]
     [SerializeField] private float waterSpeedDecrease = 0.4f;
 
-    private float finalSpeedModifier = 1f; // Base modifier is 1 (no change)
+    [NonSerialized] private PlayerMovement playerMovement;
+    private float finalSpeedModifier = 1f;
 
     private void Awake()
     {
@@ -25,6 +27,13 @@ public class PlayerStateController : MonoBehaviour
             Debug.LogError("PlayerMovement component not found on this GameObject!", this);
         }
         controls = new PlayerInput();
+
+        // --- GET THE COMPONENT ---
+        playerStatus = GetComponent<PlayerStatus>();
+        if (playerStatus == null)
+        {
+            Debug.LogError("PlayerStatus component not found on this GameObject!", this);
+        }
     }
 
     private void OnEnable()
@@ -55,6 +64,8 @@ public class PlayerStateController : MonoBehaviour
         {
             isHoldingLantern = false;
         }
+
+        if (playerStatus != null) playerStatus.IsLanternOn = isHoldingLantern;
 
         if (isHoldingLantern && countLanternTime)
         {
