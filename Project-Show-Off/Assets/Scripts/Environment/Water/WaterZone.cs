@@ -42,6 +42,34 @@ public class WaterZone : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            PlayerStatus playerStatus = other.GetComponent<PlayerStatus>();
+            if (playerStatus != null)
+            {
+                // Tell the player they are now in THIS specific water zone.
+                playerStatus.CurrentWaterZone = this;
+                Debug.Log($"Player entered WaterZone: {gameObject.name}");
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            PlayerStatus playerStatus = other.GetComponent<PlayerStatus>();
+            if (playerStatus != null && playerStatus.CurrentWaterZone == this)
+            {
+                // Player is leaving THIS zone, so clear the reference.
+                playerStatus.CurrentWaterZone = null;
+                Debug.Log($"Player exited WaterZone: {gameObject.name}");
+            }
+        }
+    }
+
     void OnDrawGizmos()
     {
         if (!Application.isPlaying)

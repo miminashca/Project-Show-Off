@@ -24,6 +24,8 @@ public class NixieNavigation : MonoBehaviour
     private float currentSpeed;
     private bool isMoving = false;
 
+    private Coroutine peekingCoroutine;
+
     void Update()
     {
         if (isMoving)
@@ -55,10 +57,31 @@ public class NixieNavigation : MonoBehaviour
     {
         if (HeadModelTransform == null) return;
 
+        if (peekingCoroutine != null)
+        {
+            StopCoroutine(peekingCoroutine);
+        }
+
+        peekingCoroutine = StartCoroutine(AnimateHead(shouldPeek));
+    }
+
+    private System.Collections.IEnumerator AnimateHead(bool shouldPeek)
+    {
         float targetY = shouldPeek ? PeekingYPosition : SubmergedYPosition;
-        Vector3 newLocalPos = HeadModelTransform.localPosition;
-        newLocalPos.y = targetY;
-        HeadModelTransform.localPosition = newLocalPos;
+        Vector3 startPos = HeadModelTransform.localPosition;
+        Vector3 endPos = new Vector3(startPos.x, targetY, startPos.z);
+        float duration = 0.5f; // Animation takes half a second
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            HeadModelTransform.localPosition = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null; // Wait for the next frame
+        }
+
+        // Ensure it ends at the exact target position
+        HeadModelTransform.localPosition = endPos;
     }
 
     public void LookAt(Vector3 targetPosition)

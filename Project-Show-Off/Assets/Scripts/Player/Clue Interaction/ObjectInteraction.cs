@@ -22,6 +22,9 @@ public class ObjectInteraction : MonoBehaviour
     private PlayerInput playerInputActions;
     private ClueObject currentInteractableClue;
     private ClueObject lastHighlightedClue;
+    
+    private FuelPickup currentInteractableFuel;
+
 
     void Awake()
     {
@@ -108,7 +111,8 @@ public class ObjectInteraction : MonoBehaviour
         if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, interactionDistance, interactableLayer))
         {
             ClueObject clue = hit.collider.GetComponent<ClueObject>();
-            if (clue != null && clue.IsInteractable())
+            FuelPickup fuel = hit.collider.GetComponent<FuelPickup>();
+            if ((clue != null && clue.IsInteractable()))
             {
                 currentInteractableClue = clue;
                 if (lastHighlightedClue != currentInteractableClue)
@@ -123,6 +127,17 @@ public class ObjectInteraction : MonoBehaviour
             else
             {
                 ClearCurrentInteractable();
+            }
+
+            if (fuel != null)
+            {
+                currentInteractableFuel = fuel;
+                SetInteractionPrompt(true);
+                foundInteractableThisFrame = true;
+            }
+            else
+            {
+                currentInteractableFuel = null;
             }
         }
         else
@@ -166,6 +181,11 @@ public class ObjectInteraction : MonoBehaviour
             {
                 Debug.LogError("InspectionManager instance not found!");
             }
+        }
+
+        if (currentInteractableFuel != null)
+        {
+            InspectionManager.Instance.TryPickupFuel(currentInteractableFuel);
         }
     }
 

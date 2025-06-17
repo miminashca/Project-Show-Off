@@ -14,27 +14,32 @@ public class FuelPickup : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    public void Refill()
     {
-        // Check if the object entering the trigger is the Player
-        if (other.CompareTag("Player")) // Make sure your player GameObject has the "Player" tag
-        {
-            LanternController lantern = other.GetComponent<LanternController>();
-            if (lantern != null)
-            {
-                Debug.Log("Player picked up fuel.");
-                lantern.RefillFuel();
-
-                // Optional: Play pickup sound
-                // AudioSource.PlayClipAtPoint(pickupSound, transform.position);
-
-                // Destroy the fuel bottle object
-                Destroy(gameObject);
-            }
-            else
-            {
-                Debug.LogWarning($"Player tagged object entered FuelPickup trigger, but no LanternController found on {other.name}.", other);
-            }
-        }
+        ClueEventManager.Instance.PickUpFuel();
     }
+    
+    // void OnTriggerEnter(Collider other)
+    // {
+    //     // Check if the object entering the trigger is the Player
+    //     if (other.CompareTag("Player")) // Make sure your player GameObject has the "Player" tag
+    //     {
+    //         LanternController lantern = other.GetComponent<LanternController>();
+    //         if (lantern != null)
+    //         {
+    //             Debug.Log("Player picked up fuel.");
+    //             lantern.RefillFuel();
+    //
+    //             // Optional: Play pickup sound
+    //             // AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+    //
+    //             // Destroy the fuel bottle object
+    //             Destroy(gameObject);
+    //         }
+    //         else
+    //         {
+    //             Debug.LogWarning($"Player tagged object entered FuelPickup trigger, but no LanternController found on {other.name}.", other);
+    //         }
+    //     }
+    // }
 }
