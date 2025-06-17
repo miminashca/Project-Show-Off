@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &4533880406833365106
+--- !u!1 &7191558895106259361
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,43 +8,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5697860197286110968}
-  - component: {fileID: 5601093736450750278}
+  - component: {fileID: 111554212401240534}
+  - component: {fileID: 2051476728699517928}
   m_Layer: 0
-  m_Name: Rubble Projector
+  m_Name: Dirt Pile Projector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5697860197286110968
+--- !u!4 &111554212401240534
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4533880406833365106}
+  m_GameObject: {fileID: 7191558895106259361}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -657.973, y: 395.675, z: 522.18005}
+  m_LocalPosition: {x: -381.30164, y: 391.51514, z: 223.47128}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5601093736450750278
+--- !u!114 &2051476728699517928
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4533880406833365106}
+  m_GameObject: {fileID: 7191558895106259361}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f19d9143a39eb3b46bc4563e9889cfbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: ed21eff903b10a243842e8b5af621aea, type: 2}
+  m_Material: {fileID: 2100000, guid: 93c50e7e23e769049a8870a9c55a8132, type: 2}
   m_DrawDistance: 100
   m_FadeScale: 0.9
   m_StartAngleFade: 180
@@ -56,9 +56,9 @@ MonoBehaviour:
     m_Override: 256
     m_UseOverride: 1
     m_Level: 0
-  m_DecalLayerMask: 257
+  m_DecalLayerMask: 1
   m_ScaleMode: 0
   m_Offset: {x: 0, y: 0, z: 0}
-  m_Size: {x: 2, y: 2, z: 1}
+  m_Size: {x: 2, y: 2, z: 0.13}
   m_FadeFactor: 1
   m_Version: 3
