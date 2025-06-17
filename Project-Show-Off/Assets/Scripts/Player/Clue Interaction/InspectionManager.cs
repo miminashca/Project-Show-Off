@@ -27,6 +27,11 @@ public class InspectionManager : MonoBehaviour
     [Header("Light")]
     [SerializeField] private Light inspectionLight;
     [SerializeField] private GameObject lantern;
+    
+    [Header("Fuel")]
+    [SerializeField] private float fuelThreshold = 10;
+    private float timer;
+    
     private bool lanternInitiallyActive = false;
 
     private PlayerInput playerInputActions;
@@ -59,6 +64,8 @@ public class InspectionManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
+        timer = -fuelThreshold;
 
         playerInputActions = new PlayerInput();
 
@@ -229,6 +236,15 @@ public class InspectionManager : MonoBehaviour
 
         // Start coroutine to enable inspection input map after a frame delay
         activateInspectionCoroutine = StartCoroutine(EnableInspectionInputAfterFrame());
+    }
+
+    public void TryPickupFuel(FuelPickup fuel)
+    {
+        if (Time.time - timer >= fuelThreshold)
+        {
+            fuel.Refill();
+            timer = Time.time;
+        }
     }
 
     private IEnumerator EnableInspectionInputAfterFrame()
