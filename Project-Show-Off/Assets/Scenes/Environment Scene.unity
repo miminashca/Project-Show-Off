@@ -667,6 +667,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5697860197286110968, guid: 66c78b9e91e026a40836fa212ce3c92b, type: 3}
   m_PrefabInstance: {fileID: 984630464}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &106351370
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 106351371}
+  - component: {fileID: 106351372}
+  m_Layer: 21
+  m_Name: PlaceholderNixie
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &106351371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106351370}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -100.6, y: -7.13, z: 142.8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1542339429}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &106351372
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 106351370}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.18
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &106435249
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,7 +1633,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1866,6 +1919,7 @@ GameObject:
   m_Component:
   - component: {fileID: 257389981}
   - component: {fileID: 257389982}
+  - component: {fileID: 257389983}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -1909,6 +1963,28 @@ MonoBehaviour:
     Path: event:/Environment/Ambience + Crickets
   windyParameterName: Windy
   transitionDuration: 3
+--- !u!114 &257389983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257389980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4928f27d1b209945bb961a6f24261c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ambientMusicEventReference:
+    Guid:
+      Data1: 1306120395
+      Data2: 1138473388
+      Data3: 255208635
+      Data4: 659500106
+    Path: event:/Music/Ambient Music
+  playerTransform: {fileID: 686111683}
+  maxInfluenceDistance: 40
+  tensionSmoothingSpeed: 2
 --- !u!1 &268289074
 GameObject:
   m_ObjectHideFlags: 0
@@ -4338,6 +4414,7 @@ GameObject:
   - component: {fileID: 590247159}
   - component: {fileID: 590247158}
   - component: {fileID: 590247157}
+  - component: {fileID: 590247160}
   m_Layer: 8
   m_Name: Swamp_T
   m_TagString: Untagged
@@ -4529,6 +4606,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 886124514}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &590247160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 590247156}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 515b8488324eba94e8ba7f9e770e0e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSurfacePlane: {fileID: 590247159}
 --- !u!1 &613065467
 GameObject:
   m_ObjectHideFlags: 0
@@ -4945,6 +5035,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: nixieLayer.m_Bits
+      value: 2097152
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Path
+      value: event:/Enemies/Nixie/UW Nix Kid Laugh
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data1
+      value: 1969112843
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data2
+      value: 1127695310
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data3
+      value: -1673116251
+      objectReference: {fileID: 0}
+    - target: {fileID: 2157266342790747539, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: childLaughterEvent.Guid.Data4
+      value: 1925351529
+      objectReference: {fileID: 0}
     - target: {fileID: 2470203979784429819, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: interactionDotUI
       value: 
@@ -4995,15 +5109,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 145.3
+      value: 113.32
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.988
+      value: 9.79
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -144
+      value: 74.644
       objectReference: {fileID: 0}
     - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -12393,7 +12507,30 @@ Transform:
   m_LocalPosition: {x: 556.99164, y: -385.06512, z: -391.44128}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1242551408}
+  - {fileID: 1324790515}
+  - {fileID: 1242264005}
+  - {fileID: 1084778116}
+  - {fileID: 1121620757}
+  - {fileID: 1525407361}
+  - {fileID: 630806764}
+  - {fileID: 239547218}
+  - {fileID: 562273990}
+  - {fileID: 94725032}
+  - {fileID: 771014433}
+  - {fileID: 2122323719}
+  - {fileID: 784193925}
+  - {fileID: 824397607}
+  - {fileID: 1104750863}
+  - {fileID: 201934921}
+  - {fileID: 1553652611}
+  - {fileID: 4866821137918510065}
+  - {fileID: 280280560}
+  - {fileID: 960546797}
+  - {fileID: 4934637365750297320}
+  - {fileID: 929569917}
+  - {fileID: 979313243}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1421073579
@@ -13580,6 +13717,7 @@ Transform:
   - {fileID: 477919013}
   - {fileID: 1280175312}
   - {fileID: 1026564377}
+  - {fileID: 106351371}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547130156
@@ -14103,6 +14241,7 @@ GameObject:
   - component: {fileID: 1611244405}
   - component: {fileID: 1611244404}
   - component: {fileID: 1611244403}
+  - component: {fileID: 1611244406}
   m_Layer: 8
   m_Name: Swamp_BR
   m_TagString: Untagged
@@ -14294,6 +14433,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 886124514}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1611244406
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1611244402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 515b8488324eba94e8ba7f9e770e0e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSurfacePlane: {fileID: 1611244405}
 --- !u!1 &1613996982
 GameObject:
   m_ObjectHideFlags: 0
@@ -17002,6 +17154,7 @@ GameObject:
   - component: {fileID: 2072512355}
   - component: {fileID: 2072512354}
   - component: {fileID: 2072512353}
+  - component: {fileID: 2072512356}
   m_Layer: 8
   m_Name: Swamp_BL
   m_TagString: Untagged
@@ -17193,6 +17346,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 886124514}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2072512356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2072512352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 515b8488324eba94e8ba7f9e770e0e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterSurfacePlane: {fileID: 2072512355}
 --- !u!1001 &2085992193
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17204,6 +17370,10 @@ PrefabInstance:
     - target: {fileID: 1453616932682400020, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_Name
       value: Spirit_Tree_Animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 1453616932682400020, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
+      propertyPath: m_TagString
+      value: SpiritTree
       objectReference: {fileID: 0}
     - target: {fileID: 2262944783699237806, guid: 8b6e9070a69e7b64eb0f42db2c525990, type: 3}
       propertyPath: m_LocalPosition.x
