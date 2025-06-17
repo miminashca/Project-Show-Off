@@ -2006,7 +2006,7 @@ MonoBehaviour:
       Data3: 255208635
       Data4: 659500106
     Path: event:/Music/Ambient Music
-  playerTransform: {fileID: 686111683}
+  playerTransform: {fileID: 0}
   maxInfluenceDistance: 40
   tensionSmoothingSpeed: 2
 --- !u!1 &268289074
@@ -18274,6 +18274,7 @@ MonoBehaviour:
   waterSurfaceLayer:
     serializedVersion: 2
     m_Bits: 256
+  submergePointVerticalOffset: 0.2
   underwaterAmbienceEvent:
     Guid:
       Data1: 1526208366
@@ -18295,6 +18296,17 @@ MonoBehaviour:
       Data3: 1602033337
       Data4: 2008393408
     Path: event:/Player/Emerging
+  childLaughterEvent:
+    Guid:
+      Data1: 1969112843
+      Data2: 1127695310
+      Data3: -1673116251
+      Data4: 1925351529
+    Path: event:/Enemies/Nixie/UW Nix Kid Laugh
+  nixieLayer:
+    serializedVersion: 2
+    m_Bits: 2097152
+  nixieProximityDistance: 30
 --- !u!4 &2214964552668669831
 Transform:
   m_ObjectHideFlags: 0
@@ -19808,7 +19820,7 @@ Transform:
   m_GameObject: {fileID: 7650862298646617480}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.24758048, z: -0, w: 0.9688674}
-  m_LocalPosition: {x: 145.3, y: 9.988, z: -144}
+  m_LocalPosition: {x: 105.3, y: 9.988, z: 80.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
