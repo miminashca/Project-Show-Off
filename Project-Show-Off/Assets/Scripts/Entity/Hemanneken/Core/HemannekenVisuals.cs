@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX; // Added for VisualEffect
@@ -45,6 +46,9 @@ public class HemannekenVisuals : MonoBehaviour
     // --- NEW FLAG FOR DEATH PROCESSING ---
     private bool _isProcessingDeath = false;
 
+    private Animator animator;
+    private readonly int hopTriggerHash = Animator.StringToHash("Hop");
+
     public void Initialize()
     {
         _playerSensor = GetComponent<PlayerSensor>();
@@ -60,6 +64,11 @@ public class HemannekenVisuals : MonoBehaviour
         {
             Debug.LogWarning("HemannekenVisuals: ParticleSystem component not found in children. Effects might not play.", this);
         }
+    }
+
+    private void OnDestroy()
+    {
+        HemannekenEventBus.OnRabbitHopStart -= PlayHopAnimation;
     }
 
     public void SetForm(bool isTrue, Transform parentTransform)
@@ -81,6 +90,14 @@ public class HemannekenVisuals : MonoBehaviour
         else
         {
             Debug.LogError($"HemannekenVisuals: {(IsTrueForm ? "True" : "Rabbit")} model prefab is not assigned!", this);
+        }
+        
+        if(!animator) animator = GetComponentInChildren<Animator>();
+        if(!animator) Debug.Log("No animator found for this Hemanneken Visuals.");
+        else
+        {
+            HemannekenEventBus.OnRabbitHopStart -= PlayHopAnimation;
+            HemannekenEventBus.OnRabbitHopStart += PlayHopAnimation;
         }
     }
 
@@ -299,5 +316,40 @@ public class HemannekenVisuals : MonoBehaviour
         // Destroy(gameObject, particleEffectDuration);
         // If not destroying, and the entity could somehow revive, you might set _isProcessingDeath = false;
         // For a typical death, the object is removed, making _isProcessingDeath reset unnecessary.
+    }
+
+    /// <summary>
+    /// Triggers the 'Hop' animation in the Animator Controller.
+    /// </summary>
+    public void PlayHopAnimation()
+    { 
+        // Ensure we have a valid animator before trying to use it.
+        if (animator == null) return;
+
+        // This activates the "Hop" trigger in the Animator,
+        // causing the transition from Idle to Hop to occur.
+        animator.SetTrigger(hopTriggerHash);
+    }
+
+    /// <summary>
+    /// Forces the Animator to return to the 'Idle' state.
+    /// Note: Usually, you don't need to call this manually. The Animator
+    /// will automatically return to Idle after the Hop animation finishes,
+    /// based on our transitions. This method is for forcefully interrupting other actions.
+    /// </summary>
+    public void PlayIdleAnimation()
+    {
+        // Ensure we have a valid animator before trying to use it.
+        if (animator == null) return;
+
+        // The Play method immediately interrupts any current animation
+        // and plays the specified state. "Base Layer" is the default layer name.
+        // The second parameter '-1' means to restart the animation from the beginning.
+        animator.Play("Idle", -1, 0f);
+    }
+
+    private void Update()
+    {
+        Debug.Log(animator);
     }
 }

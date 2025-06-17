@@ -48,18 +48,9 @@ public class HemannekenStateMachine : StateMachine
         if (parentSpawnPoint == null) Debug.LogWarning("SpawnPoint parent not found for AgentMovement initialization.", this);
 
         Movement.Initialize(parentSpawnPoint.gameObject.GetComponentInChildren<SpawnPointsManager>(), aiConfig); // Ensure SPManager is found
+        
         Visuals.Initialize();
-
         Visuals.SetForm(IsInitiallyTrueForm, transform);
-    }
-
-    protected override void Start()
-    {
-        // Set initial form based on spawn condition
-        Visuals.SetForm(IsInitiallyTrueForm, transform);
-
-        // Base Start will initialize the first state.
-        base.Start();
     }
 
     private void OnDestroy()
