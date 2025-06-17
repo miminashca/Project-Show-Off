@@ -93,4 +93,61 @@ public class NixieNavigation : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(direction);
         }
     }
+
+    // --- GIZMOS SECTION ---
+    void OnDrawGizmosSelected()
+    {
+        // --- Visualize Patrol Path ---
+        if (PatrolNodes != null && PatrolNodes.Count > 0)
+        {
+            Gizmos.color = Color.green;
+            for (int i = 0; i < PatrolNodes.Count; i++)
+            {
+                Transform node = PatrolNodes[i];
+                if (node == null) continue;
+
+                // Draw a sphere at the node's position
+                Gizmos.DrawWireSphere(node.position, 0.5f);
+                DrawGizmoLabel(node.position + Vector3.up * 0.6f, $"Node {i}", Color.green);
+
+                // Draw a line to the next node in the list
+                if (PatrolNodes.Count > 1)
+                {
+                    Transform nextNode = PatrolNodes[(i + 1) % PatrolNodes.Count];
+                    if (nextNode != null)
+                    {
+                        Gizmos.DrawLine(node.position, nextNode.position);
+                    }
+                }
+            }
+        }
+
+        // --- Visualize Peeking Heights ---
+        // These are local offsets, so we draw them relative to the main transform's position.
+        Vector3 peekPosition = transform.position + new Vector3(0, PeekingYPosition, 0);
+        Vector3 submergedPosition = transform.position + new Vector3(0, SubmergedYPosition, 0);
+
+        // Peeking Height (Cyan Disc)
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(peekPosition, 0.5f);
+        DrawGizmoLabel(peekPosition + Vector3.right * 0.6f, "Peeking Y", Color.cyan);
+
+        // Submerged Height (Dark Blue Disc)
+        Gizmos.color = new Color(0, 0, 0.8f);
+        Gizmos.DrawWireSphere(submergedPosition, 0.5f);
+        DrawGizmoLabel(submergedPosition + Vector3.right * 0.6f, "Submerged Y", Gizmos.color);
+
+        // Line connecting the two heights for clarity
+        Gizmos.color = Color.gray;
+        Gizmos.DrawLine(peekPosition, submergedPosition);
+    }
+
+    // Helper method to draw text labels in the scene view
+    private void DrawGizmoLabel(Vector3 position, string text, Color color)
+    {
+#if UNITY_EDITOR
+        UnityEditor.Handles.color = color;
+        UnityEditor.Handles.Label(position, text);
+#endif
+    }
 }

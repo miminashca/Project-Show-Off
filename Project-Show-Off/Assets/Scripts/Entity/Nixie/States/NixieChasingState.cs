@@ -21,14 +21,7 @@ public class NixieChasingState : State
 
     public override void Handle()
     {
-        // --- TRANSITION CHECKS ---
-        if (nixieAI.DistanceToPlayer <= nixieAI.AttackRange)
-        {
-            SM.TransitToState(nixieSM.HurtingState);
-            return;
-        }
-
-        if (!nixieAI.IsPlayerInMyWater)
+        if (!nixieAI.IsPlayerInMyZone)
         {
             if (nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
             {
@@ -38,6 +31,20 @@ public class NixieChasingState : State
             {
                 SM.TransitToState(nixieSM.RoamingState);
             }
+            return;
+        }
+
+        if (!nixieAI.PlayerStatus.IsLanternOn && nixieAI.DistanceToPlayer > nixieAI.PointBlankRadius)
+        {
+            Debug.Log("Player turned off lantern, Nixie is now lurking.");
+            nixieAI.PlayerLastKnownPosition = nixieAI.PlayerTransform.position;
+            SM.TransitToState(nixieSM.LurkingState);
+            return;
+        }
+
+        if (nixieAI.DistanceToPlayer <= nixieAI.AttackRange)
+        {
+            SM.TransitToState(nixieSM.HurtingState);
             return;
         }
 

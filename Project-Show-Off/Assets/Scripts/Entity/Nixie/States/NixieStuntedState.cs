@@ -33,11 +33,11 @@ public class NixieStuntedState : State
         {
             // After stun timer expires, re-evaluate the situation.
             // Transitions now use SM.TransitToState and access states via the nixieSM reference.
-            if (nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+            if (nixieAI.IsPlayerInMyZone && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
             {
                 SM.TransitToState(nixieSM.ChasingState);
             }
-            else if (!nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
+            else if (!nixieAI.IsPlayerInMyZone && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
             {
                 SM.TransitToState(nixieSM.StaringState);
             }

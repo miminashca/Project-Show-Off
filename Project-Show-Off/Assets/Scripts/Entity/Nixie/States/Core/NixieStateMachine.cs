@@ -13,6 +13,7 @@ public class NixieStateMachine : StateMachine
     public NixieChasingState ChasingState { get; private set; }
     public NixieHurtingState HurtingState { get; private set; }
     public NixieStuntedState StuntedState { get; private set; }
+    public NixieLurkingState LurkingState { get; private set; }
 
     // Use Awake for initialization, similar to your HunterStateMachine
     protected virtual void Awake()
@@ -26,6 +27,7 @@ public class NixieStateMachine : StateMachine
         ChasingState = new NixieChasingState(this);
         HurtingState = new NixieHurtingState(this);
         StuntedState = new NixieStuntedState(this);
+        LurkingState = new NixieLurkingState(this);
     }
 
     // Implementation of the abstract property from your base StateMachine

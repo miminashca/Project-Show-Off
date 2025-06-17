@@ -24,8 +24,16 @@ public class NixieStaringState : State
 
     public override void Handle()
     {
-        // --- TRANSITION CHECKS ---
-        if (nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+        // If player turns lantern off, Nixie loses interest and roams.
+        if (!nixieAI.PlayerStatus.IsLanternOn)
+        {
+            SM.TransitToState(nixieSM.RoamingState);
+            return;
+        }
+
+        bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
+
+        if (nixieAI.IsPlayerInMyZone && (nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius || isPointBlank))
         {
             SM.TransitToState(nixieSM.ChasingState);
             return;

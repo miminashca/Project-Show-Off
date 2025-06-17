@@ -897,6 +897,72 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
   m_PrefabInstance: {fileID: 2094080700}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &529072162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 529072165}
+  - component: {fileID: 529072164}
+  - component: {fileID: 529072163}
+  m_Layer: 8
+  m_Name: Nixie Zone Trigger (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &529072163
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529072162}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 2.3, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &529072164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529072162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca79aed6c581874890aca16627a5011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &529072165
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 529072162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -18.26, y: 0.81, z: 18.89}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &552267919
 GameObject:
   m_ObjectHideFlags: 0
@@ -3270,37 +3336,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1282307223
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1282307224}
-  m_Layer: 0
-  m_Name: Head
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1282307224
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1282307223}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.648, z: 0.278}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 411230311368495598}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1299788343
 GameObject:
   m_ObjectHideFlags: 0
@@ -3991,6 +4026,72 @@ Transform:
   - {fileID: 1036769174}
   m_Father: {fileID: 957228306}
   m_LocalEulerAnglesHint: {x: 0, y: 86.387, z: 0}
+--- !u!1 &1803086306
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1803086309}
+  - component: {fileID: 1803086308}
+  - component: {fileID: 1803086307}
+  m_Layer: 8
+  m_Name: Nixie Zone Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1803086307
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803086306}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 10, y: 2.3, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1803086308
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803086306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ca79aed6c581874890aca16627a5011, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1803086309
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803086306}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.44, y: 0.81, z: 7.87}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1878559912 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2214964552251006022, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
@@ -4963,8 +5064,7 @@ Transform:
   m_LocalPosition: {x: -10.19, y: 0.51, z: 6.82}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
-  m_Children:
-  - {fileID: 1282307224}
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &2253590677337883753
@@ -5171,9 +5271,9 @@ MonoBehaviour:
   - {fileID: 123752438}
   RoamingSpeed: 2
   ChasingSpeed: 6
-  HeadModelTransform: {fileID: 1282307224}
-  SubmergedYPosition: 1
-  PeekingYPosition: 4
+  HeadModelTransform: {fileID: 411230311368495598}
+  SubmergedYPosition: 0.5
+  PeekingYPosition: 2
 --- !u!114 &8006403853385248700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5189,9 +5289,11 @@ MonoBehaviour:
   StaringRadius: 20
   DetectionRadiusNormal: 15
   DetectionRadiusLantern: 30
+  PointBlankRadius: 3
   AttackRange: 1
   StunDuration: 3
-  MyWaterZone: {fileID: 1935835726}
+  MaxTensionDuration: 15
+  MyNixieZone: {fileID: 1803086308}
   LuringVocalizations: []
   AttackSound: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
@@ -5216,7 +5318,9 @@ SceneRoots:
   - {fileID: 884698156}
   - {fileID: 1431190712}
   - {fileID: 1935835727}
+  - {fileID: 1803086309}
   - {fileID: 1469841061}
+  - {fileID: 529072165}
   - {fileID: 1299788347}
   - {fileID: 552267923}
   - {fileID: 402759961}

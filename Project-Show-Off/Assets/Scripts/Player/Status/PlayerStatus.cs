@@ -6,9 +6,9 @@ public class PlayerStatus : MonoBehaviour
     public bool IsCrouching { get; set; } = false;
     public bool IsInTallGrass { get; set; } = false;
     public bool IsLanternRaised { get; set; } = false;
-    public WaterZone CurrentWaterZone { get; set; }
-
     public bool IsLanternOn { get; set; } = false;
+    public WaterZone CurrentWaterZone { get; set; }
+    public NixieZone CurrentNixieZone { get; set; }
 
     private PlayerMovement _playerMovement;
     public bool IsMoving => _playerMovement != null && _playerMovement.isMoving;

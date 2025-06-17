@@ -33,13 +33,25 @@ public class NixieRoamingState : State
 
     public override void Handle()
     {
-        // --- TRANSITION CHECKS (using the new method name and casting) ---
-        if (nixieAI.IsPlayerInMyWater && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+        bool isLanternOn = nixieAI.PlayerStatus.IsLanternOn;
+        bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
+
+        if (nixieAI.IsPlayerInMyZone && (isLanternOn || isPointBlank))
+        {
+            // Check against appropriate radius
+            if (nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius || isPointBlank)
+            {
+                SM.TransitToState(nixieSM.ChasingState);
+                return;
+            }
+        }
+
+        if (nixieAI.IsPlayerInMyZone && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
         {
             SM.TransitToState(nixieSM.ChasingState);
             return;
         }
-        if (nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
+        if (!nixieAI.IsPlayerInMyZone && isLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
         {
             SM.TransitToState(nixieSM.StaringState);
             return;
