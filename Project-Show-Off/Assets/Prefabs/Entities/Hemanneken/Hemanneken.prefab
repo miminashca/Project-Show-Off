@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 381907839171290958}
   - component: {fileID: 5403740640629636576}
   - component: {fileID: 7745754292186392169}
+  - component: {fileID: 8643986500449592445}
   m_Layer: 0
   m_Name: Hemanneken
   m_TagString: Untagged
@@ -102,6 +103,68 @@ MonoBehaviour:
   _stunVerticalRadius: 0.1
   _deathMoveDistanceInFrontOfPlayer: 0
   _deathMoveLookAtPlayer: 0
+--- !u!114 &8643986500449592445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7024320941259705108}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37a7d74b99cba574e865623d77efe13c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  farHeySound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  midHeySound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  stunnedSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  deadSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  attachSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  closeHeySound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  closeHeyInterval: 5
 --- !u!1001 &164931640669794013
 PrefabInstance:
   m_ObjectHideFlags: 0
