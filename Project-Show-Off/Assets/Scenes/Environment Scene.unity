@@ -674,6 +674,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5971804312775354607, guid: 3bf12285b3b2be746b270a8ebf01d958, type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7994504832595922595, guid: 3bf12285b3b2be746b270a8ebf01d958, type: 3}
+      propertyPath: m_Color.a
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -17017,6 +17021,16 @@ Transform:
   - {fileID: 1500447623}
   m_Father: {fileID: 1423557203}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2049403644 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5971804312775354607, guid: 3bf12285b3b2be746b270a8ebf01d958, type: 3}
+  m_PrefabInstance: {fileID: 94649239}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &2049403645 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 3803000292529414309, guid: 3bf12285b3b2be746b270a8ebf01d958, type: 3}
+  m_PrefabInstance: {fileID: 94649239}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2055095592
 GameObject:
   m_ObjectHideFlags: 0
@@ -18485,6 +18499,8 @@ MonoBehaviour:
   interactionPromptUI: {fileID: 400000739}
   interactionDotUI: {fileID: 1032413454}
   interactionPromptCanvasGroup: {fileID: 400000740}
+  fuelPickUpPromptUI: {fileID: 2049403644}
+  fuelPickUpCanvasGroup: {fileID: 2049403645}
   fadeDuration: 0.3
 --- !u!114 &3044069867058334932
 MonoBehaviour:
@@ -19820,7 +19836,7 @@ Transform:
   m_GameObject: {fileID: 7650862298646617480}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.24758048, z: -0, w: 0.9688674}
-  m_LocalPosition: {x: 105.3, y: 9.988, z: 80.3}
+  m_LocalPosition: {x: 175.18, y: 7.18, z: -169.79}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

@@ -13,6 +13,10 @@ public class ObjectInteraction : MonoBehaviour
     [SerializeField] private GameObject interactionPromptUI;
     [SerializeField] private GameObject interactionDotUI;
     [SerializeField] private CanvasGroup interactionPromptCanvasGroup;
+    //new code
+    [SerializeField] private GameObject fuelPickUpPromptUI;
+    [SerializeField] private CanvasGroup fuelPickUpCanvasGroup;
+    //end of new code
 
     //new code
     [SerializeField] private float fadeDuration = 0.3f;
@@ -51,6 +55,13 @@ public class ObjectInteraction : MonoBehaviour
             interactionPromptCanvasGroup.alpha = 0f;
             interactionPromptCanvasGroup.gameObject.SetActive(false);
         }
+
+        if (fuelPickUpPromptUI != null) fuelPickUpPromptUI.SetActive(false);
+        if (fuelPickUpCanvasGroup != null)
+        {
+            fuelPickUpCanvasGroup.alpha = 0f;
+            fuelPickUpCanvasGroup.gameObject.SetActive(false);
+        }
         //end of new code
     }
 
@@ -79,6 +90,13 @@ public class ObjectInteraction : MonoBehaviour
         {
             interactionPromptCanvasGroup.alpha = 0f;
             interactionPromptCanvasGroup.gameObject.SetActive(false);
+        }
+
+        if (fuelPickUpPromptUI != null) fuelPickUpPromptUI.SetActive(false);
+        if (fuelPickUpCanvasGroup != null)
+        {
+            fuelPickUpCanvasGroup.alpha = 0f;
+            fuelPickUpCanvasGroup.gameObject.SetActive(false);
         }
         //end of new code
 
@@ -115,6 +133,7 @@ public class ObjectInteraction : MonoBehaviour
             if ((clue != null && clue.IsInteractable()))
             {
                 currentInteractableClue = clue;
+                currentInteractableFuel = null; //new code
                 if (lastHighlightedClue != currentInteractableClue)
                 {
                     if (lastHighlightedClue != null) lastHighlightedClue.Highlight(false);
@@ -132,7 +151,13 @@ public class ObjectInteraction : MonoBehaviour
             if (fuel != null)
             {
                 currentInteractableFuel = fuel;
-                SetInteractionPrompt(true);
+                currentInteractableClue = null; //new code
+                if (lastHighlightedClue != null)
+                {
+                    lastHighlightedClue.Highlight(false);
+                    lastHighlightedClue = null;
+                }
+                SetInteractionPrompt(true); //new code
                 foundInteractableThisFrame = true;
             }
             else
@@ -159,6 +184,7 @@ public class ObjectInteraction : MonoBehaviour
             lastHighlightedClue = null;
         }
         currentInteractableClue = null;
+        currentInteractableFuel = null; //new code
         SetInteractionPrompt(false);
     }
 
@@ -192,13 +218,31 @@ public class ObjectInteraction : MonoBehaviour
     private void SetInteractionPrompt(bool show)
     {
         //new code
-        if (interactionPromptCanvasGroup != null)
+        if (currentInteractableClue != null)
         {
-            FadeCanvasGroup(interactionPromptCanvasGroup, show);
+            if (interactionPromptCanvasGroup != null)
+                FadeCanvasGroup(interactionPromptCanvasGroup, show);
+            else if (interactionPromptUI != null)
+                interactionPromptUI.SetActive(show);
         }
-        else if (interactionPromptUI != null)
+        else if (currentInteractableFuel != null)
         {
-            interactionPromptUI.SetActive(show);
+            if (fuelPickUpCanvasGroup != null)
+                FadeCanvasGroup(fuelPickUpCanvasGroup, show);
+            else if (fuelPickUpPromptUI != null)
+                fuelPickUpPromptUI.SetActive(show);
+        }
+        else
+        {
+            if (interactionPromptCanvasGroup != null)
+                FadeCanvasGroup(interactionPromptCanvasGroup, false);
+            if (fuelPickUpCanvasGroup != null)
+                FadeCanvasGroup(fuelPickUpCanvasGroup, false);
+
+            if (interactionPromptUI != null)
+                interactionPromptUI.SetActive(false);
+            if (fuelPickUpPromptUI != null)
+                fuelPickUpPromptUI.SetActive(false);
         }
         //end of new code
     }
@@ -222,7 +266,6 @@ public class ObjectInteraction : MonoBehaviour
 
         while (elapsed < fadeDuration)
         {
-            // Ensure consistent time steps and clamp t between 0 and 1
             elapsed += Mathf.Min(Time.deltaTime, fadeDuration);
             float t = Mathf.Clamp01(elapsed / fadeDuration);
             canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
