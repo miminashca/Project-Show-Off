@@ -242,7 +242,7 @@ public class InspectionManager : MonoBehaviour
     {
         if (Time.time - timer >= fuelThreshold)
         {
-            fuel.Refill();
+            fuel.Refill(fuelThreshold);
             timer = Time.time;
         }
     }
