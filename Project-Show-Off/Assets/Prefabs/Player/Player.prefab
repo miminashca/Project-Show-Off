@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4004112240833274223}
   - component: {fileID: 4185991499672993981}
   - component: {fileID: 1066200544536370512}
+  - component: {fileID: 8194570042842489309}
   - component: {fileID: 861061448298034872}
   - component: {fileID: 7652064823968303585}
   m_Layer: 7
@@ -222,6 +223,8 @@ MonoBehaviour:
   interactionPromptUI: {fileID: 0}
   interactionDotUI: {fileID: 0}
   interactionPromptCanvasGroup: {fileID: 0}
+  fuelPickUpPromptUI: {fileID: 0}
+  fuelPickUpCanvasGroup: {fileID: 0}
   fadeDuration: 0.3
 --- !u!114 &7025771011646699498
 MonoBehaviour:
@@ -371,6 +374,25 @@ MonoBehaviour:
   waterMask:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &8194570042842489309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495666101020983991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5710ac7650f80e14da30eeeb7f507454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHeyEvent:
+    Guid:
+      Data1: -981568760
+      Data2: 1109195045
+      Data3: 216580012
+      Data4: -1560041072
+    Path: event:/Player/Player Hey!/Player Hey!
 --- !u!54 &861061448298034872
 Rigidbody:
   m_ObjectHideFlags: 0
