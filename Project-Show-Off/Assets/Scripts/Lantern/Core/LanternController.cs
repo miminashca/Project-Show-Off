@@ -227,9 +227,7 @@ public class LanternController : MonoBehaviour
 
                     currentPhysicsSwayScript.InitializeSway(
                         this.playerInputActions,
-                        mainCam != null ? mainCam.transform : null,
                         lanternHandAnchor,
-                        parts.handleRigidbody,
                         parts.swingingLanternBodyRB
                     );
                 }

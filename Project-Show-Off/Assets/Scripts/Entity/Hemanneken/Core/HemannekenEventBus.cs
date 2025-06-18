@@ -7,10 +7,14 @@ public static class HemannekenEventBus
     public static event Action OnHemannekenDetached;
     public static event Action OnStartChase;
     public static event Action OnEndChase;
+    public static event Action OnRabbitHopStart;
+    public static event Action OnRabbitHopEnd;
 
     public static void AttachHemanneken() => OnHemannekenAttached?.Invoke();
     public static void DetachHemanneken() => OnHemannekenDetached?.Invoke();
     public static void TouchWater() => OnWaterTouch?.Invoke();
     public static void StartChase() => OnStartChase?.Invoke();
     public static void EndChase() => OnEndChase?.Invoke();
+    public static void RabbitEndHop() => OnRabbitHopEnd?.Invoke();
+    public static void RabbitStartHop() => OnRabbitHopStart?.Invoke();
 }

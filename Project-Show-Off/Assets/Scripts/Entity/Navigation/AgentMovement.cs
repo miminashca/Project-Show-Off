@@ -707,7 +707,7 @@ public class AgentMovement : MonoBehaviour
 
             if (_hopWaitTimer <= 0f)
             {
-                // ... (rest of the wait timer expired logic)
+                HemannekenEventBus.RabbitStartHop();
             }
 
 
@@ -753,6 +753,9 @@ public class AgentMovement : MonoBehaviour
                 transform.position = _currentSingleHopTargetPosition; // Snap to exact hop target
                 _isCurrentlyMidHop = false;
                 _hopWaitTimer = aiConfig.hopWaitDuration; // Start waiting period
+                
+                //End of hop, start IDLE animation.
+                HemannekenEventBus.RabbitEndHop();
 
                 // After completing a hop, re-check distance to the *final* series target
                 if (Vector3.Distance(transform.position, _currentHopSeriesTargetWaypoint) <= stoppingDistance)
