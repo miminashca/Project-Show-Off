@@ -2,6 +2,7 @@ using UnityEngine;
 using FMODUnity;
 using FMOD.Studio;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PlayerFootsteps : MonoBehaviour
 {
@@ -22,8 +23,12 @@ public class PlayerFootsteps : MonoBehaviour
     public Vector3 raycastOriginOffset = new Vector3(0, 0.5f, 0); // From player pivot
     public LayerMask groundLayerMask;
 
+    [Header("Material Sound Definitions")]
+    [Tooltip("List of material names that should use the 'Wood' footstep sound blend. Checks if the detected material name *starts with* any of these strings.")]
+    public List<string> woodMaterialNames = new List<string> { "WoodFloor_Shed 2", "New Material", "BridgeVer_1" };
+
+
     [Header("Water Detection Settings")]
-    // public Transform waterSurfaceTransform; // <<< REMOVED THIS
     public float playerFeetYOffset = 0f;    // Adjust if player pivot isn't at feet level
     [Tooltip("Submersion depth at which shallow water effects start.")]
     public float minDepthForShallowEffect = 0.05f;
@@ -69,11 +74,13 @@ public class PlayerFootsteps : MonoBehaviour
 
         if (footstepsEvent.IsNull) { Debug.LogError("PlayerFootsteps: Footsteps Event is not assigned.", this); }
 
+        materialBlends.Add("Wood", new FootstepSoundBlend(d: 0.0f, m: 0.0f, w: 1.0f, g: 0.0f, h: 0.25f));
         materialBlends.Add("GrassyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.3f, w: 0.0f, g: 0.7f, h: 0.25f));
         materialBlends.Add("MossyPeat", new FootstepSoundBlend(d: 0.1f, m: 0.4f, w: 0.0f, g: 0.6f, h: 0.25f));
         materialBlends.Add("Pathway", new FootstepSoundBlend(d: 0.8f, m: 0.2f, w: 0.0f, g: 0.1f, h: 0.25f));
         materialBlends.Add("Peat", new FootstepSoundBlend(d: 0.2f, m: 0.7f, w: 0.0f, g: 0.2f, h: 0.25f));
         materialBlends.Add("Default", new FootstepSoundBlend(d: 0.6f, m: 0.1f, w: 0.0f, g: 0.1f, h: 0.25f));
+
         currentGroundBlend = materialBlends["Default"];
 
         if (groundLayerMask == 0) { Debug.LogWarning("PlayerFootsteps: Ground Layer Mask is not set."); }
@@ -99,14 +106,12 @@ public class PlayerFootsteps : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // This now gets the unified WaterZone
         WaterZone zone = other.GetComponent<WaterZone>();
         if (zone != null && zone.waterSurfacePlane != null)
         {
             if (!activeWaterZones.Contains(zone))
             {
                 activeWaterZones.Add(zone);
-                // Debug.Log($"PlayerFootsteps: Entered Water Zone: {zone.gameObject.name}, Surface Y via plane: {zone.SurfaceYLevel}");
             }
         }
     }
@@ -119,38 +124,31 @@ public class PlayerFootsteps : MonoBehaviour
             if (activeWaterZones.Contains(zone))
             {
                 activeWaterZones.Remove(zone);
-                // Debug.Log($"PlayerFootsteps: Exited Water Zone: {zone.gameObject.name}");
             }
         }
     }
 
-    /// <summary>
-    /// Determines the most relevant water surface based on active zones and player position.
-    /// Sets currentActiveWaterSurface.
-    /// </summary>
-    void RecalculateActiveWaterSurfaceAndZone() // Renamed and Modified
+    void RecalculateActiveWaterSurfaceAndZone()
     {
         Transform newActiveSurface = null;
-        WaterZone newTypedActiveZone = null; // To store the best WaterZone component
+        WaterZone newTypedActiveZone = null;
 
         float highestSubmergedSurfaceY = float.MinValue;
         float playerFeetY = transform.position.y + playerFeetYOffset;
 
-        // Filter out zones that might have been destroyed or their plane removed
         activeWaterZones.RemoveAll(zone => zone == null || zone.waterSurfacePlane == null);
 
         foreach (WaterZone zone in activeWaterZones)
         {
-            // zone.SurfaceYLevel now correctly gets zone.waterSurfacePlane.position.y
             float candidateSurfaceY = zone.SurfaceYLevel;
 
-            if (playerFeetY < candidateSurfaceY) // Player is submerged in this zone's water
+            if (playerFeetY < candidateSurfaceY)
             {
                 if (candidateSurfaceY > highestSubmergedSurfaceY)
                 {
                     highestSubmergedSurfaceY = candidateSurfaceY;
                     newActiveSurface = zone.waterSurfacePlane;
-                    newTypedActiveZone = zone; // This is the currently dominant water zone
+                    newTypedActiveZone = zone;
                 }
             }
         }
@@ -158,18 +156,13 @@ public class PlayerFootsteps : MonoBehaviour
         currentActiveWaterSurface = newActiveSurface;
         currentActiveTypedWaterZone = newTypedActiveZone;
 
-        // Update PlayerStatus with the current dominant water zone
         if (playerStatus != null)
         {
             if (playerStatus.CurrentWaterZone != currentActiveTypedWaterZone)
             {
                 playerStatus.CurrentWaterZone = currentActiveTypedWaterZone;
-                // Debug.Log($"PlayerStatus.CurrentWaterZone updated to: {(currentActiveTypedWaterZone != null ? currentActiveTypedWaterZone.gameObject.name : "null")} by PlayerFootsteps");
             }
         }
-
-        // if (currentActiveWaterSurface != null) Debug.Log("Active water surface: " + currentActiveWaterSurface.name);
-        // else Debug.Log("Not in any relevant water surface");
     }
 
     void UpdateWaterLevels()
@@ -196,6 +189,8 @@ public class PlayerFootsteps : MonoBehaviour
         currentDeepWaterLevel = Mathf.Clamp01(Mathf.InverseLerp(fullShallowDepth, fullDeepDepth, submersionDepth));
     }
 
+    // --- MODIFIED --- This is the new, ultra-robust detection method.
+    // --- MODIFIED --- With a debug line to solve the naming issue.
     void DetectGroundMaterial()
     {
         Vector3 rayOrigin = transform.position + raycastOriginOffset;
@@ -204,9 +199,11 @@ public class PlayerFootsteps : MonoBehaviour
 
         if (Physics.Raycast(rayOrigin, Vector3.down, out hit, raycastDistance, groundLayerMask))
         {
+            // --- LOGIC FOR TERRAIN ---
             Terrain terrain = hit.collider.GetComponent<Terrain>();
             if (terrain != null)
             {
+                // (Terrain logic is unchanged)
                 string terrainLayerName = GetDominantTerrainLayerName(terrain, hit.point);
                 if (!string.IsNullOrEmpty(terrainLayerName))
                 {
@@ -221,25 +218,51 @@ public class PlayerFootsteps : MonoBehaviour
                     }
                 }
             }
+            // --- LOGIC FOR STANDARD GAMEOBJECTS (like your wood) ---
             else
             {
                 Renderer renderer = hit.collider.GetComponent<Renderer>();
+                if (renderer == null) { renderer = hit.collider.GetComponentInParent<Renderer>(); }
+                if (renderer == null) { renderer = hit.collider.GetComponentInChildren<Renderer>(); }
+
                 if (renderer != null && renderer.sharedMaterial != null)
                 {
                     string materialName = renderer.sharedMaterial.name;
-                    string materialNameLower = materialName.ToLower();
-                    foreach (var blendEntry in materialBlends)
+
+                    // --- THIS IS THE DEBUG LINE! ---
+                    // It will tell you the exact material name the script is seeing.
+                    Debug.Log($"Footsteps checking ground... Raycast hit: {hit.collider.name}, Detected Material Name: '{materialName}'");
+
+                    bool specificMaterialFound = false;
+
+                    foreach (string woodName in woodMaterialNames)
                     {
-                        if (materialNameLower.Contains(blendEntry.Key.ToLower()))
+                        if (!string.IsNullOrEmpty(woodName) && materialName.StartsWith(woodName))
                         {
-                            determinedKey = blendEntry.Key;
+                            determinedKey = "Wood";
+                            specificMaterialFound = true;
                             break;
+                        }
+                    }
+
+                    if (!specificMaterialFound)
+                    {
+                        string materialNameLower = materialName.ToLower();
+                        foreach (var blendEntry in materialBlends)
+                        {
+                            if (blendEntry.Key == "Wood" || blendEntry.Key == "Default") continue;
+                            if (materialNameLower.Contains(blendEntry.Key.ToLower()))
+                            {
+                                determinedKey = blendEntry.Key;
+                                break;
+                            }
                         }
                     }
                 }
             }
         }
 
+        // Apply the determined blend
         if (materialBlends.TryGetValue(determinedKey, out FootstepSoundBlend newBlend))
         {
             currentGroundBlend = newBlend;
@@ -257,6 +280,7 @@ public class PlayerFootsteps : MonoBehaviour
             }
         }
     }
+
     private string GetDominantTerrainLayerName(Terrain terrain, Vector3 worldPos)
     {
         TerrainData terrainData = terrain.terrainData;
