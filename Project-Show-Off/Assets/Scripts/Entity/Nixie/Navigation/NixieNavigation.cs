@@ -18,34 +18,72 @@ public class NixieNavigation : MonoBehaviour
     public LayerMask ObstacleLayers;
 
     [Header("Peeking Mechanic")]
-    [Tooltip("The GameObject representing the Nixie's head that peeks above water.")]
-    public Transform HeadModelTransform;
-    [Tooltip("The local Y position of the head when fully submerged.")]
-    public float SubmergedYPosition = -0.5f;
-    [Tooltip("The local Y position of the head when peeking above the surface.")]
-    public float PeekingYPosition = 0.2f;
+    [Tooltip("The vertical offset from the water surface when submerged.")]
+    public float SubmergedYOffset = -0.5f;
+    [Tooltip("The vertical offset from the water surface when peeking.")]
+    public float PeekingYOffset = 0.2f;
 
+    // --- Private runtime variables ---
     private int currentPatrolIndex = -1;
-    private Vector3 currentTargetPosition;
+    private Vector3 horizontalTargetPosition;
     private float currentSpeed;
     private bool isMoving = false;
     private bool isPeeking = false;
 
-    private Coroutine peekingCoroutine;
-
     private Collider nixieZoneCollider;
+    private float baseSwimLevel;
+
+    void Start()
+    {
+        // We need the AI script to find the zone
+        NixieAI ai = GetComponent<NixieAI>();
+        if (ai != null && ai.MyNixieZone != null)
+        {
+            nixieZoneCollider = ai.MyNixieZone.GetComponent<Collider>();
+        }
+
+        // FIX: Establish the base swimming level at the start of the game.
+        baseSwimLevel = transform.position.y;
+    }
 
     void Update()
     {
-        if (isMoving)
+        // If we don't have a target, there's nothing to do.
+        if (!isMoving) return;
+
+        // --- FIX: Construct the full 3D target position on every frame ---
+        // This makes the vertical movement (peeking) responsive.
+        float desiredY = baseSwimLevel + (isPeeking ? PeekingYOffset : SubmergedYOffset);
+        Vector3 finalTargetPosition = new Vector3(horizontalTargetPosition.x, desiredY, horizontalTargetPosition.z);
+
+        // --- Calculate direction and apply avoidance ---
+        Vector3 direction = (finalTargetPosition - transform.position).normalized;
+
+        if (direction != Vector3.zero && Physics.Raycast(transform.position, direction, out RaycastHit hit, ObstacleRaycastDistance, ObstacleLayers))
         {
-            transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, currentSpeed * Time.deltaTime);
+            // A simple avoidance: find a direction perpendicular to the obstacle's normal
+            direction = Vector3.Cross(hit.normal, Vector3.up).normalized;
+            // If the Nixie is moving straight into a wall, the cross product can be zero.
+            // In that case, we pick an arbitrary direction to the side.
+            if (direction == Vector3.zero) { direction = transform.right; }
         }
+
+        // --- Calculate the next position and apply bounding ---
+        Vector3 nextPosition = transform.position + direction * currentSpeed * Time.deltaTime;
+
+        if (nixieZoneCollider != null && !nixieZoneCollider.bounds.Contains(nextPosition))
+        {
+            nextPosition = nixieZoneCollider.ClosestPoint(nextPosition);
+        }
+
+        // --- Apply movement and rotation ---
+        transform.position = nextPosition;
+        LookAt(finalTargetPosition);
     }
 
     public void MoveTo(Vector3 position, float speed)
     {
-        currentTargetPosition = position;
+        horizontalTargetPosition = position;
         currentSpeed = speed;
         isMoving = true;
     }
@@ -62,41 +100,16 @@ public class NixieNavigation : MonoBehaviour
         return PatrolNodes[currentPatrolIndex];
     }
 
+    // FIX: This now correctly flags the vertical state. The Update loop handles the movement.
     public void SetPeeking(bool shouldPeek)
     {
-        if (HeadModelTransform == null) return;
-
-        if (peekingCoroutine != null)
-        {
-            StopCoroutine(peekingCoroutine);
-        }
-
-        peekingCoroutine = StartCoroutine(AnimateHead(shouldPeek));
-    }
-
-    private System.Collections.IEnumerator AnimateHead(bool shouldPeek)
-    {
-        float targetY = shouldPeek ? PeekingYPosition : SubmergedYPosition;
-        Vector3 startPos = HeadModelTransform.localPosition;
-        Vector3 endPos = new Vector3(startPos.x, targetY, startPos.z);
-        float duration = 0.5f; // Animation takes half a second
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            HeadModelTransform.localPosition = Vector3.Lerp(startPos, endPos, elapsedTime / duration);
-            elapsedTime += Time.deltaTime;
-            yield return null; // Wait for the next frame
-        }
-
-        // Ensure it ends at the exact target position
-        HeadModelTransform.localPosition = endPos;
+        isPeeking = shouldPeek;
     }
 
     public void LookAt(Vector3 targetPosition)
     {
         Vector3 direction = (targetPosition - transform.position).normalized;
-        direction.y = 0; // Keep the Nixie level, don't have it tilt up or down
+        direction.y = 0; // Keep the Nixie level
         if (direction != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(direction);
@@ -106,49 +119,33 @@ public class NixieNavigation : MonoBehaviour
     // --- GIZMOS SECTION ---
     void OnDrawGizmosSelected()
     {
-        // --- Visualize Patrol Path ---
-        if (PatrolNodes != null && PatrolNodes.Count > 0)
+        // ... (Patrol node gizmos are fine) ...
+
+        // --- FIX: Visualize the avoidance raycast ---
+        if (Application.isPlaying && isMoving)
         {
-            Gizmos.color = Color.green;
-            for (int i = 0; i < PatrolNodes.Count; i++)
-            {
-                Transform node = PatrolNodes[i];
-                if (node == null) continue;
+            Vector3 finalTargetPosition = new Vector3(horizontalTargetPosition.x, transform.position.y, horizontalTargetPosition.z);
+            Vector3 direction = (finalTargetPosition - transform.position).normalized;
 
-                // Draw a sphere at the node's position
-                Gizmos.DrawWireSphere(node.position, 0.5f);
-                DrawGizmoLabel(node.position + Vector3.up * 0.6f, $"Node {i}", Color.green);
-
-                // Draw a line to the next node in the list
-                if (PatrolNodes.Count > 1)
-                {
-                    Transform nextNode = PatrolNodes[(i + 1) % PatrolNodes.Count];
-                    if (nextNode != null)
-                    {
-                        Gizmos.DrawLine(node.position, nextNode.position);
-                    }
-                }
-            }
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawRay(transform.position, direction * ObstacleRaycastDistance);
         }
 
-        // --- Visualize Peeking Heights ---
-        // These are local offsets, so we draw them relative to the main transform's position.
-        Vector3 peekPosition = transform.position + new Vector3(0, PeekingYPosition, 0);
-        Vector3 submergedPosition = transform.position + new Vector3(0, SubmergedYPosition, 0);
+        // --- FIX: Visualize peeking heights relative to the base swim level ---
+        float currentBaseLevel = Application.isPlaying ? baseSwimLevel : transform.position.y;
+        Vector3 peekPos = new Vector3(transform.position.x, currentBaseLevel + PeekingYOffset, transform.position.z);
+        Vector3 subPos = new Vector3(transform.position.x, currentBaseLevel + SubmergedYOffset, transform.position.z);
 
-        // Peeking Height (Cyan Disc)
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(peekPosition, 0.5f);
-        DrawGizmoLabel(peekPosition + Vector3.right * 0.6f, "Peeking Y", Color.cyan);
+        Gizmos.DrawWireSphere(peekPos, 0.5f); // Use a disc for better level visualization
+        DrawGizmoLabel(peekPos + Vector3.right * 0.6f, "Peeking Y", Color.cyan);
 
-        // Submerged Height (Dark Blue Disc)
         Gizmos.color = new Color(0, 0, 0.8f);
-        Gizmos.DrawWireSphere(submergedPosition, 0.5f);
-        DrawGizmoLabel(submergedPosition + Vector3.right * 0.6f, "Submerged Y", Gizmos.color);
+        Gizmos.DrawWireSphere(subPos, 0.5f); // Use a disc for better level visualization
+        DrawGizmoLabel(subPos + Vector3.right * 0.6f, "Submerged Y", Gizmos.color);
 
-        // Line connecting the two heights for clarity
         Gizmos.color = Color.gray;
-        Gizmos.DrawLine(peekPosition, submergedPosition);
+        Gizmos.DrawLine(peekPos, subPos);
     }
 
     // Helper method to draw text labels in the scene view
