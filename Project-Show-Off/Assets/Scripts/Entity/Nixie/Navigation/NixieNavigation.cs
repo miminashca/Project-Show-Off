@@ -11,6 +11,12 @@ public class NixieNavigation : MonoBehaviour
     public float RoamingSpeed = 2f;
     public float ChasingSpeed = 6f;
 
+    [Header("Avoidance")]
+    [Tooltip("How far ahead the Nixie looks for obstacles.")]
+    public float ObstacleRaycastDistance = 5f;
+    [Tooltip("The layer(s) that count as obstacles (e.g., Terrain, Default).")]
+    public LayerMask ObstacleLayers;
+
     [Header("Peeking Mechanic")]
     [Tooltip("The GameObject representing the Nixie's head that peeks above water.")]
     public Transform HeadModelTransform;
@@ -23,8 +29,11 @@ public class NixieNavigation : MonoBehaviour
     private Vector3 currentTargetPosition;
     private float currentSpeed;
     private bool isMoving = false;
+    private bool isPeeking = false;
 
     private Coroutine peekingCoroutine;
+
+    private Collider nixieZoneCollider;
 
     void Update()
     {
