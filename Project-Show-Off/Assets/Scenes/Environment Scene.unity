@@ -10890,34 +10890,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 677103880}
     m_Modifications:
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: moveSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchSpeed
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: playerFootsteps
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: baseFootstepInterval
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: crouchFootstepMultiplier
-      value: 1.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: minMovementSpeedForFootsteps
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 177.461
-      objectReference: {fileID: 0}
     - target: {fileID: 1424622276937907353, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_Name
       value: Clog
@@ -11021,6 +10993,34 @@ PrefabInstance:
     - target: {fileID: 8292596121966006567, guid: 84e97e771fc05714dabe8f8a04432de9, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: moveSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchSpeed
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: playerFootsteps
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: baseFootstepInterval
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: crouchFootstepMultiplier
+      value: 1.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5403460284391899615, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: minMovementSpeedForFootsteps
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7633588495463696774, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 177.461
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
@@ -17871,6 +17871,30 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1402175456}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1405763549 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1495666101020983991, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+  m_PrefabInstance: {fileID: 1848607432}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1405763565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763549}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5710ac7650f80e14da30eeeb7f507454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHeyEvent:
+    Guid:
+      Data1: -981568760
+      Data2: 1109195045
+      Data3: 216580012
+      Data4: -1560041072
+    Path: event:/Player/Player Hey!/Player Hey!
 --- !u!1001 &1409213826
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -22362,7 +22386,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1495666101020983991, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      insertIndex: 13
+      addedObject: {fileID: 1405763565}
   m_SourcePrefab: {fileID: 100100000, guid: 283fb1960314846ef9346666a94e4541, type: 3}
 --- !u!1001 &1860985446
 PrefabInstance:
