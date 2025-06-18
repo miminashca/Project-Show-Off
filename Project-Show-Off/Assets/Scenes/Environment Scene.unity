@@ -3146,7 +3146,7 @@ MonoBehaviour:
       Data3: 255208635
       Data4: 659500106
     Path: event:/Music/Ambient Music
-  playerTransform: {fileID: 0}
+  playerTransform: {fileID: 7633588495863935559}
   maxInfluenceDistance: 40
   tensionSmoothingSpeed: 2
 --- !u!1 &268289074
@@ -26900,6 +26900,7 @@ GameObject:
   - component: {fileID: 2451448375258310711}
   - component: {fileID: 8721460338164031043}
   - component: {fileID: 2157266343179054674}
+  - component: {fileID: 8721460338164031044}
   - component: {fileID: 3811047034247533655}
   - component: {fileID: 5628067763632785427}
   - component: {fileID: 4458650822002332175}
@@ -26941,6 +26942,25 @@ MonoBehaviour:
   HeadVisibilityPoint: {fileID: 3419520522981874229}
   TorsoVisibilityPoint: {fileID: 6818528467521004259}
   FeetVisibilityPoint: {fileID: 5002848296110230531}
+--- !u!114 &8721460338164031044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7650862298646617480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5710ac7650f80e14da30eeeb7f507454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerHeyEvent:
+    Guid:
+      Data1: -981568760
+      Data2: 1109195045
+      Data3: 216580012
+      Data4: -1560041072
+    Path: event:/Player/Player Hey!/Player Hey!
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
