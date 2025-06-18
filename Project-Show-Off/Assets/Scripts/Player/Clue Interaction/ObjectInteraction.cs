@@ -28,6 +28,8 @@ public class ObjectInteraction : MonoBehaviour
     private ClueObject lastHighlightedClue;
     
     private FuelPickup currentInteractableFuel;
+    
+    private ClueReceiver currentClueReceiver;
 
 
     void Awake()
@@ -130,6 +132,8 @@ public class ObjectInteraction : MonoBehaviour
         {
             ClueObject clue = hit.collider.GetComponent<ClueObject>();
             FuelPickup fuel = hit.collider.GetComponent<FuelPickup>();
+            ClueReceiver clueReceiver = hit.collider.GetComponent<ClueReceiver>();
+            
             if ((clue != null && clue.IsInteractable()))
             {
                 currentInteractableClue = clue;
@@ -143,26 +147,33 @@ public class ObjectInteraction : MonoBehaviour
                 SetInteractionPrompt(true);
                 foundInteractableThisFrame = true;
             }
-            else
-            {
-                ClearCurrentInteractable();
-            }
-
-            if (fuel != null)
+            else if (fuel != null)
             {
                 currentInteractableFuel = fuel;
                 currentInteractableClue = null; //new code
-                if (lastHighlightedClue != null)
+                currentClueReceiver = null; //new code
+                if (lastHighlightedClue != currentInteractableClue)
                 {
-                    lastHighlightedClue.Highlight(false);
-                    lastHighlightedClue = null;
+                    if (lastHighlightedClue != null) lastHighlightedClue.Highlight(false);
+                }
+                SetInteractionPrompt(true); //new code
+                foundInteractableThisFrame = true;
+            }
+            else if (clueReceiver != null)
+            {
+                currentClueReceiver = clueReceiver;
+                currentInteractableClue = null; //new code
+                currentInteractableFuel = null; //new code
+                if (lastHighlightedClue != currentInteractableClue)
+                {
+                    if (lastHighlightedClue != null) lastHighlightedClue.Highlight(false);
                 }
                 SetInteractionPrompt(true); //new code
                 foundInteractableThisFrame = true;
             }
             else
             {
-                currentInteractableFuel = null;
+                ClearCurrentInteractable();
             }
         }
         else
@@ -184,7 +195,8 @@ public class ObjectInteraction : MonoBehaviour
             lastHighlightedClue = null;
         }
         currentInteractableClue = null;
-        currentInteractableFuel = null; //new code
+        currentInteractableFuel = null; 
+        currentClueReceiver = null; 
         SetInteractionPrompt(false);
     }
 
@@ -195,6 +207,7 @@ public class ObjectInteraction : MonoBehaviour
             return;
         }
 
+        //CLUE
         if (currentInteractableClue != null)
         {
             Debug.Log("PlayerInteraction: Interacting with " + currentInteractableClue.clueName);
@@ -209,9 +222,16 @@ public class ObjectInteraction : MonoBehaviour
             }
         }
 
+        //FUEL
         if (currentInteractableFuel != null)
         {
             InspectionManager.Instance.TryPickupFuel(currentInteractableFuel);
+        }
+        
+        //CLUE RECEIVER
+        if (currentClueReceiver != null)
+        {
+            InspectionManager.Instance.SubmitClue(currentClueReceiver);
         }
     }
 

@@ -247,6 +247,11 @@ public class InspectionManager : MonoBehaviour
         }
     }
 
+    public void SubmitClue(ClueReceiver receiver)
+    {
+        receiver.SubmitClue();
+    }
+
     private IEnumerator EnableInspectionInputAfterFrame()
     {
         yield return null; // Wait for one frame
