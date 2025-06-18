@@ -49,6 +49,7 @@ public class HemannekenVisuals : MonoBehaviour
     private Animator animator;
     private readonly int hopTriggerHash = Animator.StringToHash("Hop");
 
+    private AgentMovement agentMovement;
     public void Initialize()
     {
         _playerSensor = GetComponent<PlayerSensor>();
@@ -64,11 +65,13 @@ public class HemannekenVisuals : MonoBehaviour
         {
             Debug.LogWarning("HemannekenVisuals: ParticleSystem component not found in children. Effects might not play.", this);
         }
+
+        agentMovement = GetComponent<AgentMovement>();
     }
 
     private void OnDestroy()
     {
-        HemannekenEventBus.OnRabbitHopStart -= PlayHopAnimation;
+        if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
     }
 
     public void SetForm(bool isTrue, Transform parentTransform)
@@ -96,8 +99,8 @@ public class HemannekenVisuals : MonoBehaviour
         if(!animator) Debug.Log("No animator found for this Hemanneken Visuals.");
         else
         {
-            HemannekenEventBus.OnRabbitHopStart -= PlayHopAnimation;
-            HemannekenEventBus.OnRabbitHopStart += PlayHopAnimation;
+            if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
+            if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart += PlayHopAnimation;
         }
     }
 
@@ -325,6 +328,7 @@ public class HemannekenVisuals : MonoBehaviour
     { 
         // Ensure we have a valid animator before trying to use it.
         if (animator == null) return;
+        Debug.Log("Hop");
 
         // This activates the "Hop" trigger in the Animator,
         // causing the transition from Idle to Hop to occur.

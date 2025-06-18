@@ -13,6 +13,8 @@ public class ClueEventManager : MonoBehaviour
     public event Action<int> OnClueCountChanged; // Event for when the total count of collected clues changes
     public event Action OnFuelPickedUp; // Event for when the total count of collected clues changes
 
+    [NonSerialized] public List<String> collectedCluesIds;
+
     void Awake()
     {
         if (Instance == null)
@@ -24,6 +26,8 @@ public class ClueEventManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        collectedCluesIds = new List<String>();
     }
 
     public void RegisterClueCollected(string clueID)
