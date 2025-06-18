@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Random = UnityEngine.Random;
 
 public enum MovementStyle
 {
@@ -86,6 +88,8 @@ public class AgentMovement : MonoBehaviour
     private bool _patrolPointsInitialized = false;
     private const string LOG_PREFIX = "[AgentMovement_V17_Ground] ";
 
+    [NonSerialized] public HemannekenEventBus eventBusInstance;
+
     // Assume HemannekenAIConfig is defined elsewhere and has the new ground-related fields
     public void Initialize(SpawnPointsManager spawnPointsManager, HemannekenAIConfig pAiConfig)
     {
@@ -114,6 +118,8 @@ public class AgentMovement : MonoBehaviour
                 InitMainPatrolPoints(_spManager.SecondarySpawnPoints);
             }
         }
+
+        eventBusInstance = new HemannekenEventBus();
     }
 
     private void InitMainPatrolPoints(List<SpawnPoint> patrolPoints)
@@ -707,7 +713,7 @@ public class AgentMovement : MonoBehaviour
 
             if (_hopWaitTimer <= 0f)
             {
-                HemannekenEventBus.RabbitStartHop();
+                eventBusInstance.RabbitStartHop();
             }
 
 
@@ -755,7 +761,7 @@ public class AgentMovement : MonoBehaviour
                 _hopWaitTimer = aiConfig.hopWaitDuration; // Start waiting period
                 
                 //End of hop, start IDLE animation.
-                HemannekenEventBus.RabbitEndHop();
+                eventBusInstance.RabbitEndHop();
 
                 // After completing a hop, re-check distance to the *final* series target
                 if (Vector3.Distance(transform.position, _currentHopSeriesTargetWaypoint) <= stoppingDistance)
