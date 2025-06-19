@@ -8,7 +8,7 @@ public class HemannekenRoamingState : State
 
     public override void OnEnterState()
     {
-        Debug.Log("Entered Roaming State");
+       // Debug.Log("Entered Roaming State");
         HSM.Sensor.OnPlayerDetected += HandlePlayerDirectlyDetected; // Direct detection for investigation
         PlayerActionEventBus.OnPlayerShouted += HandleHeyTriggered;
     }

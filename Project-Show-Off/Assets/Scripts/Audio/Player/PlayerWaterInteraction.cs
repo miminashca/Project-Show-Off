@@ -61,7 +61,7 @@ public class PlayerWaterInteraction : MonoBehaviour
         {
             nixieLaughterInstance = RuntimeManager.CreateInstance(childLaughterEvent);
             // We will attach it to a specific Nixie later, not the player's head.
-            Debug.Log($"PlayerWaterInteraction: Nixie Laughter Event '{childLaughterEvent.Path}' assigned. Instance IsValid: {nixieLaughterInstance.isValid()}", this);
+            //Debug.Log($"PlayerWaterInteraction: Nixie Laughter Event '{childLaughterEvent.Path}' assigned. Instance IsValid: {nixieLaughterInstance.isValid()}", this);
         }
         else Debug.LogWarning("PlayerWaterInteraction: 'Child Laughter Event' is not assigned! Nixie lure will not function.", this);
     }

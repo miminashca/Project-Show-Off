@@ -111,10 +111,10 @@ public class AgentMovement : MonoBehaviour
         _spManager = spawnPointsManager;
         if (_spManager != null)
         {
-            Debug.Log("Found partol points manager for " + gameObject.name + " with " + _spManager.SecondarySpawnPoints.Count + " patrol points.");
+            //Debug.Log("Found partol points manager for " + gameObject.name + " with " + _spManager.SecondarySpawnPoints.Count + " patrol points.");
             if (_spManager.SecondarySpawnPoints != null && _spManager.SecondarySpawnPoints.Count > 0 && !_patrolPointsInitialized)
             {
-                Debug.Log("Initializing partol points for " + gameObject.name);
+                //Debug.Log("Initializing partol points for " + gameObject.name);
                 InitMainPatrolPoints(_spManager.SecondarySpawnPoints);
             }
         }

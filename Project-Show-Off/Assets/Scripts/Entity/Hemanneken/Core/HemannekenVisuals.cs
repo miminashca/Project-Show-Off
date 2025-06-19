@@ -96,8 +96,8 @@ public class HemannekenVisuals : MonoBehaviour
         }
         
         if(!animator) animator = GetComponentInChildren<Animator>();
-        if(!animator) Debug.Log("No animator found for this Hemanneken Visuals.");
-        else
+        //if(!animator) Debug.Log("No animator found for this Hemanneken Visuals.");
+        if(animator)
         {
             if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
             if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart += PlayHopAnimation;
@@ -328,7 +328,7 @@ public class HemannekenVisuals : MonoBehaviour
     { 
         // Ensure we have a valid animator before trying to use it.
         if (animator == null) return;
-        Debug.Log("Hop");
+        //Debug.Log("Hop");
 
         // This activates the "Hop" trigger in the Animator,
         // causing the transition from Idle to Hop to occur.
@@ -350,10 +350,5 @@ public class HemannekenVisuals : MonoBehaviour
         // and plays the specified state. "Base Layer" is the default layer name.
         // The second parameter '-1' means to restart the animation from the beginning.
         animator.Play("Idle", -1, 0f);
-    }
-
-    private void Update()
-    {
-        Debug.Log(animator);
     }
 }
