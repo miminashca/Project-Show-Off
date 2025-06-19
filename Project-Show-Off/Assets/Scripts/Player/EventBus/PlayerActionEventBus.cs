@@ -7,7 +7,7 @@ public static class PlayerActionEventBus
 
     public static void PlayerShouted(Vector3 position)
     {
-        Debug.Log($"PlayerActionEventBus: PlayerShouted event invoked from {position}");
+        //Debug.Log($"PlayerActionEventBus: PlayerShouted event invoked from {position}");
         OnPlayerShouted?.Invoke(position);
     }
 }
