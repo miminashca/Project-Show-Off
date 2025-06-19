@@ -25,6 +25,7 @@ public class LanternController : MonoBehaviour
     public bool isRaised = false;
     private bool outOfFuel = false;
     public bool IsLightOn { get; private set; }
+    public float TimeLanternRaised { get; private set; }
 
     [Header("Light Settings")]
     public float defaultIntensity = 1.5f;
@@ -107,6 +108,17 @@ public class LanternController : MonoBehaviour
     void Update()
     {
         HandleInput();
+
+        // If the lantern is currently raised, equipped, and has fuel, increment the timer.
+        if (isRaised && isEquipped && !outOfFuel)
+        {
+            TimeLanternRaised += Time.deltaTime;
+        }
+        else
+        {
+            // Otherwise, reset the timer to zero.
+            TimeLanternRaised = 0f;
+        }
 
         if (isEquipped && !outOfFuel)
         {

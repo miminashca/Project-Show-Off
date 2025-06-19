@@ -5135,6 +5135,7 @@ GameObject:
   - component: {fileID: 2253590677337883753}
   - component: {fileID: 5445979922037496206}
   - component: {fileID: 8006403853385248697}
+  - component: {fileID: 8006403853385248701}
   m_Layer: 0
   m_Name: Nixie
   m_TagString: Untagged
@@ -5271,9 +5272,8 @@ MonoBehaviour:
   - {fileID: 123752438}
   RoamingSpeed: 2
   ChasingSpeed: 6
-  HeadModelTransform: {fileID: 411230311368495598}
-  SubmergedYPosition: 0.5
-  PeekingYPosition: 2
+  SubmergedYOffset: 0
+  PeekingYOffset: 1
 --- !u!114 &8006403853385248700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5296,6 +5296,28 @@ MonoBehaviour:
   MyNixieZone: {fileID: 1803086308}
   LuringVocalizations: []
   AttackSound: {fileID: 0}
+--- !u!195 &8006403853385248701
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8006403853385248696}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -6,9 +6,10 @@ public class PlayerStateController : MonoBehaviour
     private PlayerInput controls;
     private PlayerStatus playerStatus;
 
-    private bool isHoldingLantern = false;
-    [NonSerialized] public float lanternTimeCounter = 0;
-    [NonSerialized] public bool countLanternTime = false;
+    // --- REMOVED THE FOLLOWING VARIABLES ---
+    /*    private bool isHoldingLantern = false;
+        [NonSerialized] public float lanternTimeCounter = 0;
+        [NonSerialized] public bool countLanternTime = false;*/
 
     [Header("Speed Modifiers")]
     [Tooltip("How much speed is reduced when Hemanneken is attached (e.g., 0.1 for 10% reduction).")]
@@ -54,9 +55,10 @@ public class PlayerStateController : MonoBehaviour
         WaterEventBus.OnPlayerEmerge -= HandlePlayerEmerge;
     }
 
+    // --- THE UPDATE METHOD IS NOW EMPTY, WHICH IS FINE ---
     private void Update()
     {
-        if (controls.Player.RaiseLantern.WasPressedThisFrame())
+/*        if (controls.Player.RaiseLantern.WasPressedThisFrame())
         {
             isHoldingLantern = true;
         }
@@ -74,7 +76,7 @@ public class PlayerStateController : MonoBehaviour
         else
         {
             lanternTimeCounter = 0;
-        }
+        }*/
     }
 
     private void UpdatePlayerSpeed()

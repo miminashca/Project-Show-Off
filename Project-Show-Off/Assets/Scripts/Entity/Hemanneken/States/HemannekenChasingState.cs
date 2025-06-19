@@ -14,10 +14,8 @@ public class HemannekenChasingState : State
     public override void OnEnterState()
     {
         _nextChaseUpdateTime = Time.time;
-        _lastChasedPlayerPosition = Vector3.positiveInfinity; // Reset for new chase
+        _lastChasedPlayerPosition = Vector3.positiveInfinity;
         HemannekenEventBus.StartChase();
-        // Debug.Log("Entered Chasing State");
-        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = true;
     }
 
     public override void Handle()
@@ -41,21 +39,20 @@ public class HemannekenChasingState : State
 
             _nextChaseUpdateTime = Time.time + CHASE_UPDATE_INTERVAL;
         }
-        
-        // ... (rest of the transitions: Attach, Stun, EndChase) ...
+
         if (HSM.Sensor.IsPlayerInAttachDistance())
         {
             SM.TransitToState(new HemannekenAttachedState(SM));
             return;
         }
-        
+
         if (HSM.Sensor.IsPlayerInStunDistance() && CanBeStunnedByLantern())
         {
             SM.TransitToState(new HemannekenStunningState(SM));
             return;
         }
-        
-        if(HSM.Sensor.IsPlayerInEndChaseDistance()) 
+
+        if (HSM.Sensor.IsPlayerInEndChaseDistance())
         {
             SM.TransitToState(new HemannekenRoamingState(SM));
             return;
@@ -64,14 +61,13 @@ public class HemannekenChasingState : State
 
     public override void OnExitState()
     {
-        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = false;
-        HSM.Movement.StopAgentCompletely(); 
+        HSM.Movement.StopAgentCompletely();
         HemannekenEventBus.EndChase();
-        // Debug.Log("Exited Chasing State");
     }
     
     private bool CanBeStunnedByLantern()
     {
-        return HSM.Interactor != null && HSM.Interactor.lanternTimeCounter >= HSM.aiConfig.lanternStunHoldDuration;
+        return HSM.PlayerLanternController != null && 
+               HSM.PlayerLanternController.TimeLanternRaised >= HSM.aiConfig.lanternStunHoldDuration;
     }
 }

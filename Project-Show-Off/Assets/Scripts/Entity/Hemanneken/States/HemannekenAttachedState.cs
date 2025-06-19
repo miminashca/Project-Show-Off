@@ -11,21 +11,16 @@ public class HemannekenAttachedState : State
     public override void OnEnterState()
     {
         Debug.Log("Entered Attached State");
-
         playerWaterSensor = HSM.Sensor.PlayerTransform.gameObject.GetComponent<WaterSensor>();
-        
-        HSM.PerformAttachmentToPlayer(); // Handles parenting, positioning, visual hiding, agent disabling
-        
-        HemannekenEventBus.AttachHemanneken(); // Global game event
-        
+        HSM.PerformAttachmentToPlayer();
+        HemannekenEventBus.AttachHemanneken();
         HSM.Visuals.PlayReplyHeySound();
-        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = true;
     }
 
     public override void Handle()
     {
         HSM.HandleAttachment();
-        if(playerWaterSensor.GetTimeUnderwater()>=HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
+        if (playerWaterSensor.GetTimeUnderwater() >= HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
         if (CanBeStunnedByLantern())
         {
             Debug.Log("STUN");
@@ -36,14 +31,14 @@ public class HemannekenAttachedState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Attached State");
-        HSM.PerformDetachmentFromPlayer(); // Handles unparenting, visual restoring
-        HemannekenEventBus.DetachHemanneken(); // Global game event
-        if (HSM.Interactor != null) HSM.Interactor.countLanternTime = false;
+        HSM.PerformDetachmentFromPlayer();
+        HemannekenEventBus.DetachHemanneken();
     }
     
     private bool CanBeStunnedByLantern()
     {
-        return HSM.Interactor != null && HSM.Interactor.lanternTimeCounter >= HSM.aiConfig.lanternStunHoldDuration;
+        return HSM.PlayerLanternController != null &&
+               HSM.PlayerLanternController.TimeLanternRaised >= HSM.aiConfig.lanternStunHoldDuration;
     }
 
 }
