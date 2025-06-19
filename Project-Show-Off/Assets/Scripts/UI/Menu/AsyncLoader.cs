@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
+
 
 
 public class AsyncLoader : MonoBehaviour
@@ -23,15 +23,19 @@ public class AsyncLoader : MonoBehaviour
     //Run async coroutine to load the scene
     IEnumerator LoadLevelAsync(string sceneName)
     {
-        UnityEngine.AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         asyncLoad.allowSceneActivation = false; // Prevent the scene from activating immediately
-        while (!asyncLoad.isDone)
-        {
-            float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f); // Normalize progress to 0-1 range
-            loadingSlider.value = progress; // Update the slider value
-            yield return null; // Wait for the next frame
+            while (asyncLoad.progress < 0.9f)
+            {
+                float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f); // Normalize progress to 0-1 range
+                loadingSlider.value = progress; // Update the slider value
+                yield return null; // Wait for the next frame
 
-        }
+            }
+        yield return new WaitForSeconds(0.5f);
+        //Debug.LogError("Loading complete, activating scene now.");
+        asyncLoad.allowSceneActivation = true;
     }
 
 }
