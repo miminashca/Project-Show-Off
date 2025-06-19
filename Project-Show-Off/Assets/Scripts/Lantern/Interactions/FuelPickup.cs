@@ -21,12 +21,12 @@ public class FuelPickup : MonoBehaviour
     void Start()
     {
         // Ensure the collider is set to be a trigger
-        Collider col = GetComponent<Collider>();
-        if (!col.isTrigger)
-        {
-            Debug.LogWarning($"FuelPickup on {gameObject.name} needs its collider set to 'Is Trigger'. Setting it now.", this);
-            col.isTrigger = true;
-        }
+        // Collider col = GetComponent<Collider>();
+        // if (!col.isTrigger)
+        // {
+        //     Debug.LogWarning($"FuelPickup on {gameObject.name} needs its collider set to 'Is Trigger'. Setting it now.", this);
+        //     col.isTrigger = true;
+        // }
 
         fire = GetComponentInChildren<VisualEffect>();
         fireHolder = fire.gameObject.transform.parent;
