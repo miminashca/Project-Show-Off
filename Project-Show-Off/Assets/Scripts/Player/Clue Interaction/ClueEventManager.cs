@@ -10,11 +10,10 @@ public class ClueEventManager : MonoBehaviour
     private HashSet<string> collectedClueIDs = new HashSet<string>();
 
     public event Action<string> OnClueCollected; // Event for when a specific clue is collected
+    public event Action<string> OnClueSubmitted; // Event for when a specific clue is submitted
     public event Action<int> OnClueCountChanged; // Event for when the total count of collected clues changes
     public event Action OnFuelPickedUp; // Event for when the total count of collected clues changes
-
-    [NonSerialized] public List<String> collectedCluesIds;
-
+    
     void Awake()
     {
         if (Instance == null)
@@ -26,8 +25,6 @@ public class ClueEventManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        collectedCluesIds = new List<String>();
     }
 
     public void RegisterClueCollected(string clueID)
@@ -54,6 +51,26 @@ public class ClueEventManager : MonoBehaviour
         else
         {
             Debug.LogWarning($"Clue Event Manager: Clue '{clueID}' was already collected.");
+        }
+    }
+    public void RegisterClueSubmit(string clueID)
+    {
+        if (string.IsNullOrEmpty(clueID))
+        {
+            Debug.LogWarning("Attempted to register a clue with an empty ID.");
+            return;
+        }
+
+        if (collectedClueIDs.Contains(clueID))
+        {
+            Debug.Log($"Clue Event Manager: Clue '{clueID}' submitted.");
+            collectedClueIDs.Remove(clueID);
+            OnClueSubmitted?.Invoke(clueID);
+            OnClueCountChanged?.Invoke(collectedClueIDs.Count);
+        }
+        else
+        {
+            Debug.LogWarning($"Clue Event Manager: Clue '{clueID}' has not been collected yet.");
         }
     }
 

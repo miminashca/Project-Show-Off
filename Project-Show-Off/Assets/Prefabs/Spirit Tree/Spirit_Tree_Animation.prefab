@@ -580,6 +580,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8085b3027088037449bc18f89d10b619, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5355775114140435444}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8085b3027088037449bc18f89d10b619, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5715937333021046586}
   m_SourcePrefab: {fileID: 100100000, guid: 8085b3027088037449bc18f89d10b619, type: 3}
 --- !u!1 &1453616932682400020 stripped
 GameObject:
@@ -621,6 +624,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeToggleName: IsFadingUp
   fadeIntensityName: DISAPPEAR
+--- !u!114 &5715937333021046586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1453616932682400020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1520869405
+      Data2: 1323525110
+      Data3: 1191403961
+      Data4: 1807974270
+    Path: event:/Random shiz/Spirit Tree/ST Breaths
+  Event: 
+  EventPlayTrigger: 1
+  EventStopTrigger: 2
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!4 &2262944783699237806 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 8085b3027088037449bc18f89d10b619, type: 3}
