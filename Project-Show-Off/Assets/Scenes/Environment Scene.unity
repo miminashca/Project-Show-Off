@@ -4301,7 +4301,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11065,8 +11065,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.7076631, y: 5, z: 0.90057117}
-  m_Center: {x: 0.09655565, y: -2, z: -0.049713414}
+  m_Size: {x: 0.7076631, y: 4.5849237, z: 0.90057117}
+  m_Center: {x: 0.09655564, y: -2.2075381, z: -0.049713414}
 --- !u!114 &590247158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35555,6 +35555,10 @@ PrefabInstance:
     - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: rotationSmoothTime
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: baseFootstepInterval
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6334661837088429990, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: interactionDotUI
