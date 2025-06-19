@@ -41,8 +41,6 @@ public class NixieNavigation : MonoBehaviour
         }
     }
 
-    // --- REFACTORED PUBLIC API ---
-
     public void MoveTo(Vector3 position, float speed)
     {
         _agent.speed = speed;
