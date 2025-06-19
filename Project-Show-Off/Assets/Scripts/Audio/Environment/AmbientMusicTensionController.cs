@@ -107,7 +107,7 @@ public class AmbientMusicTensionController : MonoBehaviour
         {
             float actualDistance = Mathf.Sqrt(closestDistanceSqr);
             // Linear interpolation: 1.0 when distance is 0, 0.0 when distance is maxInfluenceDistance
-            targetTension = 1.0f - (actualDistance / maxInfluenceDistance);
+            targetTension = 0.4f - (actualDistance / maxInfluenceDistance);
             targetTension = Mathf.Clamp01(targetTension); // Ensure value is between 0 and 1
         }
         // If closestDistanceSqr is greater than maxInfluenceDistance^2, targetTension remains 0

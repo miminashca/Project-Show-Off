@@ -6,20 +6,22 @@ public class HemannekenSoundController : MonoBehaviour
 {
     [Header("FMOD Event Paths - Hemanneken")]
     [SerializeField] private EventReference idleSound;
-    [SerializeField] private EventReference farHeySound;
-    [SerializeField] private EventReference midHeySound;
+    // Removed direct PlayFarHeySound and PlayMidHeySound as they are now chosen by RespondToPlayerHey
+    [SerializeField] private EventReference farHeySound; // Used by RespondToPlayerHey
+    [SerializeField] private EventReference midHeySound; // Used by RespondToPlayerHey
     [SerializeField] private EventReference stunnedSound;
     [SerializeField] private EventReference deadSound;
     [SerializeField] private EventReference attachSound;
-    [SerializeField] private EventReference closeHeySound;
+    [SerializeField] private EventReference closeHeySound; // For when attached
 
     [Header("Sound Settings")]
-    [SerializeField] private float closeHeyInterval = 5f; // How often the close hey sound plays when attached
+    [SerializeField] private float closeHeyInterval = 5f;
 
-    // For the looped idle sound (Option 1: Using an FMOD Studio Event Emitter component)
+    [Header("Distance Thresholds")]
+    [Tooltip("Distance beyond which the 'Far Hey' sound is used for player callback.")]
+    [SerializeField] private float farHeyResponseThreshold = 50f;
+
     private StudioEventEmitter idleEventEmitter;
-
-    // For the repeating "Close Hey" sound
     private Coroutine closeHeyCoroutineInstance;
     private FMOD.Studio.EventInstance closeHeyEventInstance;
 
@@ -28,63 +30,38 @@ public class HemannekenSoundController : MonoBehaviour
         idleEventEmitter = GetComponent<StudioEventEmitter>();
         if (idleEventEmitter != null)
         {
-            // Warning if script's idleSound is not set AND emitter's EventReference is also not set.
             if (idleSound.IsNull && idleEventEmitter.EventReference.IsNull)
             {
-                Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is not set in the script, and the attached StudioEventEmitter on {gameObject.name} also has no event assigned. Assign the event to the script's 'idleSound' field or directly to the emitter component's EventReference field.");
+                Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is not set in the script, and the attached StudioEventEmitter on {gameObject.name} also has no event assigned.");
             }
         }
-        else if (!idleSound.IsNull) // Script has an idle sound, but no emitter component found
+        else if (!idleSound.IsNull)
         {
-            Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is set in the script, but no StudioEventEmitter component found on {gameObject.name}. Idle sound might not play as intended. Consider adding an emitter component.");
+            Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is set, but no StudioEventEmitter component found on {gameObject.name}.");
         }
     }
 
-    // --- Public Methods to be called by Hemanneken's AI/Logic Scripts ---
+    // --- Public Methods ---
 
     #region Idle Sound
     public void StartIdleSound()
     {
         if (idleEventEmitter != null)
         {
-            EventReference eventToPlay = new EventReference(); // Determine which event to use
-
-            if (!idleSound.IsNull) // Prioritize the event set in this script
-            {
-                eventToPlay = idleSound;
-            }
-            else if (!idleEventEmitter.EventReference.IsNull) // Fallback to emitter's own EventReference if script's is null
-            {
-                eventToPlay = idleEventEmitter.EventReference;
-                // Debug.Log($"HemannekenSoundController: Using idle sound directly assigned to StudioEventEmitter on {gameObject.name} as script's idleSound field is null.");
-            }
-
+            EventReference eventToPlay = idleSound.IsNull ? idleEventEmitter.EventReference : idleSound;
             if (!eventToPlay.IsNull)
             {
-                // If the emitter's current event is different, update it
                 if (idleEventEmitter.EventReference.Path != eventToPlay.Path)
                 {
-                    if (idleEventEmitter.IsPlaying())
-                    {
-                        idleEventEmitter.Stop();
-                    }
+                    if (idleEventEmitter.IsPlaying()) idleEventEmitter.Stop();
                     idleEventEmitter.EventReference = eventToPlay;
                 }
-
-                if (!idleEventEmitter.IsPlaying())
-                {
-                    idleEventEmitter.Play();
-                }
+                if (!idleEventEmitter.IsPlaying()) idleEventEmitter.Play();
             }
-            else
-            {
-                Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: Tried to start Idle sound, but no valid FMOD Event is assigned either in the script or on the StudioEventEmitter component.");
-            }
+            else Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: No Idle FMOD Event assigned.");
         }
-        else if (!idleSound.IsNull) // Emitter is null, but script has an event.
-        {
-            Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: Tried to start Idle sound. 'idleSound' FMOD Event is assigned in script, but no StudioEventEmitter component found.");
-        }
+        else if (!idleSound.IsNull)
+            Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'idleSound' assigned, but no StudioEventEmitter component found.");
     }
 
     public void StopIdleSound()
@@ -96,28 +73,43 @@ public class HemannekenSoundController : MonoBehaviour
     }
     #endregion
 
-    #region Hey Sounds
-    public void PlayFarHeySound()
+    #region Player Hey! Callback
+    /// <summary>
+    /// Called when the Hemanneken should respond to the player's 'Hey!'.
+    /// Plays either farHeySound or midHeySound based on distance to the player.
+    /// </summary>
+    /// <param name="playerTransform">The Transform of the player who shouted.</param>
+    public void RespondToPlayerHey(Transform playerTransform)
     {
-        if (!farHeySound.IsNull)
+        if (playerTransform == null)
         {
-            RuntimeManager.PlayOneShotAttached(farHeySound, gameObject);
+            Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: PlayerTransform is null in RespondToPlayerHey. Cannot determine distance.");
+            return;
         }
-        else
-        {
-            Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'farHeySound' FMOD Event is not assigned.");
-        }
-    }
 
-    public void PlayMidHeySound()
-    {
-        if (!midHeySound.IsNull)
+        float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+        if (distanceToPlayer > farHeyResponseThreshold)
         {
-            RuntimeManager.PlayOneShotAttached(midHeySound, gameObject);
+            if (!farHeySound.IsNull)
+            {
+                RuntimeManager.PlayOneShotAttached(farHeySound, gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'farHeySound' FMOD Event is not assigned for player callback.");
+            }
         }
-        else
+        else // Mid-range or closer for the callback (but not the 'attached' closeHeySound)
         {
-            Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'midHeySound' FMOD Event is not assigned.");
+            if (!midHeySound.IsNull)
+            {
+                RuntimeManager.PlayOneShotAttached(midHeySound, gameObject);
+            }
+            else
+            {
+                Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'midHeySound' FMOD Event is not assigned for player callback.");
+            }
         }
     }
     #endregion
@@ -126,55 +118,38 @@ public class HemannekenSoundController : MonoBehaviour
     public void PlayStunnedSound()
     {
         if (!stunnedSound.IsNull)
-        {
             RuntimeManager.PlayOneShotAttached(stunnedSound, gameObject);
-        }
         else
-        {
             Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'stunnedSound' FMOD Event is not assigned.");
-        }
     }
 
     public void PlayDeadSound()
     {
-        StopAllHemannekenSounds(); // Stop ongoing sounds before playing death sound
-
+        StopAllHemannekenSounds();
         if (!deadSound.IsNull)
-        {
             RuntimeManager.PlayOneShotAttached(deadSound, gameObject);
-        }
         else
-        {
             Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'deadSound' FMOD Event is not assigned.");
-        }
     }
     #endregion
 
-    #region Attach Sounds
-    public void PlayAttachSound()
+    #region Attach Sounds (Periodic Close Hey)
+    public void PlayAttachSound() // Sound for the moment of attachment
     {
         if (!attachSound.IsNull)
-        {
             RuntimeManager.PlayOneShotAttached(attachSound, gameObject);
-        }
         else
-        {
             Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'attachSound' FMOD Event is not assigned.");
-        }
     }
 
-    public void StartCloseHeyLoop()
+    public void StartCloseHeyLoop() // Periodic 'Hey' when attached
     {
         if (closeHeyCoroutineInstance == null)
         {
             if (!closeHeySound.IsNull)
-            {
                 closeHeyCoroutineInstance = StartCoroutine(CloseHeyCoroutine());
-            }
             else
-            {
                 Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'closeHeySound' FMOD Event is not assigned. Cannot start loop.");
-            }
         }
     }
 
@@ -201,17 +176,14 @@ public class HemannekenSoundController : MonoBehaviour
                 closeHeyEventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
                 closeHeyEventInstance.release();
             }
-
             closeHeyEventInstance = RuntimeManager.CreateInstance(closeHeySound);
             RuntimeManager.AttachInstanceToGameObject(closeHeyEventInstance, gameObject);
             closeHeyEventInstance.start();
-
             yield return new WaitForSeconds(closeHeyInterval);
         }
     }
     #endregion
 
-    // --- Utility ---
     public void StopAllHemannekenSounds()
     {
         StopIdleSound();
