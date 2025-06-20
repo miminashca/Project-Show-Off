@@ -5,6 +5,7 @@ public class HunterRoamingState : State
     private HunterAI _hunterAI;
     private HunterStateMachine _hunterSM;
 
+   
     public HunterRoamingState(StateMachine stateMachine) : base(stateMachine)
     {
         _hunterSM = stateMachine as HunterStateMachine;
@@ -14,6 +15,13 @@ public class HunterRoamingState : State
     public override void OnEnterState()
     {
         if (_hunterAI == null) return;
+
+
+        //ANIMATION HERE
+        _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedRoaming;
+        _hunterAI.HunterAnimator.SetBool("IsRoaming", true);
+        //-----------
+
 
         Debug.Log($"{_hunterAI.gameObject.name} entering ROAMING state.");
         _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedRoaming;
