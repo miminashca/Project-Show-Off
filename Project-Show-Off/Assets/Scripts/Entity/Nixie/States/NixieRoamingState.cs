@@ -21,7 +21,7 @@ public class NixieRoamingState : State
     // Renamed method
     public override void OnEnterState()
     {
-        Debug.Log("Nixie entering ROAMING state.");
+        //Debug.Log("Nixie entering ROAMING state.");
         nixieNav.SetPeeking(false);
         currentPatrolTarget = nixieNav.GetNextPatrolNode();
         if (currentPatrolTarget != null)

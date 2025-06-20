@@ -16,6 +16,7 @@ public class HemannekenInvestigatingState : State
 
         // Subscribe to player detection events from the sensor for this state
         HSM.Sensor.OnPlayerDetected += HandlePlayerDetectedWhileInvestigating;
+        PlayerActionEventBus.OnPlayerShouted += HandlePlayerShoutedWhileInvestigating;
         
         SetupInvestigation();
     }
@@ -38,6 +39,12 @@ public class HemannekenInvestigatingState : State
     {
         // Player made another "Hey" or was re-detected, reset investigation
         Debug.Log("Player re-detected during investigation. Resetting target and timer.");
+        SetupInvestigation(); // Re-target and reset timer
+    }
+    private void HandlePlayerShoutedWhileInvestigating(Vector3 layerPos)
+    {
+        // Player made another "Hey" or was re-detected, reset investigation
+        Debug.Log("Player shouted during investigation. Resetting target and timer.");
         SetupInvestigation(); // Re-target and reset timer
     }
 
@@ -88,6 +95,7 @@ public class HemannekenInvestigatingState : State
             _replyCoroutine = null;
         }
         HSM.Sensor.OnPlayerDetected -= HandlePlayerDetectedWhileInvestigating;
+        PlayerActionEventBus.OnPlayerShouted -= HandlePlayerShoutedWhileInvestigating;
         // Next state's OnEnter will manage agent.
     }
 }

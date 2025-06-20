@@ -49,7 +49,7 @@ public class AmbientMusicTensionController : MonoBehaviour
             // For general ambient music, it's often 2D and doesn't need attaching.
             // RuntimeManager.AttachInstanceToGameObject(ambientMusicInstance, transform, GetComponent<Rigidbody>());
             ambientMusicInstance.start();
-            Debug.Log("Ambient Music event started.");
+            //Debug.Log("Ambient Music event started.");
         }
         else
         {

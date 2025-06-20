@@ -49,7 +49,7 @@ public class PlayerShoutController : MonoBehaviour
         }
 
         Vector3 shoutPosition = playerTransform.position;
-        Debug.Log($"Player shouted at: {shoutPosition}");
+        //Debug.Log($"Player shouted at: {shoutPosition}");
 
         // Broadcast the shout event with position to any interested listeners (Hunter, Hemanneken)
         PlayerActionEventBus.PlayerShouted(shoutPosition);
