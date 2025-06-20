@@ -8,8 +8,6 @@ public class HunterChasingState : State
     private float timeSinceLostSight = 0f;
     private const float GRACE_PERIOD_BEFORE_INVESTIGATING = 0.5f; // *** KEY NEW VARIABLE ***
 
-   
-
     public HunterChasingState(StateMachine stateMachine) : base(stateMachine)
     {
         _hunterSM = stateMachine as HunterStateMachine;
@@ -20,11 +18,6 @@ public class HunterChasingState : State
     {
         if (_hunterAI == null) return;
         Debug.Log($"{_hunterAI.gameObject.name} entering CHASING state.");
-
-        //ANIMATION HERE
-        _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedChasing;
-        _hunterAI.HunterAnimator.SetBool("IsChasing", true);
-        //-----------
 
         _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedChasing;
         _hunterAI.NavAgent.isStopped = false;
@@ -54,13 +47,6 @@ public class HunterChasingState : State
         // ALWAYS update the destination to the player's last known position.
         // This is crucial. If we lose sight, we'll still head to where they *were*.
         _hunterAI.NavAgent.SetDestination(_hunterAI.LastKnownPlayerPosition);
-
-        //ANIMATION HERE
-        float currentSpeed = _hunterAI.NavAgent.velocity.magnitude;
-        _hunterAI.HunterAnimator.SetFloat("IsChasing", currentSpeed);
-
-        _hunterAI.NavAgent.SetDestination(_hunterAI.LastKnownPlayerPosition);
-        //-------------
 
         // If we can still see the player, update their Last Known Position and reset the timer.
         if (_hunterAI.IsPlayerFullySpotted)
@@ -111,10 +97,5 @@ public class HunterChasingState : State
     public override void OnExitState()
     {
         if (_hunterAI == null) return;
-
-        //ANIMATION HERE
-        _hunterAI.HunterAnimator.SetBool("IsChasing", false);
-        _hunterAI.HunterAnimator.SetFloat("IsMoving", 0f);
-        //--------------
     }
 }
