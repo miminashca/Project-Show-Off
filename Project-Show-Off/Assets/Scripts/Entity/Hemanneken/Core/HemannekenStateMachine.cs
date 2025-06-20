@@ -61,9 +61,10 @@ public class HemannekenStateMachine : StateMachine
         base.Start();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
-
+        // This ensures the parent StateMachine's OnDestroy logic (like cleaning up the current state) is executed.
+        base.OnDestroy();
     }
 
     private Vector3 randomOffset;

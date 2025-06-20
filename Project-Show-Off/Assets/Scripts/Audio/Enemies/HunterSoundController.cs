@@ -52,7 +52,7 @@ public class HunterSoundController : MonoBehaviour
         if (poemMonologueEmitter != null && !poemMonologueSound.IsNull)
         {
             // Check if the currently assigned event is different from the desired one
-            if (poemMonologueEmitter.EventReference.Path != poemMonologueSound.Path)
+            if (poemMonologueEmitter.EventReference.Guid != poemMonologueSound.Guid)
             {
                 // CORRECTED LINE: Assign the new EventReference directly
                 poemMonologueEmitter.EventReference = poemMonologueSound;

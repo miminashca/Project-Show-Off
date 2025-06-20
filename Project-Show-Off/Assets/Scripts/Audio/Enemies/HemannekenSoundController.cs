@@ -51,7 +51,7 @@ public class HemannekenSoundController : MonoBehaviour
             EventReference eventToPlay = idleSound.IsNull ? idleEventEmitter.EventReference : idleSound;
             if (!eventToPlay.IsNull)
             {
-                if (idleEventEmitter.EventReference.Path != eventToPlay.Path)
+                if (idleEventEmitter.EventReference.Guid != eventToPlay.Guid)
                 {
                     if (idleEventEmitter.IsPlaying()) idleEventEmitter.Stop();
                     idleEventEmitter.EventReference = eventToPlay;
