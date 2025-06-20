@@ -10,7 +10,6 @@ public class HunterSuppressingState : State
     private int _shotsFired;
     private float _stateTimer;
 
-    // ... (constructor, OnEnterState, Handle, and FireSuppressiveShot are unchanged) ...
     public HunterSuppressingState(StateMachine stateMachine) : base(stateMachine)
     {
         _hunterSM = stateMachine as HunterStateMachine;
@@ -69,7 +68,6 @@ public class HunterSuppressingState : State
         {
             Debug.Log("Suppressing fire finished. Repositioning.");
 
-            // --- *** THE FIX IS HERE *** ---
             // Before transitioning, force a cooldown on aiming.
             // This forces the Hunter to actually move for a bit in the Chasing state.
             _hunterAI.TriggerAimAttemptCooldown(2.0f); // e.g., 2-second cooldown before it can aim again.

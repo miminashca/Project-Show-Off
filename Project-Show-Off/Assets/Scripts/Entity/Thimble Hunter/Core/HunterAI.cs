@@ -2,6 +2,24 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections.Generic;
 
+[System.Serializable]
+public struct GizmoSettings
+{
+    [Header("Sensor Ranges")]
+    public bool ShowVisionCone;
+    public bool ShowAuditoryRange;
+    public bool ShowShootingRange;
+    public bool ShowMeleeRange;
+    public bool ShowSuperpositionRange;
+
+    [Header("Dynamic State & Debugging")]
+    public bool ShowVolumetricLoSLines;
+    public bool ShowDetectionProgressBar;
+    public bool ShowLastKnownPlayerPosition;
+    public bool ShowCurrentAimTarget;
+    public bool ShowWaterLevelAndSubmergence;
+}
+
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AudioSource))]
@@ -75,6 +93,9 @@ public class HunterAI : MonoBehaviour
     public Transform PlayerTransform;
     public Transform GunMuzzleTransform;
     public Transform EyeLevelTransform;
+
+    [Header("Gizmo Display Settings")]
+    public GizmoSettings GizmoToggles;
 
     [Header("VFX/SFX (Assign in Inspector)")]
     public GameObject MuzzleFlashPrefab;
@@ -536,159 +557,145 @@ public class HunterAI : MonoBehaviour
         return true;
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
-        if (EyeLevelTransform == null) return;
-
-        // --- Vision Cone & Sensor Ranges ---
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
-        Vector3 fovLine1 = Quaternion.AngleAxis(VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
-        Vector3 fovLine2 = Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
-        Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine1);
-        Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine2);
-
-        // --- Volumetric LoS Debugging ---
-        if (PlayerTransform != null && TargetPlayerStatus != null)
+        if (GizmoToggles.ShowVisionCone)
         {
-            Transform[] points = TargetPlayerStatus.GetVisibilityPoints();
-            if (points == null || points.Length == 0) return;
-
-            int hunterLayer = LayerMask.NameToLayer("Hunter");
-            LayerMask ignoreHunterMask = ~(1 << hunterLayer);
-
-            foreach (var point in points)
+            if (EyeLevelTransform != null)
             {
-                if (point == null) continue;
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
+                Vector3 fovLine1 = Quaternion.AngleAxis(VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
+                Vector3 fovLine2 = Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
+                Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine1);
+                Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine2);
+            }
+        }
 
-                // Always draw a small sphere at the point's location
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawSphere(point.position, 0.1f);
+        if (GizmoToggles.ShowVolumetricLoSLines)
+        {
+            if (EyeLevelTransform != null && PlayerTransform != null && TargetPlayerStatus != null)
+            {
+                Transform[] points = TargetPlayerStatus.GetVisibilityPoints();
+                if (points == null || points.Length == 0) return;
 
-                // Only draw lines if in play mode, as TargetPlayerStatus might not be fully ready in editor
-                if (!Application.isPlaying) continue;
+                int hunterLayer = LayerMask.NameToLayer("Hunter");
+                LayerMask ignoreHunterMask = ~(1 << hunterLayer);
 
-                // Check 1: Is the point submerged?
-                if (TargetPlayerStatus.IsSubmerged(point.position))
+                foreach (var point in points)
                 {
-                    Gizmos.color = Color.blue; // BLUE for SUBMERGED
-                    Gizmos.DrawLine(EyeLevelTransform.position, point.position);
-                    continue; // Don't do further checks
-                }
+                    if (point == null) continue;
+                    Gizmos.color = Color.magenta;
+                    Gizmos.DrawSphere(point.position, 0.1f);
 
-                // Check 2: Is there a clear line of sight?
-                Vector3 directionToPoint = point.position - EyeLevelTransform.position;
-                float distanceToPoint = directionToPoint.magnitude;
-
-                // Perform the same raycast as the detection logic
-                RaycastHit hit;
-                if (Physics.Raycast(EyeLevelTransform.position, directionToPoint.normalized, out hit, distanceToPoint, ignoreHunterMask, QueryTriggerInteraction.Ignore))
-                {
-                    // We hit something. If it's NOT the player, it's an obstacle.
-                    if (!hit.transform.IsChildOf(PlayerTransform) && hit.transform != PlayerTransform)
+                    if (!Application.isPlaying) continue;
+                    if (TargetPlayerStatus.IsSubmerged(point.position))
                     {
-                        Gizmos.color = Color.red; // RED for BLOCKED
-                        Gizmos.DrawLine(EyeLevelTransform.position, hit.point); // Draw line to the hit point
-                        Gizmos.DrawSphere(hit.point, 0.15f); // Mark where it was blocked
+                        Gizmos.color = Color.blue;
+                        Gizmos.DrawLine(EyeLevelTransform.position, point.position);
+                        continue;
+                    }
+                    Vector3 directionToPoint = point.position - EyeLevelTransform.position;
+                    float distanceToPoint = directionToPoint.magnitude;
+                    RaycastHit hit;
+                    if (Physics.Raycast(EyeLevelTransform.position, directionToPoint.normalized, out hit, distanceToPoint, ignoreHunterMask, QueryTriggerInteraction.Ignore))
+                    {
+                        if (!hit.transform.IsChildOf(PlayerTransform) && hit.transform != PlayerTransform)
+                        {
+                            Gizmos.color = Color.red;
+                            Gizmos.DrawLine(EyeLevelTransform.position, hit.point);
+                            Gizmos.DrawSphere(hit.point, 0.15f);
+                        }
+                        else
+                        {
+                            Gizmos.color = Color.green;
+                            Gizmos.DrawLine(EyeLevelTransform.position, point.position);
+                        }
                     }
                     else
                     {
-                        Gizmos.color = Color.green; // GREEN for VISIBLE (hit the player)
+                        Gizmos.color = Color.green;
                         Gizmos.DrawLine(EyeLevelTransform.position, point.position);
                     }
-                }
-                else
-                {
-                    // Raycast hit nothing, meaning clear path to the point
-                    Gizmos.color = Color.green; // GREEN for VISIBLE
-                    Gizmos.DrawLine(EyeLevelTransform.position, point.position);
                 }
             }
         }
 
-
-        // --- Detection Progress Bar ---
-        if (Application.isPlaying)
+        if (GizmoToggles.ShowDetectionProgressBar && Application.isPlaying)
         {
             float barWidth = 1f;
             float barHeight = 0.1f;
             Vector3 barPosition = transform.position + Vector3.up * 2.5f;
-
             Gizmos.color = Color.grey;
             Gizmos.DrawCube(barPosition, new Vector3(barWidth, barHeight, 0.01f));
-
             Gizmos.color = Color.Lerp(Color.green, Color.red, DetectionProgress);
             float progressWidth = barWidth * DetectionProgress;
             Vector3 progressPosition = barPosition - Vector3.right * (barWidth / 2f) + Vector3.right * (progressWidth / 2f);
             Gizmos.DrawCube(progressPosition, new Vector3(progressWidth, barHeight, 0.01f));
         }
 
-        // --- Other Gizmos (can remain mostly the same) ---
-        Gizmos.color = Color.cyan; // Changed from blue to avoid confusion with submerged LoS lines
-        Gizmos.DrawWireSphere(transform.position, AuditoryDetectionRange);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, ShootingRange);
-        Gizmos.color = new Color(1f, 0f, 1f, 0.5f); // Melee
-        Gizmos.DrawWireSphere(transform.position, MeleeRange);
-
-        // --- Superposition Trigger Distance ---
-        Gizmos.color = new Color(0.8f, 0.5f, 0.2f, 0.7f); // Orange for superposition trigger
-        Gizmos.DrawWireSphere(transform.position, MaxSuperpositionDistance);
-        if (PlayerTransform != null && Vector3.Distance(transform.position, PlayerTransform.position) > MaxSuperpositionDistance)
+        if (GizmoToggles.ShowAuditoryRange)
         {
-            Gizmos.color = Color.red; // Indicate player is outside this range
-            Gizmos.DrawLine(transform.position, PlayerTransform.position);
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, AuditoryDetectionRange);
+        }
+        if (GizmoToggles.ShowShootingRange)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, ShootingRange);
+        }
+        if (GizmoToggles.ShowMeleeRange)
+        {
+            Gizmos.color = new Color(1f, 0f, 1f, 0.5f);
+            Gizmos.DrawWireSphere(transform.position, MeleeRange);
+        }
+        if (GizmoToggles.ShowSuperpositionRange)
+        {
+            Gizmos.color = new Color(0.8f, 0.5f, 0.2f, 0.7f);
+            Gizmos.DrawWireSphere(transform.position, MaxSuperpositionDistance);
+            if (PlayerTransform != null && Vector3.Distance(transform.position, PlayerTransform.position) > MaxSuperpositionDistance)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(transform.position, PlayerTransform.position);
+            }
         }
 
-
-        // --- Last Known Player Position ---
-        if (LastKnownPlayerPosition != Vector3.zero)
+        if (GizmoToggles.ShowLastKnownPlayerPosition && LastKnownPlayerPosition != Vector3.zero)
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(LastKnownPlayerPosition, 0.5f);
         }
 
-        // --- Current Confirmed Aim Target (from Aiming State) ---
-        if (CurrentConfirmedAimTarget != Vector3.zero)
+        if (GizmoToggles.ShowCurrentAimTarget && CurrentConfirmedAimTarget != Vector3.zero)
         {
             Gizmos.color = Color.white;
             Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.2f);
             if (GunMuzzleTransform != null) Gizmos.DrawLine(GunMuzzleTransform.position, CurrentConfirmedAimTarget);
         }
 
-        // --- Water Surface Visualization & Player Submergence ---
-        if (PlayerTransform != null)
+        if (GizmoToggles.ShowWaterLevelAndSubmergence && PlayerTransform != null)
         {
             Vector3 playerBase = PlayerTransform.position;
-            float lineLength = 5f; // Length of the water level indicator lines
-
-            // Draw a simple representation of water level around player
-            Gizmos.color = new Color(0.2f, 0.5f, 1f, 0.4f); // Light blue, semi-transparent
-            Vector3 waterLineStart, waterLineEnd;
-
-            // Forward/Backward lines at water level
-            waterLineStart = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z - lineLength / 2);
-            waterLineEnd = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z + lineLength / 2);
+            float lineLength = 5f;
+            Gizmos.color = new Color(0.2f, 0.5f, 1f, 0.4f);
+            Vector3 waterLineStart = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z - lineLength / 2);
+            Vector3 waterLineEnd = new Vector3(playerBase.x, WaterSurfaceYLevel, playerBase.z + lineLength / 2);
             Gizmos.DrawLine(waterLineStart, waterLineEnd);
-
-            // Left/Right lines at water level
             waterLineStart = new Vector3(playerBase.x - lineLength / 2, WaterSurfaceYLevel, playerBase.z);
             waterLineEnd = new Vector3(playerBase.x + lineLength / 2, WaterSurfaceYLevel, playerBase.z);
             Gizmos.DrawLine(waterLineStart, waterLineEnd);
 
-            // Indicate if player's current AIM POINT is submerged
             Vector3 currentAimGizmoPoint = GetPlayerAimPoint();
-            if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(currentAimGizmoPoint))
+            if (Application.isPlaying && TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(currentAimGizmoPoint))
             {
-                Gizmos.color = Color.blue; // Dark blue if aim point submerged
+                Gizmos.color = Color.blue;
                 Gizmos.DrawSphere(currentAimGizmoPoint, 0.25f);
-                // Use the WaterZone's surface level if available for a more accurate gizmo
                 float surfaceY = TargetPlayerStatus.CurrentWaterZone != null ? TargetPlayerStatus.CurrentWaterZone.SurfaceYLevel : WaterSurfaceYLevel;
-                Gizmos.DrawLine(currentAimGizmoPoint, new Vector3(currentAimGizmoPoint.x, surfaceY, currentAimGizmoPoint.z)); // Line to surface
+                Gizmos.DrawLine(currentAimGizmoPoint, new Vector3(currentAimGizmoPoint.x, surfaceY, currentAimGizmoPoint.z));
             }
             else
             {
-                Gizmos.color = Color.yellow; // Yellow if aim point above water
+                Gizmos.color = Color.yellow;
                 Gizmos.DrawSphere(currentAimGizmoPoint, 0.25f);
             }
         }
