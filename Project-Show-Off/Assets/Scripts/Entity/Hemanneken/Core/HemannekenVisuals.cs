@@ -41,6 +41,7 @@ public class HemannekenVisuals : MonoBehaviour
 
     private GameObject _currentModelInstance;
     private PlayerSensor _playerSensor; // To get player's transform
+    private HemannekenSoundController _soundController; // NEW FMOD
     public bool IsTrueForm { get; private set; }
 
     // --- NEW FLAG FOR DEATH PROCESSING ---
@@ -67,6 +68,14 @@ public class HemannekenVisuals : MonoBehaviour
         }
 
         agentMovement = GetComponent<AgentMovement>();
+
+        // --- ADDED --- Get the sound controller component on this GameObject
+        _soundController = GetComponent<HemannekenSoundController>();
+        if (_soundController == null)
+        {
+            Debug.LogError("HemannekenVisuals: HemannekenSoundController component not found. Reply sounds will not work.", this);
+        }
+        // --- END ADDED ---
     }
 
     private void OnDestroy()
@@ -220,7 +229,29 @@ public class HemannekenVisuals : MonoBehaviour
         _activeStunBehaviorCoroutine = null;
     }
 
-    public void PlayReplyHeySound() { Debug.Log("SFX: Hemanneken replies 'Hey'"); /* Implement sound */ }
+    // --- MODIFIED ---
+    public void PlayReplyHeySound()
+    {
+        // Check if we have a valid reference to the sound controller.
+        if (_soundController == null)
+        {
+            Debug.LogWarning("Cannot play reply 'Hey' sound because the HemannekenSoundController is not assigned.", this);
+            return;
+        }
+
+        // Check if the player sensor and its transform are available.
+        // The RespondToPlayerHey method needs this to calculate distance.
+        if (_playerSensor == null || _playerSensor.PlayerTransform == null)
+        {
+            Debug.LogWarning("Cannot play reply 'Hey' sound because the PlayerSensor or its PlayerTransform is not available.", this);
+            return;
+        }
+
+        // Call the public method from your sound controller script, passing the player's transform.
+        _soundController.RespondToPlayerHey(_playerSensor.PlayerTransform);
+    }
+    // --- END MODIFIED ---
+
 
     public void PlayTransformationEffects()
     {
