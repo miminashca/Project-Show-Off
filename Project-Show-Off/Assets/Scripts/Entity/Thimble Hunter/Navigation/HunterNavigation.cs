@@ -182,7 +182,7 @@ public class HunterNavigation : MonoBehaviour
             {
                 if (node != null)
                 {
-                    Gizmos.DrawWireSphere(node.position, 3.0f);
+                    Gizmos.DrawWireSphere(node.position, 5.0f);
                 }
             }
         }
