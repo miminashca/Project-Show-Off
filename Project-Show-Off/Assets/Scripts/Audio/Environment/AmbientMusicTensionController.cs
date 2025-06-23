@@ -14,9 +14,21 @@ public class AmbientMusicTensionController : MonoBehaviour
     [Tooltip("Assign the player's Transform. If null, will try to find GameObject with 'Player' tag.")]
     public Transform playerTransform;
 
-    [Header("Tension Control Settings")]
+    [Header("Spirit Tree Tension Settings")]
     [Tooltip("The maximum distance (in meters) at which a Spirit Tree starts influencing tension.")]
-    public float maxInfluenceDistance = 75f;
+    public float treeMaxInfluenceDistance = 75f;
+
+    // ----- NEW: MONSTER TENSION SETTINGS -----
+    [Header("Monster Tension Settings")]
+    [Tooltip("Layers that contain monsters which should trigger tension (e.g., Hunter, Nixie).")]
+    public LayerMask monsterLayers;
+    [Tooltip("The maximum distance (in meters) at which a monster starts influencing tension.")]
+    public float monsterMaxDetectionRange = 50f;
+    [Tooltip("The distance (in meters) at which a monster causes maximum tension (1.0).")]
+    public float monsterMaxTensionRange = 10f;
+    // -------------------------------------------
+
+    [Header("Tension Control Settings")]
     [Tooltip("How quickly the tension parameter smooths to its target value.")]
     public float tensionSmoothingSpeed = 2.0f;
 
@@ -45,11 +57,7 @@ public class AmbientMusicTensionController : MonoBehaviour
         if (!ambientMusicEventReference.IsNull)
         {
             ambientMusicInstance = RuntimeManager.CreateInstance(ambientMusicEventReference);
-            // Optional: If your ambient music event is 3D, you might want to attach it.
-            // For general ambient music, it's often 2D and doesn't need attaching.
-            // RuntimeManager.AttachInstanceToGameObject(ambientMusicInstance, transform, GetComponent<Rigidbody>());
             ambientMusicInstance.start();
-            //Debug.Log("Ambient Music event started.");
         }
         else
         {
@@ -59,96 +67,136 @@ public class AmbientMusicTensionController : MonoBehaviour
         }
 
         // --- Find Spirit Trees ---
-        // It's good practice to find them once if they don't change often.
-        // If trees can be added/removed dynamically, you might need to update this list.
         spiritTrees = GameObject.FindGameObjectsWithTag("SpiritTree");
         if (spiritTrees.Length == 0)
         {
-            Debug.LogWarning("AmbientMusicTensionController: No GameObjects found with the tag 'SpiritTree'. Tension will remain at 0 unless trees are added and found later.");
+            Debug.LogWarning("AmbientMusicTensionController: No GameObjects found with the tag 'SpiritTree'.");
         }
     }
 
     void Update()
     {
-        if (!ambientMusicInstance.isValid() || playerTransform == null)
-        {
-            return; // Exit if FMOD instance is not valid or player is missing
-        }
+        if (!ambientMusicInstance.isValid() || playerTransform == null) return;
 
-        // If no trees were found at start, or if you want to dynamically find them:
-        // You could uncomment this if trees are frequently added/removed,
-        // but it's less performant than finding them once.
-        // spiritTrees = GameObject.FindGameObjectsWithTag("SpiritTree");
+        // --- Calculate tension from different sources ---
+        float treeTension = CalculateTreeTension();
+        float monsterTension = CalculateMonsterTension();
 
-        if (spiritTrees.Length == 0)
-        {
-            // No trees, target tension should be 0
-            SmoothlyUpdateTension(0f);
-            return;
-        }
+        // --- Determine the final target tension ---
+        // We use the highest tension value from all sources.
+        // This means if a monster is close, its high tension will override the lower tree tension.
+        float targetTension = Mathf.Max(treeTension, monsterTension);
+
+        SmoothlyUpdateTension(targetTension);
+    }
+
+    private float CalculateTreeTension()
+    {
+        if (spiritTrees == null || spiritTrees.Length == 0) return 0f;
 
         float closestDistanceSqr = Mathf.Infinity;
-        // Transform closestTree = null; // Not strictly needed for this logic
-
         foreach (GameObject tree in spiritTrees)
         {
-            if (tree == null || !tree.activeInHierarchy) continue; // Skip inactive or destroyed trees
+            if (tree == null || !tree.activeInHierarchy) continue;
 
             float distanceSqr = (tree.transform.position - playerTransform.position).sqrMagnitude;
             if (distanceSqr < closestDistanceSqr)
             {
                 closestDistanceSqr = distanceSqr;
-                // closestTree = tree.transform;
             }
         }
 
-        float targetTension = 0f;
-        if (closestDistanceSqr <= (maxInfluenceDistance * maxInfluenceDistance)) // Compare squared distances to avoid Sqrt
+        if (closestDistanceSqr <= (treeMaxInfluenceDistance * treeMaxInfluenceDistance))
         {
             float actualDistance = Mathf.Sqrt(closestDistanceSqr);
-            // Linear interpolation: 1.0 when distance is 0, 0.0 when distance is maxInfluenceDistance
-            targetTension = 0.4f - (actualDistance / maxInfluenceDistance);
-            targetTension = Mathf.Clamp01(targetTension); // Ensure value is between 0 and 1
+            // Inversely scale tension from 0.4 (at 0 distance) to 0 (at max distance)
+            float tension = 0.4f * (1.0f - (actualDistance / treeMaxInfluenceDistance));
+            return Mathf.Clamp(tension, 0f, 0.4f);
         }
-        // If closestDistanceSqr is greater than maxInfluenceDistance^2, targetTension remains 0
 
-        SmoothlyUpdateTension(targetTension);
+        return 0f;
+    }
+
+    private float CalculateMonsterTension()
+    {
+        // Use an overlap sphere to find all monster colliders within the max detection range.
+        // This is more performant than finding all monsters in the scene every frame.
+        Collider[] monstersInRange = Physics.OverlapSphere(playerTransform.position, monsterMaxDetectionRange, monsterLayers);
+
+        if (monstersInRange.Length == 0) return 0f; // No monsters nearby
+
+        float closestMonsterDistSqr = Mathf.Infinity;
+        foreach (var monsterCollider in monstersInRange)
+        {
+            // We find the closest point on the collider to the player for more accurate distance
+            Vector3 closestPoint = monsterCollider.ClosestPoint(playerTransform.position);
+            float distSqr = (closestPoint - playerTransform.position).sqrMagnitude;
+            if (distSqr < closestMonsterDistSqr)
+            {
+                closestMonsterDistSqr = distSqr;
+            }
+        }
+
+        float closestDistance = Mathf.Sqrt(closestMonsterDistSqr);
+
+        // If the player is within the maximum tension range, tension is 1.0
+        if (closestDistance <= monsterMaxTensionRange)
+        {
+            return 1.0f;
+        }
+
+        // If the player is between the max tension and max detection range, scale the tension
+        // We calculate how far the player is into the "detection zone" as a percentage
+        // and invert it, so closer means higher tension.
+        float tension = 1.0f - ((closestDistance - monsterMaxTensionRange) / (monsterMaxDetectionRange - monsterMaxTensionRange));
+        return Mathf.Clamp01(tension);
     }
 
     void SmoothlyUpdateTension(float targetTension)
     {
-        // Lerp the current tension value towards the target value for a smoother transition
         currentTensionValue = Mathf.Lerp(currentTensionValue, targetTension, Time.deltaTime * tensionSmoothingSpeed);
 
-        // Apply the smoothed tension value to the FMOD parameter
         if (ambientMusicInstance.isValid())
         {
-            FMOD.RESULT result = ambientMusicInstance.setParameterByName(TENSION_PARAMETER_NAME, currentTensionValue);
-            if (result != FMOD.RESULT.OK)
-            {
-                Debug.LogWarning($"FMOD: Could not set parameter '{TENSION_PARAMETER_NAME}'. Error: {result}");
-            }
+            ambientMusicInstance.setParameterByName(TENSION_PARAMETER_NAME, currentTensionValue);
         }
     }
 
     void OnDestroy()
     {
-        // Important: Stop and release the FMOD event instance when this GameObject is destroyed
         if (ambientMusicInstance.isValid())
         {
-            ambientMusicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT); // Allow graceful fade out
+            ambientMusicInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
             ambientMusicInstance.release();
-            Debug.Log("Ambient Music event stopped and released.");
         }
     }
 
-    // Optional: Gizmo to visualize the influence radius in the editor
+    // This function ensures your ranges make sense in the editor.
+    private void OnValidate()
+    {
+        if (monsterMaxTensionRange < 0) monsterMaxTensionRange = 0;
+        if (monsterMaxDetectionRange < monsterMaxTensionRange)
+        {
+            monsterMaxDetectionRange = monsterMaxTensionRange + 1.0f;
+        }
+    }
+
     void OnDrawGizmosSelected()
     {
-        if (playerTransform != null)
-        {
-            Gizmos.color = new Color(1, 0.5f, 0, 0.3f); // Orange, semi-transparent
-            Gizmos.DrawWireSphere(playerTransform.position, maxInfluenceDistance);
-        }
+        if (playerTransform == null) return;
+
+        // Gizmo for Spirit Tree tension
+        Gizmos.color = new Color(0, 1, 1, 0.25f); // Cyan
+        Gizmos.DrawWireSphere(playerTransform.position, treeMaxInfluenceDistance);
+
+        // ----- NEW: GIZMOS FOR MONSTER TENSION -----
+        // Gizmo for outer monster detection range
+        Gizmos.color = new Color(1, 1, 0, 0.25f); // Yellow
+        Gizmos.DrawWireSphere(playerTransform.position, monsterMaxDetectionRange);
+
+        // Gizmo for inner (max) monster tension range
+        Gizmos.color = new Color(1, 0, 0, 0.4f); // Red
+        Gizmos.DrawWireSphere(playerTransform.position, monsterMaxTensionRange);
+        // ------------------------------------------
     }
 }
