@@ -25,7 +25,7 @@ public class HunterAimingState : State
 
         _hunterAI.NavAgent.isStopped = true;
         _hunterAI.NavAgent.velocity = Vector3.zero;
-        _hunterAI.HunterAnimator.SetBool("IsMoving", false);
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
         _hunterAI.HunterAnimator.SetBool("IsAiming", true);
 
         _currentAimTime = _hunterAI.AimTime;

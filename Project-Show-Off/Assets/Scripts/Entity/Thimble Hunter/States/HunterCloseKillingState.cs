@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class HunterCloseKillingState : State
 {
@@ -61,4 +61,4 @@ public class HunterCloseKillingState : State
         // If it could be, reset any relevant hunter parameters here.
         // Debug.Log($"{_hunterAI.gameObject.name} exiting CLOSE_KILLING state (unlikely).");
     }
-}
+}*/

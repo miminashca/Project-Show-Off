@@ -11,7 +11,6 @@ public class HunterStateMachine : StateMachine
     public HunterAimingState AimingState { get; private set; }
     public HunterSuppressingState SuppressingState { get; private set; }
     public HunterShootingState ShootingState { get; private set; }
-    public HunterCloseKillingState CloseKillingState { get; private set; }
 
     protected virtual void Awake()
     {
@@ -30,7 +29,6 @@ public class HunterStateMachine : StateMachine
         AimingState = new HunterAimingState(this);
         SuppressingState = new HunterSuppressingState(this);
         ShootingState = new HunterShootingState(this);
-        CloseKillingState = new HunterCloseKillingState(this);
     }
 
     // Implementation of the abstract property from your base StateMachine

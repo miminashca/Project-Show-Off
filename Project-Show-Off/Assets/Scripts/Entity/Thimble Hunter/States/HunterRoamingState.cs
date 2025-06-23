@@ -16,9 +16,11 @@ public class HunterRoamingState : State
         if (_hunterAI == null) return;
 
         Debug.Log($"{_hunterAI.gameObject.name} entering ROAMING state.");
+
         _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedRoaming;
         _hunterAI.NavAgent.isStopped = false;
-        _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedRoaming);
 
         SetNewRoamDestination();
     }
@@ -88,25 +90,29 @@ public class HunterRoamingState : State
     private void SetNewRoamDestination()
     {
         if (_hunterAI == null) return;
+
         Transform targetNode = _hunterAI.GetConfiguredRoamNode();
+
         if (targetNode != null)
         {
             _hunterAI.CurrentTargetNode = targetNode;
+
             if (_hunterAI.NavAgent.isOnNavMesh)
             {
                 _hunterAI.NavAgent.SetDestination(_hunterAI.CurrentTargetNode.position);
-                if (!_hunterAI.HunterAnimator.GetBool("IsMoving"))
-                    _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+
+                _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedRoaming);
             }
             else
             {
                 Debug.LogWarning($"{_hunterAI.gameObject.name} is not on a NavMesh. Cannot set roam destination.", _hunterAI);
-                _hunterAI.HunterAnimator.SetBool("IsMoving", false);
+
+                _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
             }
         }
         else
         {
-            _hunterAI.HunterAnimator.SetBool("IsMoving", false);
+            _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
         }
     }
 

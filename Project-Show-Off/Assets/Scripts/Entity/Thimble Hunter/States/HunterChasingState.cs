@@ -6,7 +6,7 @@ public class HunterChasingState : State
     private HunterStateMachine _hunterSM;
 
     private float timeSinceLostSight = 0f;
-    private const float GRACE_PERIOD_BEFORE_INVESTIGATING = 0.5f; // *** KEY NEW VARIABLE ***
+    private const float GRACE_PERIOD_BEFORE_INVESTIGATING = 0.5f;
 
     public HunterChasingState(StateMachine stateMachine) : base(stateMachine)
     {
@@ -17,11 +17,13 @@ public class HunterChasingState : State
     public override void OnEnterState()
     {
         if (_hunterAI == null) return;
+
         Debug.Log($"{_hunterAI.gameObject.name} entering CHASING state.");
 
         _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedChasing;
         _hunterAI.NavAgent.isStopped = false;
-        _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedChasing);
 
         // Don't play the spotted sound repeatedly if we are just coming back from aiming/suppressing
         if (SM.PreviousState is not HunterAimingState and not HunterSuppressingState)
@@ -67,8 +69,8 @@ public class HunterChasingState : State
         // 1. To MELEE: Highest priority. Player is too close.
         if (distanceToLKP <= _hunterAI.MeleeRange)
         {
-            Debug.LogWarning($"{_hunterAI.gameObject.name} Player IN MELEE RANGE. Transitioning to CloseKill.");
-            SM.TransitToState(_hunterSM.CloseKillingState);
+            Debug.LogWarning($"{_hunterAI.gameObject.name} Player IN MELEE RANGE. Transitioning to Aiming for a point-blank shot.");
+            SM.TransitToState(_hunterSM.AimingState);
             return;
         }
 
