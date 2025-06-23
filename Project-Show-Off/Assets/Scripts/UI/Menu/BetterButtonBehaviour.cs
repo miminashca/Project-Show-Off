@@ -44,6 +44,7 @@ public class BetterButtonBehaviour : MonoBehaviour, ISelectHandler, IDeselectHan
     public void OnPointerEnter(PointerEventData eventData)
     {
         isHovered = true;
+        Debug.Log("Button hovered: " + gameObject.name);
         TransitionColors(invertedBackgroundColor, invertedTextColor);
     }
 
@@ -80,7 +81,7 @@ public class BetterButtonBehaviour : MonoBehaviour, ISelectHandler, IDeselectHan
             if (label)
                 label.color = Color.Lerp(startTextColor, targetTextColor, t);
 
-            elapsedTime += Time.deltaTime;
+            elapsedTime += Time.unscaledDeltaTime;
             yield return null; // Wait for the next frame
         }
 

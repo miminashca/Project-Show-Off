@@ -11,8 +11,27 @@ public class PauseScreen : MonoBehaviour
     }
     private void TogglePause()
     {
-        // Toggle the active state
-        pauseScreen.SetActive(!pauseScreen.activeSelf);
+        bool isPaused = !pauseScreen.activeSelf;
+        pauseScreen.SetActive(isPaused);
+
+        if (isPaused)
+        {
+            // Show and unlock the cursor
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+            // Optional: Pause time
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            // Hide and lock the cursor
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            // Optional: Resume time
+            Time.timeScale = 1f;
+        }
     }
 
     void Update()
