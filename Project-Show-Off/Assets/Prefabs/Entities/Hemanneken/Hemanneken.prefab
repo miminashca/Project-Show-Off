@@ -75,12 +75,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5be58ca398f754794a8aa4d19e3b2d59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3.5
-  rotationSpeed: 700
-  stoppingDistance: 0.2
-  waveAmplitude: 1
-  waveFrequency: 1
-  wavePathResolution: 8
+  aiConfig: {fileID: 11400000, guid: 286a82ff654a04ea4aa28e655a29d542, type: 2}
+  _currentMovementStyle: 0
+  _isGroundRestricted: 0
+  _isActivelyMoving: 0
 --- !u!114 &7745754292186392169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -165,6 +163,7 @@ MonoBehaviour:
       Data4: 1835875883
     Path: event:/Enemies/Hemanneken/CloseHey
   closeHeyInterval: 5
+  farHeyResponseThreshold: 50
 --- !u!1001 &164931640669794013
 PrefabInstance:
   m_ObjectHideFlags: 0

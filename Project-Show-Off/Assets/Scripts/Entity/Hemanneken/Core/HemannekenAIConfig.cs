@@ -21,6 +21,8 @@ public class HemannekenAIConfig : ScriptableObject
     public float transformationDuration = 1f;
     public float deathEffectDuration = 5f;
     public float waterDeathThreshold = 2f;
+    public float rabbitEscapeDistance = 5f;
+    
 
     [Header("Custom Roaming Movement")]
     public float defaultSpeed = 3.5f;
