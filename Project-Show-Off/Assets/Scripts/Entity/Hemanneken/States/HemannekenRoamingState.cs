@@ -46,7 +46,10 @@ public class HemannekenRoamingState : State
                     SM.TransitToState(new RabbitEscapeState(SM));
                     return;
                 }
-                SM.TransitToState(new HemannekenEnchantixState(SM));
+                else
+                {
+                    SM.TransitToState(new HemannekenEnchantixState(SM));
+                }
                 return; 
             }
         }
