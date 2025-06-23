@@ -39,8 +39,15 @@ public class HemannekenRoamingState : State
         {
             if (HSM.Sensor.IsPlayerInRabbitChaseDistance())
             {
+                Debug.Log("Real rabbit? " + HSM.isRealRabbit);
+
+                if (HSM.isRealRabbit)
+                { 
+                    SM.TransitToState(new RabbitEscapeState(SM));
+                    return;
+                }
                 SM.TransitToState(new HemannekenEnchantixState(SM));
-                return; // Transitioning
+                return; 
             }
         }
     }
