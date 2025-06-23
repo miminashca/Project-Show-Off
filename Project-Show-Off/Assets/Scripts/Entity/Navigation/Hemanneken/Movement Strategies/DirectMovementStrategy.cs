@@ -5,47 +5,44 @@ public class DirectMovementStrategy : IMovementStrategy
 {
     public event Action OnArrival;
 
-    private readonly float _speed;
-    private readonly float _rotationSpeed;
-    private readonly float _stoppingDistance;
-
+    // Internal state variables, not parameters.
     private Transform _agentTransform;
     private Vector3 _targetPosition;
     private bool _isMoving;
 
-    public DirectMovementStrategy(HemannekenAIConfig config)
-    {
-        _speed = config.defaultSpeed;
-        _rotationSpeed = config.rotationSpeed;
-        _stoppingDistance = config.stoppingDistance;
-    }
+    // 1. The constructor is now parameterless. It doesn't store any config data.
+    public DirectMovementStrategy() { }
 
-    // Correctly implements the interface signature
     public void SetDestination(AgentMovement context, Vector3 destination)
     {
         _agentTransform = context.transform;
         _targetPosition = destination;
-        _isMoving = Vector3.Distance(_agentTransform.position, _targetPosition) > _stoppingDistance;
+
+        // Use the live stopping distance from the context's current parameters.
+        _isMoving = Vector3.Distance(_agentTransform.position, _targetPosition) > context.CurrentParameters.stoppingDistance;
     }
 
-    // Correctly implements the interface signature
     public void UpdateMovement(AgentMovement context)
     {
         if (!_isMoving || _agentTransform == null) return;
+        
+        // 2. Get the LIVE parameters from the context every frame.
+        MovementParameters p = context.CurrentParameters;
 
-        if (MoveTowards(_targetPosition, _speed))
+        // 3. Use the live parameters for movement calculations.
+        if (MoveTowards(_targetPosition, p.speed, p.stoppingDistance))
         {
             Arrived();
             return;
         }
         
-        RotateTowards(_targetPosition, _rotationSpeed, context.IsGroundRestricted);
+        RotateTowards(_targetPosition, p.rotationSpeed, context.IsGroundRestricted);
     }
 
-    private bool MoveTowards(Vector3 target, float speed)
+    private bool MoveTowards(Vector3 target, float speed, float stoppingDistance)
     {
         Vector3 direction = target - _agentTransform.position;
-        if (direction.magnitude <= _stoppingDistance) return true;
+        if (direction.magnitude <= stoppingDistance) return true;
         
         Vector3 movement = direction.normalized * speed * Time.deltaTime;
         if (movement.magnitude >= direction.magnitude)

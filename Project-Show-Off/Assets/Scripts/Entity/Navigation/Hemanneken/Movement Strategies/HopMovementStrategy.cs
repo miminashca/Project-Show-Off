@@ -7,11 +7,6 @@ public class HopMovementStrategy : IMovementStrategy
     public event Action OnArrival;
 
     // Configuration
-    private readonly float _hopSpeed;
-    private readonly float _hopDistance;
-    private readonly float _hopWaitDuration;
-    private readonly float _rotationSpeed;
-    private readonly float _stoppingDistance;
     private readonly GroundingModule _groundingModule;
     private readonly HemannekenEventBus _eventBus;
 
@@ -22,13 +17,8 @@ public class HopMovementStrategy : IMovementStrategy
     private float _hopWaitTimer;
     private bool _isCurrentlyMidHop;
 
-    public HopMovementStrategy(HemannekenAIConfig config, GroundingModule grounding, HemannekenEventBus eventBus)
+    public HopMovementStrategy(GroundingModule grounding, HemannekenEventBus eventBus)
     {
-        _hopSpeed = config.hopSpeed;
-        _hopDistance = config.hopDistance;
-        _hopWaitDuration = config.hopWaitDuration;
-        _rotationSpeed = config.rotationSpeed;
-        _stoppingDistance = config.stoppingDistance;
         _groundingModule = grounding;
         _eventBus = eventBus;
     }
@@ -46,15 +36,17 @@ public class HopMovementStrategy : IMovementStrategy
     {
         if (_agentTransform == null) return;
         
+        MovementParameters p = context.CurrentParameters;
+        
         // --- Phase 1: Waiting Between Hops ---
         if (_hopWaitTimer > 0f)
         {
             _hopWaitTimer -= Time.deltaTime;
-            RotateTowards(_seriesTargetWaypoint, _rotationSpeed * 2f, context.IsGroundRestricted);
+            RotateTowards(_seriesTargetWaypoint, p.rotationSpeed * 2f, context.IsGroundRestricted);
 
             if (_hopWaitTimer <= 0f)
             {
-                if (Vector3.Distance(_agentTransform.position, _seriesTargetWaypoint) <= _stoppingDistance)
+                if (Vector3.Distance(_agentTransform.position, _seriesTargetWaypoint) <= p.stoppingDistance)
                 {
                     Arrived();
                 }
@@ -69,31 +61,33 @@ public class HopMovementStrategy : IMovementStrategy
         // --- Phase 2: Actively Moving Mid-Hop ---
         else if (_isCurrentlyMidHop)
         {
-            if (MoveTowards(_singleHopTargetPosition, _hopSpeed))
+            if (MoveTowards(_singleHopTargetPosition, p.hopSpeed))
             {
                 _agentTransform.position = _singleHopTargetPosition;
                 _isCurrentlyMidHop = false;
-                _hopWaitTimer = _hopWaitDuration;
+                _hopWaitTimer = p.hopWaitDuration;
                 _eventBus?.RabbitEndHop();
 
-                if (Vector3.Distance(_agentTransform.position, _seriesTargetWaypoint) <= _stoppingDistance)
+                if (Vector3.Distance(_agentTransform.position, _seriesTargetWaypoint) <= p.stoppingDistance)
                 {
                     Arrived();
                 }
             }
             else
             {
-                RotateTowards(_singleHopTargetPosition, _rotationSpeed, context.IsGroundRestricted);
+                RotateTowards(_singleHopTargetPosition, p.rotationSpeed, context.IsGroundRestricted);
             }
         }
     }
     
     private void PlanNextHop(AgentMovement context)
     {
+        MovementParameters p = context.CurrentParameters;
+        
         Vector3 directionToWaypoint = (_seriesTargetWaypoint - _agentTransform.position).normalized;
         float distanceToFinalTarget = Vector3.Distance(_agentTransform.position, _seriesTargetWaypoint);
         
-        float hopTravelDistance = Mathf.Min(_hopDistance, distanceToFinalTarget);
+        float hopTravelDistance = Mathf.Min(p.hopDistance, distanceToFinalTarget);
         _singleHopTargetPosition = _agentTransform.position + directionToWaypoint * hopTravelDistance;
 
         if (context.IsGroundRestricted)

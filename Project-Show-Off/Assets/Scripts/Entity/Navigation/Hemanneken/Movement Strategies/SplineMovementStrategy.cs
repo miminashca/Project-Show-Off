@@ -7,31 +7,27 @@ public class SplineMovementStrategy : IMovementStrategy
 {
     public event Action OnArrival;
 
-    private readonly float _speed, _rotationSpeed, _stoppingDistance, _waveAmplitude, _waveFrequency;
-    private readonly int _wavePathResolution;
+    // Dependencies, not parameters.
     private readonly GroundingModule _groundingModule;
 
+    // Internal state variables.
     private Transform _agentTransform;
     private List<Vector3> _pathPoints = new List<Vector3>();
     private int _currentSegmentIndex;
     private float _segmentProgress;
     private bool _isMoving;
 
-    public SplineMovementStrategy(HemannekenAIConfig config, GroundingModule grounding)
+    // 1. The constructor is simplified. It only takes dependencies, not config data.
+    public SplineMovementStrategy(GroundingModule grounding)
     {
-        _speed = config.defaultSpeed;
-        _rotationSpeed = config.rotationSpeed;
-        _stoppingDistance = config.stoppingDistance;
-        _waveAmplitude = config.waveAmplitude;
-        _waveFrequency = config.waveFrequency;
-        _wavePathResolution = config.wavePathResolution;
         _groundingModule = grounding;
     }
 
-    // Correctly implements the interface signature
     public void SetDestination(AgentMovement context, Vector3 destination)
     {
         _agentTransform = context.transform;
+        
+        // Pass the context to the path generator so it can use the live parameters.
         GenerateWavePath(context, destination);
 
         if (_pathPoints.Count >= 4)
@@ -46,12 +42,15 @@ public class SplineMovementStrategy : IMovementStrategy
         }
     }
 
-    // Correctly implements the interface signature
     public void UpdateMovement(AgentMovement context)
     {
         if (!_isMoving || _agentTransform == null) return;
         
-        float distanceThisFrame = _speed * Time.deltaTime;
+        // 2. Get the LIVE parameters from the context every frame.
+        MovementParameters p = context.CurrentParameters;
+
+        // 3. Use the live parameters for movement calculations.
+        float distanceThisFrame = p.speed * Time.deltaTime;
         float segmentLength = Vector3.Distance(_pathPoints[_currentSegmentIndex], _pathPoints[_currentSegmentIndex + 1]);
         if (segmentLength > 0.01f)
         {
@@ -70,10 +69,10 @@ public class SplineMovementStrategy : IMovementStrategy
         }
         
         Vector3 targetPosition = GetPointOnSpline();
-        _agentTransform.position = Vector3.MoveTowards(_agentTransform.position, targetPosition, _speed * Time.deltaTime * 1.5f);
-        RotateTowards(targetPosition, _rotationSpeed, context.IsGroundRestricted);
+        _agentTransform.position = Vector3.MoveTowards(_agentTransform.position, targetPosition, p.speed * Time.deltaTime * 1.5f);
+        RotateTowards(targetPosition, p.rotationSpeed, context.IsGroundRestricted);
 
-        if (Vector3.Distance(_agentTransform.position, _pathPoints.Last()) < _stoppingDistance)
+        if (Vector3.Distance(_agentTransform.position, _pathPoints.Last()) < p.stoppingDistance)
         {
             Arrived();
         }
@@ -81,6 +80,9 @@ public class SplineMovementStrategy : IMovementStrategy
 
     private void GenerateWavePath(AgentMovement context, Vector3 end)
     {
+        // Get the live parameters for path generation.
+        MovementParameters p = context.CurrentParameters;
+
         _pathPoints.Clear();
         Vector3 start = context.transform.position;
         Vector3 pathDirection = end - start;
@@ -90,14 +92,14 @@ public class SplineMovementStrategy : IMovementStrategy
         _pathPoints.Add(start);
         _pathPoints.Add(start);
 
-        if (pathDistance > _stoppingDistance && _waveAmplitude > 0.01f && _wavePathResolution > 1)
+        if (pathDistance > p.stoppingDistance && p.waveAmplitude > 0.01f && p.wavePathResolution > 1)
         {
             Vector3 perpendicular = Vector3.Cross(pathNormal, Vector3.up).normalized;
-            for (int i = 1; i < _wavePathResolution; i++)
+            for (int i = 1; i < p.wavePathResolution; i++)
             {
-                float t = (float)i / _wavePathResolution;
+                float t = (float)i / p.wavePathResolution;
                 Vector3 pointOnLine = start + pathNormal * (t * pathDistance);
-                float sineOffset = Mathf.Sin(t * _waveFrequency * Mathf.PI) * _waveAmplitude;
+                float sineOffset = Mathf.Sin(t * p.waveFrequency * Mathf.PI) * p.waveAmplitude;
                 Vector3 wavePoint = pointOnLine + perpendicular * sineOffset;
 
                 if (context.IsGroundRestricted)

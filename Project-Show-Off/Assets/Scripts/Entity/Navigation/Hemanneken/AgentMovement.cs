@@ -18,6 +18,7 @@ public class AgentMovement : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private HemannekenAIConfig aiConfig;
     private SpawnPointsManager spawnPointsManager;
+    public MovementParameters CurrentParameters { get; private set; }
     
     [Header("Runtime State")]
     [SerializeField] private MovementStyle _currentMovementStyle = MovementStyle.Direct;
@@ -71,11 +72,13 @@ public class AgentMovement : MonoBehaviour
         SetGroundRestriction(aiConfig.defaultRoamOnGround);
 
         // 2. Initialize Movement Strategies
+        CurrentParameters = new MovementParameters(aiConfig);
         _movementStrategies = new Dictionary<MovementStyle, IMovementStrategy>
         {
-            [MovementStyle.Direct] = new DirectMovementStrategy(aiConfig),
-            [MovementStyle.SplineWave] = new SplineMovementStrategy(aiConfig, _groundingModule),
-            [MovementStyle.Hop] = new HopMovementStrategy(aiConfig, _groundingModule, _eventBus)
+            // The constructors are now simpler
+            [MovementStyle.Direct] = new DirectMovementStrategy(),
+            [MovementStyle.SplineWave] = new SplineMovementStrategy(_groundingModule),
+            [MovementStyle.Hop] = new HopMovementStrategy(_groundingModule, _eventBus)
         };
         
         // 3. Initialize Patrol Points
@@ -125,8 +128,14 @@ public class AgentMovement : MonoBehaviour
     /// <summary>
     /// Commands the agent to move to a specific destination using a given style.
     /// </summary>
-    public void SetDestination(Vector3 destination, MovementStyle style, bool? groundRestricted = null)
+    public void SetDestination(Vector3 destination, MovementStyle style, MovementParameters newParams = null, bool? groundRestricted = null)
     {
+        if (newParams != null)
+        {
+            // If the state provides new parameters, make them the current ones.
+            CurrentParameters = newParams;
+        }
+        
         StopAgentCompletely(false); // Stop current movement but don't reset roam state
         
         _currentMovementStyle = style;
@@ -159,8 +168,13 @@ public class AgentMovement : MonoBehaviour
     /// Starts the agent's roaming behavior.
     /// </summary>
     /// <param name="pauseAtWaypoints">If true, the agent will pause at each patrol point.</param>
-    public void RoamWaypoints(MovementStyle style, bool groundRestricted, bool pauseAtWaypoints)
+    public void RoamWaypoints(MovementStyle style, bool groundRestricted, bool pauseAtWaypoints, MovementParameters newParams = null)
     {
+        if (newParams != null)
+        {
+            CurrentParameters = newParams;
+        }
+        
         StopAgentCompletely(false);
         _currentMovementStyle = style;
         SetGroundRestriction(groundRestricted);
