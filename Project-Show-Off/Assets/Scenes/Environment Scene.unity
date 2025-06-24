@@ -7656,7 +7656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18209,6 +18209,96 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1037676162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &542484442 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7876340740082008496, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+  m_PrefabInstance: {fileID: 1408249333}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &542484453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542484442}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fba00b72a0b61bb4a980c78b5c42f008, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poemMonologueSound:
+    Guid:
+      Data1: -1335721727
+      Data2: 1235955613
+      Data3: 208302251
+      Data4: 1695295673
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/Echoes Drown
+  aggressiveYellSound:
+    Guid:
+      Data1: 1561153696
+      Data2: 1324661579
+      Data3: 1441975229
+      Data4: 33400211
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH Yell
+  idleGruntSound:
+    Guid:
+      Data1: 240652729
+      Data2: 1326968673
+      Data3: 2045414027
+      Data4: -2083178377
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/Seeking Mumbles
+  investigativeGruntSound:
+    Guid:
+      Data1: 240652729
+      Data2: 1326968673
+      Data3: 2045414027
+      Data4: -2083178377
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/Seeking Mumbles
+  chaseYellSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  focusGruntSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  gunCockSound:
+    Guid:
+      Data1: -1738828896
+      Data2: 1130069701
+      Data3: 1402679951
+      Data4: 943404023
+    Path: event:/Enemies/Thimble Hunter/Gun Cock
+  gunFireSound:
+    Guid:
+      Data1: 255676975
+      Data2: 1262104730
+      Data3: -1409848942
+      Data4: 1445907451
+    Path: event:/Enemies/Thimble Hunter/Gunshot Far
+  damnMissedSound:
+    Guid:
+      Data1: 1858992669
+      Data2: 1159720964
+      Data3: 556815021
+      Data4: -2100356666
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH Curse
+  gotchaHitSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  poemMonologueEmitter: {fileID: 0}
+  minIdleGruntInterval: 6
+  maxIdleGruntInterval: 12
 --- !u!1 &543799869
 GameObject:
   m_ObjectHideFlags: 0
@@ -52210,6 +52300,110 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1678205068546716966, guid: 0fdae38c508957c4d9c931b28e7f7fa7, type: 3}
   m_PrefabInstance: {fileID: 494424855}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1408249333
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1125327254}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1613996983}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1773578642}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[3]'
+      value: 
+      objectReference: {fileID: 242028952}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1500623169}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[5]'
+      value: 
+      objectReference: {fileID: 189815707}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[6]'
+      value: 
+      objectReference: {fileID: 1618610937}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[7]'
+      value: 
+      objectReference: {fileID: 540242104}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[8]'
+      value: 
+      objectReference: {fileID: 983534866}
+    - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: 'RoamingNodes.Array.data[9]'
+      value: 
+      objectReference: {fileID: 1167028644}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 107.350494
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.89
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -101.4723
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4444677288708405559, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7562875076684361056, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: PlayerTransform
+      value: 
+      objectReference: {fileID: 1075171911}
+    - target: {fileID: 7876340740082008496, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_Name
+      value: Thimble Hunter Alpha
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7876340740082008496, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 542484453}
+  m_SourcePrefab: {fileID: 100100000, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
 --- !u!1001 &1408298311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -76727,6 +76921,7 @@ SceneRoots:
   - {fileID: 745653894}
   - {fileID: 1381422401}
   - {fileID: 599649863}
+  - {fileID: 1408249333}
   - {fileID: 1910551307}
   - {fileID: 126332014}
   - {fileID: 791540713}
