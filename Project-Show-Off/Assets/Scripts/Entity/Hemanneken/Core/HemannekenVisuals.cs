@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.VFX; // Added for VisualEffect
 
 public class HemannekenVisuals : MonoBehaviour
@@ -36,6 +37,13 @@ public class HemannekenVisuals : MonoBehaviour
     // Optional: If you have a specific particle system just for death, you could add:
     // [SerializeField] private ParticleSystem _deathSpecificParticleSystem;
 
+    //new code
+    [Header("Vignette visuals")]
+    [SerializeField] private float vignetteIntensity; // attach post-processing vignette intensity
+    PostProcessVolume postProcessingVolume; // reference to the PostProcessingVolume component
+    Vignette vignette; // reference to the Vignette effect
+    //end
+
     private Coroutine _activeStunBehaviorCoroutine;
     private bool _isStunBehaviorActive = false; // Flag to control the stun coroutine's loops
 
@@ -69,6 +77,13 @@ public class HemannekenVisuals : MonoBehaviour
         agentMovement = GetComponent<AgentMovement>();
     }
 
+    //new ode for Vignette Effect
+    //public void EnableVignette()
+    //{
+    //    Debug.Log("Enabling Vignette Effect"); 
+    //    vignette.enabled.Override(true);
+    //}
+    //end
     private void OnDestroy()
     {
         if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
