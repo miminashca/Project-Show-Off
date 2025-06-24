@@ -23,8 +23,7 @@ public class HemannekenStateMachine : StateMachine
 
     // High-level game interaction properties
     private Transform _playerTransformForAttachment; // Store when needed
-
-    // ... in HemannekenStateMachine.cs, inside Awake() ...
+    
     protected virtual void Awake() 
     {
         if (aiConfig == null)
