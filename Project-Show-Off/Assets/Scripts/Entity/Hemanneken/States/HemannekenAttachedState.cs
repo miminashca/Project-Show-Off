@@ -11,7 +11,17 @@ public class HemannekenAttachedState : State
     public override void OnEnterState()
     {
         Debug.Log("Entered Attached State");
-        playerWaterSensor = HSM.Sensor.PlayerTransform.gameObject.GetComponent<WaterSensor>();
+
+        // 1. Tell the movement system to clear any active paths and reset its state.
+        HSM.Movement.StopAgentCompletely(true); 
+
+        // 2. Disable the AgentMovement component.
+        HSM.Movement.enabled = false;
+
+        if (HSM.Sensor.PlayerTransform != null)
+        {
+            playerWaterSensor = HSM.Sensor.PlayerTransform.gameObject.GetComponent<WaterSensor>();
+        }
         HSM.PerformAttachmentToPlayer();
         HemannekenEventBus.AttachHemanneken();
         HSM.Visuals.PlayReplyHeySound();
@@ -23,6 +33,7 @@ public class HemannekenAttachedState : State
     public override void Handle()
     {
         HSM.HandleAttachment();
+        
         //if (playerWaterSensor.GetTimeUnderwater() >= HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
         if (CanBeStunnedByLantern())
         {
@@ -34,6 +45,10 @@ public class HemannekenAttachedState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Attached State");
+
+        // Re-enable the AgentMovement component so that subsequent states can use it again.
+        HSM.Movement.enabled = true;
+
         HSM.PerformDetachmentFromPlayer();
         HemannekenEventBus.DetachHemanneken();
         //new vignett code
@@ -46,5 +61,4 @@ public class HemannekenAttachedState : State
         return HSM.PlayerLanternController != null &&
                HSM.PlayerLanternController.TimeLanternRaised >= HSM.aiConfig.lanternStunHoldDuration;
     }
-
 }

@@ -36,10 +36,11 @@ public class RabbitEscapeState : State
     private void SetDestination()
     {
         HSM.Movement.SetDestination(
-            destination: currentEscapeDestination, 
+            destination: currentEscapeDestination,
             style: MovementStyle.Hop,
-            newParams: escapeParams,
-            groundRestricted: true
+            groundRestricted: true,
+            pauseOnArrival: false,
+            newParams: escapeParams
         );
     }
 

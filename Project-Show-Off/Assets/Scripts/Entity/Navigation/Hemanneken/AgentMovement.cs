@@ -1,5 +1,3 @@
-// File: AgentMovement.cs
-using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +10,7 @@ public enum MovementStyle
     Hop
 }
 
-[RequireComponent(typeof(HemannekenEventBus))] // Good practice to ensure it exists
+[RequireComponent(typeof(HemannekenEventBus))]
 public class AgentMovement : MonoBehaviour
 {
     [Header("Configuration")]
@@ -103,7 +101,7 @@ public class AgentMovement : MonoBehaviour
         if (_waypointPauseTimer > 0)
         {
             _waypointPauseTimer -= Time.deltaTime;
-            return; // IMPORTANT: return here
+            return;
         }
 
         if (_isActivelyMoving && _currentStrategy != null)
@@ -128,7 +126,7 @@ public class AgentMovement : MonoBehaviour
     /// <summary>
     /// Commands the agent to move to a specific destination using a given style.
     /// </summary>
-    public void SetDestination(Vector3 destination, MovementStyle style, MovementParameters newParams = null, bool? groundRestricted = null)
+    public void SetDestination(Vector3 destination, MovementStyle style, bool? groundRestricted = null, bool pauseOnArrival = true, MovementParameters newParams = null)
     {
         if (newParams != null)
         {
@@ -136,6 +134,7 @@ public class AgentMovement : MonoBehaviour
             CurrentParameters = newParams;
         }
         
+        _pauseOnArrival = pauseOnArrival;
         StopAgentCompletely(false); // Stop current movement but don't reset roam state
         
         _currentMovementStyle = style;
@@ -179,7 +178,6 @@ public class AgentMovement : MonoBehaviour
         _currentMovementStyle = style;
         SetGroundRestriction(groundRestricted);
         
-        // --- SET THE NEW FLAG ---
         _pauseOnArrival = pauseAtWaypoints;
 
         _needsNewRoamTarget = true;
@@ -232,8 +230,6 @@ public class AgentMovement : MonoBehaviour
 
         Vector3 nextDestination = FindNextPatrolPoint();
 
-        // Use the public API to start the movement.
-        // The SetDestination method will handle the logic of starting the movement.
         SetDestination(nextDestination, _currentMovementStyle);
     }
     
@@ -275,16 +271,12 @@ public class AgentMovement : MonoBehaviour
             _currentStrategy.OnArrival -= OnDestinationArrival;
             _currentStrategy = null;
         }
-        
-        // --- THIS IS THE KEY CHANGE ---
-        // Only start the pause timer IF the command requested it.
+
         if (_pauseOnArrival)
         {
             _waypointPauseTimer = WAYPOINT_PAUSE_DURATION;
         }
-
-        // We always need a new roam target after arrival, whether we paused or not.
-        // If we don't pause, the Update loop will immediately call StartNextRoamSegment on the next frame.
+        
         _needsNewRoamTarget = true;
     }
 
@@ -296,10 +288,7 @@ public class AgentMovement : MonoBehaviour
     {
         if (!Application.isPlaying) return;
 
-        // Delegate gizmo drawing to the current strategy
         _currentStrategy?.DrawGizmos();
-
-        // Draw common gizmos
         if (_isGroundRestricted)
         {
             _groundingModule?.DrawGizmos(transform);
