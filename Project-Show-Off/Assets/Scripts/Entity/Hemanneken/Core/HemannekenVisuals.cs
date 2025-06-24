@@ -95,7 +95,7 @@ public class HemannekenVisuals : MonoBehaviour
     //end
     private void OnDestroy()
     {
-        if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
+        if(agentMovement) agentMovement._eventBus.OnRabbitHopStart -= PlayHopAnimation;
     }
 
     public void SetForm(bool isTrue, Transform parentTransform)
@@ -123,8 +123,8 @@ public class HemannekenVisuals : MonoBehaviour
         //if(!animator) Debug.Log("No animator found for this Hemanneken Visuals.");
         if(animator)
         {
-            if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart -= PlayHopAnimation;
-            if(agentMovement) agentMovement.eventBusInstance.OnRabbitHopStart += PlayHopAnimation;
+            if(agentMovement) agentMovement._eventBus.OnRabbitHopStart -= PlayHopAnimation;
+            if(agentMovement) agentMovement._eventBus.OnRabbitHopStart += PlayHopAnimation;
         }
     }
 

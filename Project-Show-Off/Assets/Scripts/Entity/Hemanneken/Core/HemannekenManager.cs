@@ -41,6 +41,7 @@ public class HemannekenManager : MonoBehaviour
         {
             HemannekenStateMachine hemanneken = Instantiate(hemannekenPrefab, p.transform);
             hemanneken.IsInitiallyTrueForm = p.isOverWater;
+            hemanneken.isRealRabbit = p.isRealRabbit;
             // The HemannekenStateMachine's Awake will handle setting the form via its Visuals component
         }
     }

@@ -32,7 +32,7 @@ public class HemannekenChasingState : State
                 _lastChasedPlayerPosition == Vector3.positiveInfinity) // Always path on first update or if no last pos
             {
                 // Debug.Log(LOG_PREFIX + "Player moved or first chase update. Re-pathing chase.");
-                HSM.Movement.SetDestination(currentPlayerPosition, MovementStyle.SplineWave);
+                HSM.Movement.SetDestination(currentPlayerPosition, MovementStyle.SplineWave, null, false);
                 _lastChasedPlayerPosition = currentPlayerPosition;
             }
             // else { Debug.Log(LOG_PREFIX + "Player stationary, not re-pathing chase."); }
