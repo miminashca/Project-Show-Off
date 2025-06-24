@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+//using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.VFX; // Added for VisualEffect
+using UnityEngine.Rendering.HighDefinition;
+using UnityEngine.Rendering;
 
 public class HemannekenVisuals : MonoBehaviour
 {
@@ -40,8 +42,8 @@ public class HemannekenVisuals : MonoBehaviour
     //new code
     [Header("Vignette visuals")]
     [SerializeField] private float vignetteIntensity; // attach post-processing vignette intensity
-    PostProcessVolume postProcessingVolume; // reference to the PostProcessingVolume component
-    Vignette vignette; // reference to the Vignette effect
+    Volume postProcessingVolume; // reference to the PostProcessingVolume component
+   // Vignette vignette; // reference to the Vignette effect
     //end
 
     private Coroutine _activeStunBehaviorCoroutine;
@@ -61,7 +63,9 @@ public class HemannekenVisuals : MonoBehaviour
     private AgentMovement agentMovement;
     public void Initialize()
     {
-        _playerSensor = GetComponent<PlayerSensor>();
+        postProcessingVolume = GameObject.FindGameObjectWithTag("Volume").GetComponent<UnityEngine.Rendering.Volume>();
+
+           _playerSensor = GetComponent<PlayerSensor>();
         if (_playerSensor == null)
         {
             Debug.LogWarning("HemannekenVisuals: PlayerSensor component not found. Some behaviors might not work as expected.", this);
@@ -76,9 +80,27 @@ public class HemannekenVisuals : MonoBehaviour
         }
 
         agentMovement = GetComponent<AgentMovement>();
+        //new vignette innitialization code
+        //  PostProcessVolume postProcessVolume = FindAnyObjectByType<PostProcessVolume>();
+        UnityEngine.Rendering.HighDefinition.Vignette tmp;
+        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
+        tmp.active = false;
 
-        // --- ADDED --- Get the sound controller component on this GameObject
-        _soundController = GetComponent<HemannekenSoundController>();
+
+        
+      /*  if (postProcessingVolume != null && postProcessingVolume.profile.TryGetSettings(out vignette))
+        {
+          //  vignette.enabled.Override(false); // Disable vignette by default
+        }
+        else
+        {
+            Debug.LogWarning("HemannekenVisuals: PostProcessVolume or Vignette effect not found. Vignette effects will not work.", this);
+        }
+      */
+        //end
+
+            // --- ADDED --- Get the sound controller component on this GameObject
+            _soundController = GetComponent<HemannekenSoundController>();
         if (_soundController == null)
         {
             Debug.LogError("HemannekenVisuals: HemannekenSoundController component not found. Reply sounds will not work.", this);
@@ -87,11 +109,33 @@ public class HemannekenVisuals : MonoBehaviour
     }
 
     //new ode for Vignette Effect
-    //public void EnableVignette()
-    //{
-    //    Debug.Log("Enabling Vignette Effect"); 
-    //    vignette.enabled.Override(true);
-    //}
+    public void EnableVignette()
+    {
+        UnityEngine.Rendering.HighDefinition.Vignette tmp;
+        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
+        tmp.active = true;
+        tmp.intensity.Override(1f);
+
+
+        /*
+        if(vignette != null)
+        {
+            vignette.enabled.Override(true);
+            vignette.intensity.Override(vignetteIntensity); // Set vignette intensity
+            Debug.Log("HemannekenVisuals: Vignette enabled");
+        }
+        */
+    }
+    public void DisableVignette()
+    {
+        /*
+        if(vignette != null)
+        {
+            vignette.enabled.Override(false);
+            Debug.Log("HemannekenVisuals: Vignette disabled");
+        }
+        */
+    }
     //end
     private void OnDestroy()
     {
