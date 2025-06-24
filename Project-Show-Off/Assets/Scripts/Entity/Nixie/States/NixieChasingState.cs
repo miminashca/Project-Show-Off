@@ -28,19 +28,24 @@ public class NixieChasingState : State
 
     public override void Handle()
     {
+        // --- TRANSITION CHECKS (IN ORDER OF PRIORITY) ---
+
+        // 1. Player leaves the Nixie's zone.
         if (!nixieAI.IsPlayerInMyZone)
         {
-            if (nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
+            // --- FIX --- Added check for PlayerStatus.IsLanternOn.
+            if (nixieAI.PlayerStatus.IsLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
             {
                 SM.TransitToState(nixieSM.StaringState);
             }
-            else // Player is out of water AND out of staring range
+            else // Player is out of water AND (out of staring range OR lantern is off).
             {
                 SM.TransitToState(nixieSM.RoamingState);
             }
             return;
         }
 
+        // 2. Player turns off their lantern to hide.
         if (!nixieAI.PlayerStatus.IsLanternOn && nixieAI.DistanceToPlayer > nixieAI.PointBlankRadius)
         {
             Debug.Log("Player turned off lantern, Nixie is now lurking.");
@@ -49,6 +54,7 @@ public class NixieChasingState : State
             return;
         }
 
+        // 3. Player is close enough to be attacked.
         if (nixieAI.DistanceToPlayer <= nixieAI.AttackRange)
         {
             SM.TransitToState(nixieSM.HurtingState);
@@ -58,15 +64,12 @@ public class NixieChasingState : State
         // --- BEHAVIOR LOGIC ---
         repathTimer -= Time.deltaTime;
 
-        // Only calculate a new path if the timer is up, to save performance.
         if (repathTimer <= 0)
         {
             repathTimer = REPATH_INTERVAL;
-            // The magic happens here: We request the Wavy movement style.
             nixieNav.MoveTo(nixieAI.PlayerTransform.position, nixieNav.ChasingSpeed, NixieNavigation.MoveStyle.Wavy);
         }
 
-        // We still look directly at the player for a more focused, predatory feel, even while swaying.
         nixieNav.LookAt(nixieAI.PlayerTransform.position);
     }
 

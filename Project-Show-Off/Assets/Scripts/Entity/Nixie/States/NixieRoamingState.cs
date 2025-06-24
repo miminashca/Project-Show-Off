@@ -9,6 +9,7 @@ public class NixieRoamingState : State
 
     private Transform currentPatrolTarget;
     private float lureTimer;
+    private float tensionTimer;
 
     // The constructor now only takes the StateMachine
     public NixieRoamingState(StateMachine pSM) : base(pSM)
@@ -21,11 +22,11 @@ public class NixieRoamingState : State
     public override void OnEnterState()
     {
         //Debug.Log("Nixie entering ROAMING state.");
-        nixieNav.SetPeeking(false); // Hide while roaming
+        nixieNav.SetPeeking(false);
+        tensionTimer = 0f;
         currentPatrolTarget = nixieNav.GetNextPatrolNode();
         if (currentPatrolTarget != null)
         {
-            // Use the straight movement style for patrolling
             nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed, NixieNavigation.MoveStyle.Straight);
         }
         ResetLureTimer();
@@ -33,30 +34,48 @@ public class NixieRoamingState : State
 
     public override void Handle()
     {
-        bool isLanternOn = nixieAI.PlayerStatus.IsLanternOn;
-        bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
+        // --- TRANSITION CHECKS (IN ORDER OF PRIORITY) ---
 
-        // 1. HIGHEST PRIORITY: Check for conditions to CHASE
-        // Player must be IN the water zone. They are detected if the lantern is on OR they are point-blank.
-        if (nixieAI.IsPlayerInMyZone && (isLanternOn || isPointBlank))
+        // 1. CHASE: Player is in the zone and clearly visible.
+        if (nixieAI.IsPlayerInMyZone)
         {
-            // The point-blank check is an unconditional chase trigger.
-            // Otherwise, they must be within the current detection radius.
-            if (isPointBlank || nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
+            bool isLanternOn = nixieAI.PlayerStatus.IsLanternOn;
+            bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
+
+            if (isPointBlank || (isLanternOn && nixieAI.DistanceToPlayer <= nixieAI.DetectionRadiusLantern))
             {
                 SM.TransitToState(nixieSM.ChasingState);
                 return;
             }
         }
-        // 2. SECOND PRIORITY: Check for conditions to STARE
-        // Player must be OUT of the water zone, have the lantern ON, and be within StaringRadius.
-        else if (!nixieAI.IsPlayerInMyZone && isLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
+
+        // 2. STARE: Player is OUT of the zone but visible with lantern.
+        else if (!nixieAI.IsPlayerInMyZone && nixieAI.PlayerStatus.IsLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
         {
             SM.TransitToState(nixieSM.StaringState);
             return;
         }
 
-        // 3. DEFAULT BEHAVIOR: Continue Roaming
+        // --- BEHAVIOR LOGIC (If no transition occurs) ---
+
+        // 3a. Tension Timer: Build tension if player is hiding in the zone.
+        bool canBuildTension = nixieAI.IsPlayerInMyZone && !nixieAI.PlayerStatus.IsLanternOn;
+        if (canBuildTension)
+        {
+            tensionTimer += Time.deltaTime;
+            if (tensionTimer >= nixieAI.MaxTensionDuration)
+            {
+                Debug.Log("Tension timer expired! Nixie has found the player.");
+                SM.TransitToState(nixieSM.ChasingState); // --- FIX --- This transition is now handled here.
+                return;
+            }
+        }
+        else
+        {
+            tensionTimer = 0f; // Reset if conditions aren't met.
+        }
+
+        // 3b. Patrolling Behavior
         if (currentPatrolTarget != null && Vector3.Distance(nixieAI.transform.position, currentPatrolTarget.position) < 1.5f)
         {
             currentPatrolTarget = nixieNav.GetNextPatrolNode();
@@ -66,6 +85,7 @@ public class NixieRoamingState : State
             }
         }
 
+        // 3c. Luring Sounds
         lureTimer -= Time.deltaTime;
         if (lureTimer <= 0)
         {
@@ -78,6 +98,7 @@ public class NixieRoamingState : State
     public override void OnExitState()
     {
         nixieNav.StopMoving();
+        tensionTimer = 0f;
     }
 
     private void ResetLureTimer()
