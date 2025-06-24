@@ -136,12 +136,25 @@ public class HunterAI : MonoBehaviour
     public Transform CurrentTargetNode { get; set; }
     public Vector3 CurrentConfirmedAimTarget { get; set; }
 
+    // NEW FMOD CHANGE
+    public HunterSoundController SoundController { get; private set; }
+    // END FMOD CHANGE
+
 
     void Awake()
     {
         NavAgent = GetComponent<NavMeshAgent>();
         HunterAnimator = GetComponent<Animator>();
         HunterAudioSource = GetComponent<AudioSource>();
+
+        // NEW FMOD EVENT
+        // Find and assign the HunterSoundController component on this GameObject
+        SoundController = GetComponent<HunterSoundController>();
+        if (SoundController == null)
+        {
+            Debug.LogError("HunterAI is missing a HunterSoundController component!", this.gameObject);
+        }
+        // END FMOD EVENT
 
         if (PlayerTransform == null)
         {
@@ -493,7 +506,7 @@ public class HunterAI : MonoBehaviour
         Debug.Log($"{gameObject.name}: BANG!");
         HunterAnimator.SetTrigger("Shoot");
         HunterEventBus.HunterFiredShot();
-        PlaySound(GunshotSound);
+        //PlaySound(GunshotSound);
 
         if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
         {
