@@ -17,6 +17,7 @@ public class HemannekenStateMachine : StateMachine
 
     // Internal state properties, managed by this SM or its components
     public bool IsInitiallyTrueForm { get; set; } // Set by HemannekenManager on spawn
+    public bool isRealRabbit = false;
 
     protected override State InitialState => new HemannekenRoamingState(this); // Default, can be adjusted
 
@@ -50,7 +51,6 @@ public class HemannekenStateMachine : StateMachine
     
         if (parentSpawnPoint == null) Debug.LogWarning("SpawnPoint parent not found for AgentMovement initialization.", this);
 
-        Movement.Initialize(parentSpawnPoint.gameObject.GetComponentInChildren<SpawnPointsManager>(), aiConfig); // Ensure SPManager is found
         Visuals.Initialize();
     }
 
@@ -58,6 +58,10 @@ public class HemannekenStateMachine : StateMachine
     {
         //Debug.Log(IsInitiallyTrueForm);
         Visuals.SetForm(IsInitiallyTrueForm, transform);
+
+        aiConfig.defaultRoamOnGround = !IsInitiallyTrueForm;
+        Movement.InitializeFromConfig();
+        
         base.Start();
     }
 

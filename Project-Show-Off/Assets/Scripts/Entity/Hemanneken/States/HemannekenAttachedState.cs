@@ -20,7 +20,7 @@ public class HemannekenAttachedState : State
     public override void Handle()
     {
         HSM.HandleAttachment();
-        if (playerWaterSensor.GetTimeUnderwater() >= HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
+        //if (playerWaterSensor.GetTimeUnderwater() >= HSM.aiConfig.waterDeathThreshold) HSM.TransitToState(new HemannekenDeathState(SM));
         if (CanBeStunnedByLantern())
         {
             Debug.Log("STUN");

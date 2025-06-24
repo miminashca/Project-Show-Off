@@ -22,6 +22,7 @@ public class HunterSuppressingState : State
         Debug.Log($"{_hunterAI.gameObject.name} entering SUPPRESSING state.");
 
         _hunterAI.NavAgent.isStopped = true;
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
         _hunterAI.HunterAnimator.SetBool("IsAiming", true);
 
         // Target the last known position. This is the cover the player is behind.

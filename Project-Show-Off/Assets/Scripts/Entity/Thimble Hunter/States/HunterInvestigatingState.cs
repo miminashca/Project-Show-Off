@@ -25,11 +25,14 @@ public class HunterInvestigatingState : State
     public override void OnEnterState()
     {
         if (_hunterAI == null) return;
+
         Debug.Log($"{_hunterAI.gameObject.name} entering INVESTIGATING state (LKP: {_hunterAI.LastKnownPlayerPosition}).");
 
         _hunterAI.NavAgent.speed = _hunterAI.MovementSpeedInvestigating;
         _hunterAI.NavAgent.isStopped = false;
-        _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedInvestigating);
+
         if (!_hunterAI.HunterAudioSource.isPlaying) // Avoid interrupting other sounds
             _hunterAI.PlaySound(_hunterAI.HeardNoiseSound);
 
@@ -76,9 +79,9 @@ public class HunterInvestigatingState : State
             if (!_isAtLKP) // First time reaching LKP
             {
                 _isAtLKP = true;
-                _hunterAI.HunterAnimator.SetBool("IsMoving", false);
+                _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
                 _hunterAI.HunterAnimator.SetBool("IsLookingAround", true);
-                _hunterAI.IsActivelyScanning = true; // --- SETTING ALERTNESS FLAG ---
+                _hunterAI.IsActivelyScanning = true;
                 StartNextLookSweep();
             }
 
@@ -87,9 +90,9 @@ public class HunterInvestigatingState : State
         else if (_isAtLKP)
         {
             _isAtLKP = false;
-            _hunterAI.HunterAnimator.SetBool("IsMoving", true);
+            _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedInvestigating);
             _hunterAI.HunterAnimator.SetBool("IsLookingAround", false);
-            _hunterAI.IsActivelyScanning = false; // No longer scanning
+            _hunterAI.IsActivelyScanning = false;
         }
 
 

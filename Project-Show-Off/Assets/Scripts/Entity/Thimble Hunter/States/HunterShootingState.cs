@@ -21,8 +21,8 @@ public class HunterShootingState : State
 
         _hunterAI.NavAgent.isStopped = true;
         _hunterAI.NavAgent.velocity = Vector3.zero;
-        _hunterAI.HunterAnimator.SetBool("IsMoving", false);
-        // Animator trigger "Shoot" is called by _hunterAI.FireGun()
+
+        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
 
         _isReloading = false; // Will be set to true after firing
 
@@ -33,7 +33,7 @@ public class HunterShootingState : State
         _isReloading = true;
         _currentReloadTime = _hunterAI.ReloadTime;
         _hunterAI.CurrentReloadTimer = _currentReloadTime;
-        _hunterAI.HunterAnimator.SetTrigger("Reload"); // Assuming a "Reload" trigger
+        _hunterAI.HunterAnimator.SetTrigger("Reload");
         _hunterAI.PlaySound(_hunterAI.ReloadSound);
     }
 

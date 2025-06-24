@@ -175,7 +175,7 @@ public class SoundTrigger : MonoBehaviour
             // if FMOD isn't fully initialized or if you're not in play mode.
             // A simpler approach for OnValidate might be to just clear fmodEventPath if fmodEvent is null,
             // or rely on Awake to populate it. For robust path fetching, Awake/Start is better.
-            // For now, I'll leave the more robust path fetching in Awake.
+            // For now, IMovementStrategy'll leave the more robust path fetching in Awake.
         }
         else
         {
