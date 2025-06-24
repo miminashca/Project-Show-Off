@@ -7656,7 +7656,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10648,6 +10648,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 418949375}
     m_Modifications:
+    - target: {fileID: 1207136943921125070, guid: 30fadf7bc8a80914e83e7027b4440f72, type: 3}
+      propertyPath: WaveAmplitude
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1207136943921125070, guid: 30fadf7bc8a80914e83e7027b4440f72, type: 3}
+      propertyPath: WaveFrequency
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1207136943921125070, guid: 30fadf7bc8a80914e83e7027b4440f72, type: 3}
+      propertyPath: WavePathResolution
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 1207136943921125070, guid: 30fadf7bc8a80914e83e7027b4440f72, type: 3}
       propertyPath: 'PatrolNodes.Array.data[0]'
       value: 
@@ -66516,7 +66528,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 32.06
+      value: -63
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
@@ -66524,7 +66536,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -38.42
+      value: -34
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w

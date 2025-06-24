@@ -18,15 +18,15 @@ public class NixieRoamingState : State
         nixieNav = nixieSM.NixieNav;
     }
 
-    // Renamed method
     public override void OnEnterState()
     {
         //Debug.Log("Nixie entering ROAMING state.");
-        nixieNav.SetPeeking(false);
+        nixieNav.SetPeeking(false); // Hide while roaming
         currentPatrolTarget = nixieNav.GetNextPatrolNode();
         if (currentPatrolTarget != null)
         {
-            nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed);
+            // Use the straight movement style for patrolling
+            nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed, NixieNavigation.MoveStyle.Straight);
         }
         ResetLureTimer();
     }
@@ -36,34 +36,33 @@ public class NixieRoamingState : State
         bool isLanternOn = nixieAI.PlayerStatus.IsLanternOn;
         bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
 
+        // 1. HIGHEST PRIORITY: Check for conditions to CHASE
+        // Player must be IN the water zone. They are detected if the lantern is on OR they are point-blank.
         if (nixieAI.IsPlayerInMyZone && (isLanternOn || isPointBlank))
         {
-            // Check against appropriate radius
-            if (nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius || isPointBlank)
+            // The point-blank check is an unconditional chase trigger.
+            // Otherwise, they must be within the current detection radius.
+            if (isPointBlank || nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
             {
                 SM.TransitToState(nixieSM.ChasingState);
                 return;
             }
         }
-
-        if (nixieAI.IsPlayerInMyZone && nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius)
-        {
-            SM.TransitToState(nixieSM.ChasingState);
-            return;
-        }
-        if (!nixieAI.IsPlayerInMyZone && isLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
+        // 2. SECOND PRIORITY: Check for conditions to STARE
+        // Player must be OUT of the water zone, have the lantern ON, and be within StaringRadius.
+        else if (!nixieAI.IsPlayerInMyZone && isLanternOn && nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
         {
             SM.TransitToState(nixieSM.StaringState);
             return;
         }
 
-        if (currentPatrolTarget != null && Vector3.Distance(nixieAI.transform.position, currentPatrolTarget.position) < 1f)
+        // 3. DEFAULT BEHAVIOR: Continue Roaming
+        if (currentPatrolTarget != null && Vector3.Distance(nixieAI.transform.position, currentPatrolTarget.position) < 1.5f)
         {
             currentPatrolTarget = nixieNav.GetNextPatrolNode();
-            // Only try to move if the new target is also not null
             if (currentPatrolTarget != null)
             {
-                nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed);
+                nixieNav.MoveTo(currentPatrolTarget.position, nixieNav.RoamingSpeed, NixieNavigation.MoveStyle.Straight);
             }
         }
 

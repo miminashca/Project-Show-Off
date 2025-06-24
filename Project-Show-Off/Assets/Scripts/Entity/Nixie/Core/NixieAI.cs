@@ -95,22 +95,24 @@ public class NixieAI : MonoBehaviour
 
         DistanceToPlayer = Vector3.Distance(transform.position, PlayerTransform.position);
 
-        if (IsPlayerInMyZone && !PlayerStatus.IsLanternOn &&
-            StateMachine.CurrentState != StateMachine.ChasingState &&
-            StateMachine.CurrentState != StateMachine.StaringState)
+        bool canBuildTension = IsPlayerInMyZone &&
+                       !PlayerStatus.IsLanternOn &&
+                       StateMachine.CurrentState == StateMachine.RoamingState;
+
+        if (canBuildTension)
         {
             tensionTimer += Time.deltaTime;
             if (tensionTimer >= MaxTensionDuration)
             {
                 Debug.Log("Tension timer expired! Nixie has found the player.");
-                // Force a transition to Chasing state, bypassing normal checks
+                // Force a transition to Chasing state
                 StateMachine.TransitToState(StateMachine.ChasingState);
                 tensionTimer = 0f; // Reset the timer
             }
         }
         else
         {
-            // Reset the timer if the condition is not met (player leaves, turns on lantern, etc.)
+            // Reset the timer if the condition is not met
             tensionTimer = 0f;
         }
     }

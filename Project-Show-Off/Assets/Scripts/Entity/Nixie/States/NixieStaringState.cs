@@ -18,33 +18,29 @@ public class NixieStaringState : State
     {
         Debug.Log("Nixie entering STARING state.");
         nixieNav.StopMoving();
-        nixieNav.SetPeeking(true);
+        nixieNav.SetPeeking(true); // Peeks to stare at the player
         ResetLureTimer();
     }
 
     public override void Handle()
     {
-        // If player turns lantern off, Nixie loses interest and roams.
-        if (!nixieAI.PlayerStatus.IsLanternOn)
-        {
-            SM.TransitToState(nixieSM.RoamingState);
-            return;
-        }
-
         bool isPointBlank = nixieAI.DistanceToPlayer <= nixieAI.PointBlankRadius;
 
+        // 1. HIGHEST PRIORITY: Check if player enters the water zone. If so, CHASE.
         if (nixieAI.IsPlayerInMyZone && (nixieAI.DistanceToPlayer <= nixieAI.CurrentDetectionRadius || isPointBlank))
         {
             SM.TransitToState(nixieSM.ChasingState);
             return;
         }
-        if (nixieAI.DistanceToPlayer > nixieAI.StaringRadius)
+        // 2. SECOND PRIORITY: Check for conditions to stop staring and ROAM.
+        // This happens if the player turns off the lantern OR moves too far away.
+        else if (!nixieAI.PlayerStatus.IsLanternOn || nixieAI.DistanceToPlayer > nixieAI.StaringRadius)
         {
             SM.TransitToState(nixieSM.RoamingState);
             return;
         }
 
-        // --- BEHAVIOR LOGIC ---
+        // 3. DEFAULT BEHAVIOR: Continue Staring
         nixieNav.LookAt(nixieAI.PlayerTransform.position);
 
         lureTimer -= Time.deltaTime;
