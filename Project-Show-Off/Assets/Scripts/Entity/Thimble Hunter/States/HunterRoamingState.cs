@@ -23,6 +23,14 @@ public class HunterRoamingState : State
         _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedRoaming);
 
         SetNewRoamDestination();
+
+        // NEW FMOD CHANGE
+        // Tell the sound controller to begin the periodic idle grunt routine.
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.StartIdleGrunts();
+        }
+        // END FMOD CHANGE
     }
 
     public override void Handle()
@@ -44,20 +52,16 @@ public class HunterRoamingState : State
         }
 
         // --- Superposition Logic ---
-        // Check if cooldown is over AND distance condition is met
         if (_hunterAI.CurrentSuperpositionCooldownTimer <= 0f && _hunterAI.PlayerTransform != null)
         {
             bool isTooFar = Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) > _hunterAI.MaxSuperpositionDistance;
 
-            // --- MODIFIED LOGIC ---
-            // The Hunter will only attempt superposition IF it's too far AND the player is NOT looking at it.
             if (isTooFar && !_hunterAI.IsVisibleToPlayer())
             {
                 AttemptSuperposition();
-                _hunterAI.CurrentSuperpositionCooldownTimer = _hunterAI.SuperpositionAttemptCooldown; // Reset cooldown
+                _hunterAI.CurrentSuperpositionCooldownTimer = _hunterAI.SuperpositionAttemptCooldown;
             }
         }
-
 
         if (!_hunterAI.NavAgent.pathPending && _hunterAI.NavAgent.remainingDistance < _hunterAI.NavAgent.stoppingDistance + 0.1f)
         {
@@ -67,7 +71,6 @@ public class HunterRoamingState : State
 
     private void AttemptSuperposition()
     {
-        // This part remains the same. It calls your already-correct GetSuperpositionNode method.
         Transform superpositionNode = _hunterAI.GetSuperpositionNode();
         if (superpositionNode != null)
         {
@@ -100,13 +103,11 @@ public class HunterRoamingState : State
             if (_hunterAI.NavAgent.isOnNavMesh)
             {
                 _hunterAI.NavAgent.SetDestination(_hunterAI.CurrentTargetNode.position);
-
                 _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedRoaming);
             }
             else
             {
                 Debug.LogWarning($"{_hunterAI.gameObject.name} is not on a NavMesh. Cannot set roam destination.", _hunterAI);
-
                 _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
             }
         }
@@ -119,5 +120,14 @@ public class HunterRoamingState : State
     public override void OnExitState()
     {
         if (_hunterAI == null) return;
+
+        // NEW FMOD CHANGE
+        // Tell the sound controller to stop the periodic idle grunt routine
+        // to ensure it doesn't play during other states (like chasing).
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.StopIdleGrunts();
+        }
+        // END FMOD CHANGE
     }
 }
