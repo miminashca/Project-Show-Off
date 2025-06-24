@@ -90,7 +90,8 @@ Transform:
   m_LocalPosition: {x: 0.7, y: 0.4, z: 0.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8272267803297296018}
   m_Father: {fileID: 4258081052341108069}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1374797242565452361
@@ -667,6 +668,10 @@ MonoBehaviour:
   crouchHeight: 1.5
   standingHeight: 2.5
   crouchLerpSpeed: 8
+  headTransform: {fileID: 3419520523386429940}
+  torsoTransform: {fileID: 6818528467926079778}
+  headCrouchY: 0.8
+  torsoCrouchY: 0.6
   maxStamina: 100
   staminaDrainRate: 15
   staminaRegenRate: 10
@@ -717,13 +722,9 @@ MonoBehaviour:
   passiveDrainRate: 0.1
   activeDrainRate: 3
   hemannekenRepelRadius: 7
-  nixieAttractRadius: 20
   hemannekenLayer:
     serializedVersion: 2
     m_Bits: 1048576
-  nixieLayer:
-    serializedVersion: 2
-    m_Bits: 2097152
   interactionCheckInterval: 0.25
   raisedLocalPositionOffset: {x: 0, y: 0.2, z: 0.05}
   lanternPullOutSoundEvent:
@@ -770,6 +771,8 @@ MonoBehaviour:
   interactionPromptUI: {fileID: 0}
   interactionDotUI: {fileID: 0}
   interactionPromptCanvasGroup: {fileID: 0}
+  fuelPickUpPromptUI: {fileID: 0}
+  fuelPickUpCanvasGroup: {fileID: 0}
   fadeDuration: 0.3
 --- !u!114 &6220929352804563842
 MonoBehaviour:
@@ -821,6 +824,10 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  woodMaterialNames:
+  - WoodFloor_Shed 2
+  - New Material
+  - BridgeVer_1
   playerFeetYOffset: 0
   minDepthForShallowEffect: 0.05
   fullShallowDepth: 0.2
@@ -839,7 +846,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c162ba45d7fdc4ea04440b5aa6b4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHealth: 100
+  maxWoundLevel: 3
+  currentWoundLevel: 0
+  timeToRegenerateOneLevel: 30
+  adrenalineDuration: 10
+  adrenalineSpeedBoost: 0.5
 --- !u!114 &8721460337746503042
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,6 +882,7 @@ MonoBehaviour:
   waterSurfaceLayer:
     serializedVersion: 2
     m_Bits: 256
+  submergePointVerticalOffset: 0.2
   underwaterAmbienceEvent:
     Guid:
       Data1: 1526208366
@@ -892,6 +904,17 @@ MonoBehaviour:
       Data3: 1602033337
       Data4: 2008393408
     Path: event:/Player/Emerging
+  childLaughterEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  nixieLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  nixieProximityDistance: 30
 --- !u!114 &3811047033570357142
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -946,4 +969,78 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5c162ba45d7fdc4ea04440b5aa6b4c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHealth: 100
+  maxWoundLevel: 3
+  currentWoundLevel: 0
+  timeToRegenerateOneLevel: 30
+  adrenalineDuration: 10
+  adrenalineSpeedBoost: 0.5
+--- !u!1001 &6020248724062534874
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2214964552251006022}
+    m_Modifications:
+    - target: {fileID: 1864514067433654036, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4081064393684931713, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Name
+      value: Lantern
+      objectReference: {fileID: 0}
+    - target: {fileID: 4081064393684931713, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+--- !u!4 &8272267803297296018 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2396134820323349064, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+  m_PrefabInstance: {fileID: 6020248724062534874}
+  m_PrefabAsset: {fileID: 0}

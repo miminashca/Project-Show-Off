@@ -69,6 +69,7 @@ public class PlayerMovement : MonoBehaviour
     [NonSerialized] public bool isCrouching = false;
     [NonSerialized] public bool isSprinting = false;
     [NonSerialized] public bool isGrounded = true;
+    [NonSerialized] public bool HasInfiniteStamina = false;
     private Vector3 velocity;
     private float finalSpeed;
     private Vector3 currentDirection = Vector3.zero;
@@ -249,6 +250,17 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleStamina()
     {
+        // If infinite stamina is active, max out stamina and bypass all drain/regen logic.
+        if (HasInfiniteStamina)
+        {
+            currentStamina = maxStamina;
+            // We still need to determine if the player is trying to sprint for animations/sounds.
+            isSprinting = controls.Player.Sprint.inProgress && isMoving && !isCrouching;
+            timeSinceStoppedSprinting = 0f;
+            staminaDroppedBelowHalfDuringThisSprint = false; // Reset this flag
+            return; // Exit the method early
+        }
+
         bool sprintInputActive = controls.Player.Sprint.inProgress;
         bool canPotentiallySprint = sprintInputActive && isMoving && !isCrouching;
 

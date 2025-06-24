@@ -558,15 +558,14 @@ public class HunterAI : MonoBehaviour
                 else
                 {
                     Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name} at {hit.point}");
-                    PlayerHealth playerHealth = hit.collider.GetComponentInParent<PlayerHealth>(); // GetComponentInParent is safer if colliders are on children
-                    if (playerHealth != null) playerHealth.TakeDamage(GunDamage);
+                    PlayerHealth playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
+                    if (playerHealth != null)
+                    {
+                        // --- THIS IS THE ONLY CHANGE NEEDED IN THIS FILE ---
+                        playerHealth.RegisterShot(); // Changed from TakeDamage(GunDamage)
+                    }
                     if (BulletImpactPlayerPrefab != null) Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
-            }
-            else
-            {
-                Debug.Log($"{gameObject.name} HIT Obstacle: {hit.collider.name} at {hit.point}");
-                if (BulletImpactObstaclePrefab != null) Instantiate(BulletImpactObstaclePrefab, hit.point, Quaternion.LookRotation(hit.normal));
             }
         }
         else

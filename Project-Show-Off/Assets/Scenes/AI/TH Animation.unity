@@ -2556,16 +2556,16 @@ MonoBehaviour:
   GunMuzzleTransform: {fileID: 1007718771}
   EyeLevelTransform: {fileID: 140746476}
   GizmoToggles:
-    ShowVisionCone: 0
+    ShowVisionCone: 1
     ShowAuditoryRange: 0
-    ShowShootingRange: 0
+    ShowShootingRange: 1
     ShowMeleeRange: 0
     ShowSuperpositionRange: 0
-    ShowVolumetricLoSLines: 0
-    ShowDetectionProgressBar: 0
-    ShowLastKnownPlayerPosition: 0
-    ShowCurrentAimTarget: 0
-    ShowWaterLevelAndSubmergence: 0
+    ShowVolumetricLoSLines: 1
+    ShowDetectionProgressBar: 1
+    ShowLastKnownPlayerPosition: 1
+    ShowCurrentAimTarget: 1
+    ShowWaterLevelAndSubmergence: 1
   MuzzleFlashPrefab: {fileID: 0}
   BulletImpactPlayerPrefab: {fileID: 0}
   BulletImpactObstaclePrefab: {fileID: 0}
@@ -2589,7 +2589,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1866068003}
-  - {fileID: 1722734578}
   - {fileID: 140746476}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3672,7 +3671,10 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 4bff84f50873f784c912be3f38b2e5d2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -3941191186800394412, guid: 296407453589cb743aa506b9e3bc2b21, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1722734578}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 296407453589cb743aa506b9e3bc2b21, type: 3}
 --- !u!1 &1462985497
@@ -3890,6 +3892,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6818528467926079778, guid: b38f40ba8922942e09b962a94b877f89, type: 3}
   m_PrefabInstance: {fileID: 1013918396}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1583026434 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3941191186800394412, guid: 296407453589cb743aa506b9e3bc2b21, type: 3}
+  m_PrefabInstance: {fileID: 1451135646}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1598540422 stripped
 Transform:
@@ -4176,9 +4183,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1722734577}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.684465, z: -0, w: 0.72904575}
-  m_LocalPosition: {x: 0.582, y: 0.161, z: 0.221}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: 0.12115834, y: 0.50473535, z: -0.26433218, w: 0.81282926}
+  m_LocalPosition: {x: 115.12105, y: -171.67532, z: 83.88505}
+  m_LocalScale: {x: 100, y: 149.99997, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2133211942}
@@ -4189,7 +4196,7 @@ Transform:
   - {fileID: 847750848}
   - {fileID: 2053761696}
   - {fileID: 1036769174}
-  m_Father: {fileID: 957228306}
+  m_Father: {fileID: 1583026434}
   m_LocalEulerAnglesHint: {x: 0, y: 86.387, z: 0}
 --- !u!1 &1803086306
 GameObject:

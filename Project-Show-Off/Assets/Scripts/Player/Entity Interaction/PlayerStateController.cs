@@ -6,19 +6,19 @@ public class PlayerStateController : MonoBehaviour
     private PlayerInput controls;
     private PlayerStatus playerStatus;
 
-    // --- REMOVED THE FOLLOWING VARIABLES ---
-    /*    private bool isHoldingLantern = false;
-        [NonSerialized] public float lanternTimeCounter = 0;
-        [NonSerialized] public bool countLanternTime = false;*/
-
     [Header("Speed Modifiers")]
     [Tooltip("How much speed is reduced when Hemanneken is attached (e.g., 0.1 for 10% reduction).")]
-    [SerializeField] private float hemannekenSpeedDecrease = 0.1f; // Renamed for clarity
+    [SerializeField] private float hemannekenSpeedDecrease = 0.1f;
     [Tooltip("How much speed is reduced when underwater (e.g., 0.4 for 40% reduction).")]
     [SerializeField] private float waterSpeedDecrease = 0.4f;
 
     [NonSerialized] private PlayerMovement playerMovement;
-    private float finalSpeedModifier = 1f;
+
+    // --- NEW: State flags for robust calculation ---
+    private bool isHemannekenAttached = false;
+    private bool isSubmerged = false;
+    private bool isAdrenalineActive = false;
+    private float adrenalineSpeedBoostValue = 0f;
 
     private void Awake()
     {
@@ -29,7 +29,6 @@ public class PlayerStateController : MonoBehaviour
         }
         controls = new PlayerInput();
 
-        // --- GET THE COMPONENT ---
         playerStatus = GetComponent<PlayerStatus>();
         if (playerStatus == null)
         {
@@ -40,8 +39,8 @@ public class PlayerStateController : MonoBehaviour
     private void OnEnable()
     {
         controls.Enable();
-        HemannekenEventBus.OnHemannekenAttached += HandleHemAttached; // Renamed handler
-        HemannekenEventBus.OnHemannekenDetached += HandleHemDetached; // Renamed handler
+        HemannekenEventBus.OnHemannekenAttached += HandleHemAttached;
+        HemannekenEventBus.OnHemannekenDetached += HandleHemDetached;
         WaterEventBus.OnPlayerSubmerge += HandlePlayerSubmerge;
         WaterEventBus.OnPlayerEmerge += HandlePlayerEmerge;
     }
@@ -55,64 +54,69 @@ public class PlayerStateController : MonoBehaviour
         WaterEventBus.OnPlayerEmerge -= HandlePlayerEmerge;
     }
 
-    // --- THE UPDATE METHOD IS NOW EMPTY, WHICH IS FINE ---
     private void Update()
     {
-/*        if (controls.Player.RaiseLantern.WasPressedThisFrame())
-        {
-            isHoldingLantern = true;
-        }
-        else if (controls.Player.RaiseLantern.WasReleasedThisFrame())
-        {
-            isHoldingLantern = false;
-        }
-
-        if (playerStatus != null) playerStatus.IsLanternOn = isHoldingLantern;
-
-        if (isHoldingLantern && countLanternTime)
-        {
-            lanternTimeCounter += Time.deltaTime;
-        }
-        else
-        {
-            lanternTimeCounter = 0;
-        }*/
+        // The Update method is now empty, which is fine
     }
 
-    private void UpdatePlayerSpeed()
+    /// <summary>
+    /// Called by PlayerHealth to enable/disable the speed boost from adrenaline.
+    /// </summary>
+    public void SetAdrenalineBoost(float boostValue, bool isActive)
     {
-        if (playerMovement != null)
+        isAdrenalineActive = isActive;
+        adrenalineSpeedBoostValue = boostValue;
+        RecalculateAndApplySpeed();
+    }
+
+    /// <summary>
+    /// REFACTORED: Recalculates the final speed modifier from scratch based on current states.
+    /// This is more robust than adding/subtracting values.
+    /// </summary>
+    private void RecalculateAndApplySpeed()
+    {
+        if (playerMovement == null) return;
+
+        float finalSpeedModifier = 1f; // Start at 100%
+
+        if (isHemannekenAttached)
         {
-            playerMovement.speedModifier = finalSpeedModifier;
-            // Debug.Log($"Player speed modifier updated to: {finalSpeedModifier}");
+            finalSpeedModifier -= hemannekenSpeedDecrease;
         }
+        if (isSubmerged)
+        {
+            finalSpeedModifier -= waterSpeedDecrease;
+        }
+        if (isAdrenalineActive)
+        {
+            finalSpeedModifier += adrenalineSpeedBoostValue;
+        }
+
+        // Ensure speed doesn't become negative
+        playerMovement.speedModifier = Mathf.Max(0, finalSpeedModifier);
     }
 
-    private void HandleHemAttached() // Renamed
+    private void HandleHemAttached()
     {
-        //Debug.Log("PSC: Hemanneken Attached - Speed Decreased");
-        finalSpeedModifier -= hemannekenSpeedDecrease;
-        UpdatePlayerSpeed();
+        isHemannekenAttached = true;
+        RecalculateAndApplySpeed();
     }
 
-    private void HandleHemDetached() // Renamed
+    private void HandleHemDetached()
     {
-        //Debug.Log("PSC: Hemanneken Detached - Speed Restored");
-        finalSpeedModifier += hemannekenSpeedDecrease;
-        UpdatePlayerSpeed();
+        isHemannekenAttached = false;
+        RecalculateAndApplySpeed();
     }
 
     private void HandlePlayerSubmerge()
     {
-        //Debug.Log("PSC: Player Submerged - Speed Decreased");
-        finalSpeedModifier -= waterSpeedDecrease;
-        UpdatePlayerSpeed();
+        isSubmerged = true;
+        RecalculateAndApplySpeed();
     }
 
     private void HandlePlayerEmerge()
     {
-        //Debug.Log("PSC: Player Emerged - Speed Restored");
-        finalSpeedModifier += waterSpeedDecrease;
-        UpdatePlayerSpeed();
+        isSubmerged = false;
+        RecalculateAndApplySpeed();
     }
 }
