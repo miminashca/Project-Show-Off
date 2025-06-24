@@ -114,7 +114,8 @@ public class HemannekenVisuals : MonoBehaviour
         UnityEngine.Rendering.HighDefinition.Vignette tmp;
         postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
         tmp.active = true;
-        tmp.intensity.Override(1f);
+        tmp.intensity.Override(.5f);
+        tmp.smoothness.Override(.4f);
 
 
         /*
@@ -128,13 +129,10 @@ public class HemannekenVisuals : MonoBehaviour
     }
     public void DisableVignette()
     {
-        /*
-        if(vignette != null)
-        {
-            vignette.enabled.Override(false);
-            Debug.Log("HemannekenVisuals: Vignette disabled");
-        }
-        */
+        UnityEngine.Rendering.HighDefinition.Vignette tmp;
+        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
+        tmp.active = false;
+        tmp.intensity.Override(0f);
     }
     //end
     private void OnDestroy()
