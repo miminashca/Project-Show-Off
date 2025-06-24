@@ -39,6 +39,8 @@ public class NixieAI : MonoBehaviour
     public float DistanceToPlayer { get; private set; }
     public Vector3 PlayerLastKnownPosition { get; set; }
 
+    private float tensionTimer;
+
     public float CurrentDetectionRadius
     {
         get
@@ -92,18 +94,35 @@ public class NixieAI : MonoBehaviour
         if (PlayerTransform == null) return;
 
         DistanceToPlayer = Vector3.Distance(transform.position, PlayerTransform.position);
+
+        if (IsPlayerInMyZone && !PlayerStatus.IsLanternOn &&
+            StateMachine.CurrentState != StateMachine.ChasingState &&
+            StateMachine.CurrentState != StateMachine.StaringState)
+        {
+            tensionTimer += Time.deltaTime;
+            if (tensionTimer >= MaxTensionDuration)
+            {
+                Debug.Log("Tension timer expired! Nixie has found the player.");
+                // Force a transition to Chasing state, bypassing normal checks
+                StateMachine.TransitToState(StateMachine.ChasingState);
+                tensionTimer = 0f; // Reset the timer
+            }
+        }
+        else
+        {
+            // Reset the timer if the condition is not met (player leaves, turns on lantern, etc.)
+            tensionTimer = 0f;
+        }
     }
 
     private void HandlePlayerShout(Vector3 shoutPosition)
     {
+        // The event sends the shout position, so we must accept the parameter,
+        // even if our current logic only checks the distance.
         if (DistanceToPlayer <= StaringRadius)
         {
             Debug.Log("Nixie was stunned by a shout!");
-            // --- FIX --- The stun should happen if it's staring OR chasing within the radius.
-            if (StateMachine.CurrentState == StateMachine.StaringState || StateMachine.CurrentState == StateMachine.ChasingState)
-            {
-                StateMachine.TransitToState(StateMachine.StuntedState);
-            }
+            StateMachine.TransitToState(StateMachine.StuntedState);
         }
     }
 

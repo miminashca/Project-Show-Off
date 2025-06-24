@@ -92,6 +92,6 @@ public class WaterSensor : MonoBehaviour
 
     public float GetTimeUnderwater()
     {
-        return timeUnderwater; 
+        return timeUnderwater;
     }
 }
