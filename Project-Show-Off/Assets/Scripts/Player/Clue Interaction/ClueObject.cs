@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ClueObject : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public class ClueObject : MonoBehaviour
     private Renderer objectRenderer;
     private Color originalColor;
     [SerializeField] private Color highlightColor = new Color(1f, 1f, 0.5f, 1f); // A light yellow
+
+    [SerializeField] private FirefliesVfxController fireflies;
 
     void Awake()
     {
@@ -105,6 +108,8 @@ public class ClueObject : MonoBehaviour
 
     private void OnDestroy()
     {
+        if(fireflies) fireflies.TurnOff();
+        
         if (ClueEventManager.Instance != null)
         {
             ClueEventManager.Instance.OnGameDataLoaded -= CheckStatusOnLoad;
