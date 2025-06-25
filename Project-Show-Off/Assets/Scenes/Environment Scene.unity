@@ -18256,11 +18256,11 @@ MonoBehaviour:
     Path: event:/Enemies/Thimble Hunter/Voice Lines/Seeking Mumbles
   chaseYellSound:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 1858992669
+      Data2: 1159720964
+      Data3: 556815021
+      Data4: -2100356666
+    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH Curse
   focusGruntSound:
     Guid:
       Data1: 0
@@ -18297,8 +18297,8 @@ MonoBehaviour:
       Data4: 0
     Path: 
   poemMonologueEmitter: {fileID: 0}
-  minIdleGruntInterval: 6
-  maxIdleGruntInterval: 12
+  minIdleGruntInterval: 20
+  maxIdleGruntInterval: 40
 --- !u!1 &543799869
 GameObject:
   m_ObjectHideFlags: 0
@@ -21004,6 +21004,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1570249227119625800, guid: e3c60d63daf076f4aa9d2d2ac7e38a0e, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2038862613737604529, guid: e3c60d63daf076f4aa9d2d2ac7e38a0e, type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3380353845864964169, guid: e3c60d63daf076f4aa9d2d2ac7e38a0e, type: 3}
@@ -52308,6 +52312,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1356360969041273350, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3663939426246837843, guid: d3001c0a3c973d04ca2653a3333c10f4, type: 3}
       propertyPath: 'RoamingNodes.Array.data[0]'
       value: 

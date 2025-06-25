@@ -25,11 +25,23 @@ public class HunterChasingState : State
 
         _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedChasing);
 
-        // Don't play the spotted sound repeatedly if we are just coming back from aiming/suppressing
+        // This logic prevents the sound from playing repeatedly if we are just cycling
+        // between Chasing and Aiming/Suppressing. The yell should only happen once
+        // at the start of the encounter.
         if (SM.PreviousState is not HunterAimingState and not HunterSuppressingState)
         {
             HunterEventBus.HunterSpottedPlayer(_hunterAI.PlayerTransform.gameObject);
-            _hunterAI.PlaySound(_hunterAI.SpottedPlayerSound);
+
+            // We comment out the old sound system call...
+            // _hunterAI.PlaySound(_hunterAI.SpottedPlayerSound);
+
+            // NEW FMOD CHANGE
+            // ...and replace it with our new FMOD event call.
+            if (_hunterAI.SoundController != null)
+            {
+                _hunterAI.SoundController.PlayChaseYell();
+            }
+            // END FMOD CHANGE
         }
 
         timeSinceLostSight = 0f; // Reset the grace period timer
@@ -45,12 +57,8 @@ public class HunterChasingState : State
         }
 
         // --- Core Logic Reordering ---
-
-        // ALWAYS update the destination to the player's last known position.
-        // This is crucial. If we lose sight, we'll still head to where they *were*.
         _hunterAI.NavAgent.SetDestination(_hunterAI.LastKnownPlayerPosition);
 
-        // If we can still see the player, update their Last Known Position and reset the timer.
         if (_hunterAI.IsPlayerFullySpotted)
         {
             _hunterAI.LastKnownPlayerPosition = _hunterAI.PlayerTransform.position;
@@ -58,7 +66,6 @@ public class HunterChasingState : State
         }
         else
         {
-            // If we've lost sight, start the grace period timer.
             timeSinceLostSight += Time.deltaTime;
         }
 
@@ -66,7 +73,7 @@ public class HunterChasingState : State
 
         // --- Transition Checks (in new priority order) ---
 
-        // 1. To MELEE: Highest priority. Player is too close.
+        // 1. To MELEE (or point-blank shot)
         if (distanceToLKP <= _hunterAI.MeleeRange)
         {
             Debug.LogWarning($"{_hunterAI.gameObject.name} Player IN MELEE RANGE. Transitioning to Aiming for a point-blank shot.");
@@ -74,20 +81,15 @@ public class HunterChasingState : State
             return;
         }
 
-        // 2. To AIMING: The MOST IMPORTANT CHANGE IS HERE.
-        // We check if we are in shooting range of the LAST KNOWN POSITION.
-        // We DON'T require IsPlayerFullySpotted to be true right now. This gives AimingState a chance.
+        // 2. To AIMING
         if (_hunterAI.AimAttemptCooldownTimer <= 0f && distanceToLKP <= _hunterAI.ShootingRange)
         {
-            // Let the Aiming state figure out if the player is actually visible or behind cover.
-            // This is the key to enabling the Suppressing state.
             Debug.Log($"{_hunterAI.gameObject.name}: In range of LKP. Transitioning to Aiming to assess the situation.");
             SM.TransitToState(_hunterSM.AimingState);
             return;
         }
 
-        // 3. To INVESTIGATING: The fallback condition.
-        // This only happens if we are OUTSIDE shooting range and the grace period has expired.
+        // 3. To INVESTIGATING
         if (timeSinceLostSight > GRACE_PERIOD_BEFORE_INVESTIGATING)
         {
             Debug.Log($"{_hunterAI.gameObject.name} lost sight of player for more than grace period. Transitioning to Investigate.");
