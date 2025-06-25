@@ -7662,7 +7662,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29601,9 +29601,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 149688687}
     m_Modifications:
+    - target: {fileID: 1449583495646516237, guid: 5474b08b5b3dca94c9193331aacf528a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1721050839635248265, guid: 5474b08b5b3dca94c9193331aacf528a, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3431066685558022548, guid: 5474b08b5b3dca94c9193331aacf528a, type: 3}
       propertyPath: m_Name
@@ -29703,7 +29707,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6175910609523027582, guid: 5474b08b5b3dca94c9193331aacf528a, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8260665296840301231, guid: 5474b08b5b3dca94c9193331aacf528a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
