@@ -519,4 +519,15 @@ public class PlayerMovement : MonoBehaviour
 
     public float CurrentStamina => currentStamina;
     public float MaxStamina => maxStamina;
+    
+    public void SetStamina(float amount)
+    {
+        // Clamp the value to be within valid range
+        currentStamina = Mathf.Clamp(amount, 0f, maxStamina);
+    
+        // You might want to reset stamina-related flags here too, if necessary
+        isSprinting = false; 
+        timeSinceStoppedSprinting = staminaRegenDelay; // Ensures regen can start if not maxed
+    }
+    
 }

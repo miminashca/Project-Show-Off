@@ -36,7 +36,7 @@ public class ClueCounterUI : MonoBehaviour
 
         if (InspectionManager.Instance != null)
         {
-            InspectionManager.Instance.OnClueCollected += UpdateClueCounter;
+            ClueEventManager.Instance.OnClueCollectedAmount += UpdateClueCounter;
         }
 
         UpdateClueCounter(0);
@@ -46,7 +46,7 @@ public class ClueCounterUI : MonoBehaviour
     {
         if (InspectionManager.Instance != null)
         {
-            InspectionManager.Instance.OnClueCollected -= UpdateClueCounter;
+            ClueEventManager.Instance.OnClueCollectedAmount -= UpdateClueCounter;
         }
     }
 
