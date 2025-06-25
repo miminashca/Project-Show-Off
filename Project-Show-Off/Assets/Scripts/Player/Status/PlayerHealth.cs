@@ -210,4 +210,16 @@ public class PlayerHealth : MonoBehaviour
         // You might also want to disable the camera controller script here.
         this.enabled = false;
     }
+    
+    public void SetWoundLevel(int level)
+    {
+        currentWoundLevel = Mathf.Clamp(level, 0, maxWoundLevel);
+
+        // This is crucial to update UI and other game logic that listens for this event.
+        OnWoundLevelChanged?.Invoke(currentWoundLevel, maxWoundLevel);
+    
+        // Reset timers to a neutral state
+        regenerationTimer = timeToRegenerateOneLevel;
+        adrenalineTimer = 0f;
+    }
 }

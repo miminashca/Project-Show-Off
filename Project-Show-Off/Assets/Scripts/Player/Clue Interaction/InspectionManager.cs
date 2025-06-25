@@ -48,11 +48,7 @@ public class InspectionManager : MonoBehaviour
     private bool isInspecting = false;
     private Vector3 previousMousePosition;
     private bool isRotatingObject = false;
-
-    //new code below
-    public event System.Action<int> OnClueCollected;
-    private int clueCount = 0;
-    //end of new code
+    
     void Awake()
     {
         if (Instance == null)
@@ -347,11 +343,6 @@ public class InspectionManager : MonoBehaviour
 
         Debug.Log($"Collecting {currentClueData.clueName}");
         currentClueData.OnCollected();
-
-        //new code below
-        clueCount++;
-        OnClueCollected?.Invoke(clueCount);
-        //end of new code
 
         currentInspectedObject = null;
         currentClueData = null;

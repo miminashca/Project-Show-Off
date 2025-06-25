@@ -635,4 +635,41 @@ public class LanternController : MonoBehaviour
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
         }
     }
+    
+    public void ApplyLoadedFuel(float fuelAmount)
+    {
+        currentFuel = Mathf.Clamp(fuelAmount, 0f, maxFuel);
+    
+        // Update the state based on the new fuel level
+        outOfFuel = (currentFuel <= 0);
+    
+        // Notify the UI or other listeners about the change
+        OnFuelChanged?.Invoke(currentFuel, maxFuel);
+
+        // If the lantern is supposed to be on, update its visuals and sounds
+        if (isEquipped)
+        {
+            if (outOfFuel)
+            {
+                // If we loaded and are now out of fuel, turn everything off
+                if (lanternLight != null) SetLightState(false);
+                if (lanternVFXGraph != null) lanternVFXGraph.Stop();
+                if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(false);
+                StopGasBurnLoopSFX();
+            }
+            else
+            {
+                // If we have fuel, ensure light, VFX, and sound are correct for the current state (raised/lowered)
+                SetLightState(true, isRaised ? raisedIntensity : defaultIntensity, isRaised ? raisedRange : defaultRange);
+            
+                if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(true);
+                if (lanternVFXGraph != null)
+                {
+                    lanternVFXGraph.Play();
+                    lanternVFXGraph.SetVector2(flameSizeRangePropertyName, isRaised ? raisedFlameSize : defaultFlameSize);
+                }
+                StartGasBurnLoop(); // This method already checks if it's running
+            }
+        }
+    }
 }

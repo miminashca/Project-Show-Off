@@ -14,14 +14,26 @@ public class ClueReceiver : MonoBehaviour
     {
         clueGhost = Instantiate(clueGhostPrefab, this.transform);
         clueNormal = Instantiate(clueNormalPrefab, this.transform);
-        clueNormal.SetActive(false);
 
-        ClueEventManager.Instance.OnClueSubmitted += SwapClueGhost;
+        ClueEventManager.Instance.OnClueSubmittedWithId += SwapClueGhost;
+        
+        if (ClueEventManager.Instance.IsClueSubmitted(clueID))
+        {
+            // This clue was already submitted in the loaded save data.
+            // Immediately set the correct visual state.
+            SwapClueGhost(clueID);
+        }
+        else
+        {
+            // Clue is not yet submitted, show the ghost.
+            clueGhost.SetActive(true);
+            clueNormal.SetActive(false);
+        }
     }
 
     private void OnDestroy()
     {
-        ClueEventManager.Instance.OnClueSubmitted -= SwapClueGhost;
+        ClueEventManager.Instance.OnClueSubmittedWithId -= SwapClueGhost;
     }
 
     public void SubmitClue()
