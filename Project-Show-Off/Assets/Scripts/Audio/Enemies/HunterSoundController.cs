@@ -27,6 +27,11 @@ public class HunterSoundController : MonoBehaviour
     // Option 2: Or manage instance manually (more code, but sometimes more control)
     // private FMOD.Studio.EventInstance _poemMonologueInstance;
 
+    // NEW FMOD CHANGE
+    // --- Instance variable to hold our controllable sound ---
+    private FMOD.Studio.EventInstance _investigativeGruntInstance;
+    // END FMOD CHANGE
+
     // --- Idle Grunt Logic ---
     [Header("Idle Grunt Settings")]
     [SerializeField] private float minIdleGruntInterval = 6f;
@@ -144,13 +149,34 @@ public class HunterSoundController : MonoBehaviour
 
     public void PlayInvestigativeGrunt()
     {
+        // Stop the previous instance if it's somehow still playing.
+        StopInvestigativeGrunt();
+
         if (!investigativeGruntSound.IsNull)
         {
-            RuntimeManager.PlayOneShotAttached(investigativeGruntSound, gameObject);
-            // Consider if idle grunts should stop/pause during investigation
-            // StopIdleGrunts();
+            // Create the instance but don't play it yet
+            _investigativeGruntInstance = RuntimeManager.CreateInstance(investigativeGruntSound);
+            // Attach it to the Hunter GameObject for 3D positioning
+            RuntimeManager.AttachInstanceToGameObject(_investigativeGruntInstance, gameObject);
+            // Start the sound
+            _investigativeGruntInstance.start();
+            // Release the instance. This is crucial! It tells FMOD to automatically
+            // clean up the memory once the sound finishes playing or is stopped.
+            _investigativeGruntInstance.release();
         }
     }
+
+    // This is our new method to stop the sound prematurely.
+    public void StopInvestigativeGrunt()
+    {
+        // Check if the instance is valid (i.e., it exists and hasn't been fully destroyed)
+        if (_investigativeGruntInstance.isValid())
+        {
+            // Stop the sound immediately, without any fade out.
+            _investigativeGruntInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+        }
+    }
+    // END FMOD CHANGE
 
     public void PlayChaseYell()
     {
