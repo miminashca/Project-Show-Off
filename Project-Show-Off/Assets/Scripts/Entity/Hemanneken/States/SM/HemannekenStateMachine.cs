@@ -2,18 +2,19 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(PlayerSensor), typeof(AgentMovement), typeof(HemannekenVisuals))]
+[RequireComponent(typeof(HemannekenPlayerSensor), typeof(AgentMovement), typeof(HemannekenVisuals))]
 public class HemannekenStateMachine : StateMachine
 {
     [Header("Configuration")]
     [SerializeField] public HemannekenAIConfig aiConfig; // Assign in Inspector
 
     // Public references for States (Context)
-    public PlayerSensor Sensor { get; private set; }
+    public HemannekenPlayerSensor Sensor { get; private set; }
     public AgentMovement Movement { get; private set; }
     public HemannekenVisuals Visuals { get; private set; }
     public PlayerStateController Interactor { get; private set; }
     public LanternController PlayerLanternController { get; private set; }
+    public PlayerHealth PlayerHealth { get; private set; }
 
     // Internal state properties, managed by this SM or its components
     public bool IsInitiallyTrueForm { get; set; } // Set by HemannekenManager on spawn
@@ -34,8 +35,16 @@ public class HemannekenStateMachine : StateMachine
         }
 
         PlayerLanternController = FindAnyObjectByType<LanternController>();
+        PlayerHealth = FindAnyObjectByType<PlayerHealth>();
 
-        Sensor = GetComponent<PlayerSensor>();
+        if (PlayerHealth == null)
+        {
+            Debug.LogError("HemannekenStateMachine could not find the PlayerHealth component in the scene!", this);
+            enabled = false;
+            return;
+        }
+
+        Sensor = GetComponent<HemannekenPlayerSensor>();
         Movement = GetComponent<AgentMovement>();
         Visuals = GetComponent<HemannekenVisuals>();
         Interactor = FindFirstObjectByType<PlayerStateController>();
@@ -43,24 +52,20 @@ public class HemannekenStateMachine : StateMachine
         if (Sensor == null) Debug.LogError("PlayerSensor not found!", this);
         else Sensor.Initialize(aiConfig, this.transform);
 
-        // Find SpawnPointsManager - ensure this logic correctly finds your SpawnPointsManager
         SpawnPoint parentSpawnPoint = GetComponentInParent<SpawnPoint>();
-        // Option 2: If SPManager is globally findable (less ideal but works)
-        // if (spManager == null) spManager = FindFirstObjectByType<SpawnPointsManager>();
-    
         if (parentSpawnPoint == null) Debug.LogWarning("SpawnPoint parent not found for AgentMovement initialization.", this);
 
         Visuals.Initialize();
     }
 
-    private void Start()
+    protected override void Start()
     {
-        //Debug.Log(IsInitiallyTrueForm);
+        //Debug.Log(IsInitiallyTrueForm);  
         Visuals.SetForm(IsInitiallyTrueForm, transform);
 
         aiConfig.defaultRoamOnGround = !IsInitiallyTrueForm;
         Movement.InitializeFromConfig();
-        
+
         base.Start();
     }
 
@@ -147,4 +152,5 @@ public class HemannekenStateMachine : StateMachine
     {
         Destroy(gameObject, delay);
     }
+
 }

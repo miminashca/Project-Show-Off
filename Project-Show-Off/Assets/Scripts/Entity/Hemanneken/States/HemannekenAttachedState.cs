@@ -25,9 +25,8 @@ public class HemannekenAttachedState : State
         HSM.PerformAttachmentToPlayer();
         HemannekenEventBus.AttachHemanneken();
         HSM.Visuals.PlayReplyHeySound();
-        //new vignett code
         HSM.Visuals.EnableVignette();
-        //end
+        HSM.PlayerHealth.IncrementAttachedHemannekens();
     }
 
     public override void Handle()
@@ -51,9 +50,8 @@ public class HemannekenAttachedState : State
 
         HSM.PerformDetachmentFromPlayer();
         HemannekenEventBus.DetachHemanneken();
-        //new vignett code
         HSM.Visuals.DisableVignette();
-        //end
+        HSM.PlayerHealth.DecrementAttachedHemannekens();
     }
     
     private bool CanBeStunnedByLantern()

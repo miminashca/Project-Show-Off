@@ -50,7 +50,7 @@ public class HemannekenVisuals : MonoBehaviour
     private bool _isStunBehaviorActive = false; // Flag to control the stun coroutine's loops
 
     private GameObject _currentModelInstance;
-    private PlayerSensor _playerSensor; // To get player's transform
+    private HemannekenPlayerSensor _playerSensor; // To get player's transform
     private HemannekenSoundController _soundController; // NEW FMOD
     public bool IsTrueForm { get; private set; }
 
@@ -65,7 +65,7 @@ public class HemannekenVisuals : MonoBehaviour
     {
         postProcessingVolume = GameObject.FindGameObjectWithTag("Volume").GetComponent<UnityEngine.Rendering.Volume>();
 
-           _playerSensor = GetComponent<PlayerSensor>();
+           _playerSensor = GetComponent<HemannekenPlayerSensor>();
         if (_playerSensor == null)
         {
             Debug.LogWarning("HemannekenVisuals: PlayerSensor component not found. Some behaviors might not work as expected.", this);

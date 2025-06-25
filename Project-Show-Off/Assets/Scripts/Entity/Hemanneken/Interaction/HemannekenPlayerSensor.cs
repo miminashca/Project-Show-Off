@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class PlayerSensor : MonoBehaviour
+public class HemannekenPlayerSensor : MonoBehaviour
 {
     public Transform PlayerTransform { get; private set; }
     public Vector3 PlayerLastKnownPosition;

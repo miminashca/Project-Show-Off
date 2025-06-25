@@ -20,6 +20,12 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float adrenalineSpeedBoost = 0.5f;
     private float adrenalineTimer = 0f;
 
+    [Header("Choking by Hemanneken")]
+    [Tooltip("The base time in seconds the player can survive while being choked by one Hemanneken.")]
+    [SerializeField] private float timeToChoke = 10f;
+    private int numberOfHemannekensAttached = 0;
+    private float chokeTimer;
+
     // --- Component References ---
     private PlayerMovement playerMovement;
     private PlayerStateController playerStateController;
@@ -27,6 +33,7 @@ public class PlayerHealth : MonoBehaviour
 
     // --- Events for UI/GameManager ---
     public static event Action<int, int> OnWoundLevelChanged; // Sends Current, Max
+    public static event Action<float, float> OnChokeTimerChanged;
     public static event Action OnPlayerDied;
 
     public int CurrentWoundLevel => currentWoundLevel;
@@ -58,6 +65,7 @@ public class PlayerHealth : MonoBehaviour
     {
         HandleRegeneration();
         HandleAdrenalineRush();
+        HandleChoking();
     }
 
     /// <summary>
@@ -83,6 +91,26 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    private void HandleChoking()
+    {
+        // Only run the timer if at least one Hemanneken is attached.
+        if (numberOfHemannekensAttached > 0)
+        {
+            // The timer drains faster for each Hemanneken attached.
+            // e.g., 2 attached drains the timer twice as fast.
+            chokeTimer -= Time.deltaTime * numberOfHemannekensAttached;
+
+            // Notify any UI elements about the timer's progress.
+            OnChokeTimerChanged?.Invoke(chokeTimer, timeToChoke);
+
+            if (chokeTimer <= 0)
+            {
+                Debug.Log("Player has been choked to death by Hemanneken!");
+                Die();
+            }
+        }
+    }
+
     private void HandleRegeneration()
     {
         // Only regenerate if the player is wounded and not currently in an adrenaline rush
@@ -104,16 +132,6 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void ActivateAdrenalineRush()
-    {
-        Debug.Log("ADRENALINE RUSH ACTIVATED!");
-        adrenalineTimer = adrenalineDuration;
-
-        // Let the other components know the rush has started
-        playerStateController.SetAdrenalineBoost(adrenalineSpeedBoost, true);
-        playerMovement.HasInfiniteStamina = true;
-    }
-
     private void HandleAdrenalineRush()
     {
         if (adrenalineTimer > 0)
@@ -133,6 +151,50 @@ public class PlayerHealth : MonoBehaviour
                     regenerationTimer = timeToRegenerateOneLevel;
                 }
             }
+        }
+    }
+
+    private void ActivateAdrenalineRush()
+    {
+        Debug.Log("ADRENALINE RUSH ACTIVATED!");
+        adrenalineTimer = adrenalineDuration;
+
+        // Let the other components know the rush has started
+        playerStateController.SetAdrenalineBoost(adrenalineSpeedBoost, true);
+        playerMovement.HasInfiniteStamina = true;
+    }
+
+    /// <summary>
+    /// Called by a Hemanneken when it enters its AttachedState.
+    /// </summary>
+    public void IncrementAttachedHemannekens()
+    {
+        if (numberOfHemannekensAttached == 0)
+        {
+            // This is the first one, start the timer from its max value.
+            chokeTimer = timeToChoke;
+        }
+        numberOfHemannekensAttached++;
+        Debug.Log($"Hemanneken attached. Total: {numberOfHemannekensAttached}. Choke timer started/sped up.");
+    }
+
+    /// <summary>
+    /// Called by a Hemanneken when it exits its AttachedState (by dying or detaching).
+    /// </summary>
+    public void DecrementAttachedHemannekens()
+    {
+        numberOfHemannekensAttached--;
+        if (numberOfHemannekensAttached < 0) numberOfHemannekensAttached = 0;
+
+        if (numberOfHemannekensAttached == 0)
+        {
+            Debug.Log("Last Hemanneken detached. Choke timer stopped.");
+            // Stop the timer and notify UI it's gone.
+            OnChokeTimerChanged?.Invoke(timeToChoke, timeToChoke);
+        }
+        else
+        {
+            Debug.Log($"Hemanneken detached. Remaining: {numberOfHemannekensAttached}.");
         }
     }
 
