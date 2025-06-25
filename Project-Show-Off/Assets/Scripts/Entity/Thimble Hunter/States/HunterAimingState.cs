@@ -47,7 +47,16 @@ public class HunterAimingState : State
         swayOffsetX = Random.Range(0f, 100f);
         swayOffsetY = Random.Range(0f, 100f);
 
-        _hunterAI.PlaySound(_hunterAI.StartAimingSound);
+        // This line uses the old system. We will replace it.
+        // _hunterAI.PlaySound(_hunterAI.StartAimingSound); 
+
+        // NEW FMOD CHANGE
+        // Play the FMOD gun cock sound when entering the aiming state.
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.PlayGunCockSound();
+        }
+        // END FMOD CHANGE
     }
 
     public override void Handle()
@@ -95,9 +104,6 @@ public class HunterAimingState : State
 
         _currentAimTime -= Time.deltaTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
-
-        // --- REMOVED REDUNDANT EXIT CHECK ---
-        // The logic below handles all exit cases correctly now.
 
         bool shouldTakeShot = false;
         if (currentShotConfidence >= _hunterAI.ShotConfidenceThreshold) shouldTakeShot = true;

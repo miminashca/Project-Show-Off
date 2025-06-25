@@ -29,12 +29,21 @@ public class HunterShootingState : State
         // Fire the gun immediately using the confirmed aim target
         _hunterAI.FireGun();
 
+        // NEW FMOD EVENT
+        // Play the FMOD gunfire sound using the sound controller
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.PlayGunFireSound();
+        }
+        // END FMOD EVENT
+
+
         // Start reload phase
         _isReloading = true;
         _currentReloadTime = _hunterAI.ReloadTime;
         _hunterAI.CurrentReloadTimer = _currentReloadTime;
         _hunterAI.HunterAnimator.SetTrigger("Reload");
-        _hunterAI.PlaySound(_hunterAI.ReloadSound);
+        _hunterAI.PlaySound(_hunterAI.ReloadSound); // Note: This is the old sound system call. You might want to update this to use your new controller too! For example: _hunterAI.SoundController.PlayGunCockSound();
     }
 
     public override void Handle()

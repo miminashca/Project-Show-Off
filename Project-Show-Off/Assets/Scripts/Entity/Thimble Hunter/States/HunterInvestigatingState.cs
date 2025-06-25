@@ -82,6 +82,15 @@ public class HunterInvestigatingState : State
                 _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
                 _hunterAI.HunterAnimator.SetBool("IsLookingAround", true);
                 _hunterAI.IsActivelyScanning = true;
+
+                // NEW FMOD CHANGE
+                // Play the investigative grunt sound now that the Hunter has arrived and is starting to search.
+                if (_hunterAI.SoundController != null)
+                {
+                    _hunterAI.SoundController.PlayInvestigativeGrunt();
+                }
+                // END FMOD CHANGE
+
                 StartNextLookSweep();
             }
 
@@ -160,5 +169,15 @@ public class HunterInvestigatingState : State
         if (_hunterAI == null) return;
         _hunterAI.CurrentInvestigationTimer = 0f;
         _hunterAI.IsActivelyScanning = false;
+
+        // NEW FMOD CHANGE
+        // When we leave this state for any reason (like spotting the player),
+        // we tell the sound controller to stop the investigative grunt immediately.
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.StopInvestigativeGrunt();
+        }
+        // END FMOD CHANGE
+
     }
 }
