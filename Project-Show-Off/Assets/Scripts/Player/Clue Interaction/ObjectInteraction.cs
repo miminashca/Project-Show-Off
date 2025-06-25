@@ -268,22 +268,33 @@ public class ObjectInteraction : MonoBehaviour
             else if (fuelPickUpPromptUI != null)
                 fuelPickUpPromptUI.SetActive(show);
         }
+        else if (currentClueReceiver != null)
+        {
+            if (offerPromptCanvasGroup != null)
+                FadeCanvasGroup(offerPromptCanvasGroup, show);
+            else if (offerPromptUI != null)
+                offerPromptUI.SetActive(show);
+        }
         else
         {
             if (interactionPromptCanvasGroup != null)
                 FadeCanvasGroup(interactionPromptCanvasGroup, false);
             if (fuelPickUpCanvasGroup != null)
                 FadeCanvasGroup(fuelPickUpCanvasGroup, false);
+            if (offerPromptCanvasGroup != null)
+                FadeCanvasGroup(offerPromptCanvasGroup, false);
 
             if (interactionPromptUI != null)
                 interactionPromptUI.SetActive(false);
             if (fuelPickUpPromptUI != null)
                 fuelPickUpPromptUI.SetActive(false);
+            if (offerPromptUI != null)
+                offerPromptUI.SetActive(false);
         }
         //end of new code
     }
 
-    //new code
+    //new code fade canvas logic
     private void FadeCanvasGroup(CanvasGroup canvasGroup, bool fadeIn)
     {
         if (fadeCoroutine != null)
