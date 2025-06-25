@@ -27,7 +27,6 @@ public class GameManager : MonoBehaviour
     private LanternController lanternController;
     private Transform playerTransform;
     private ClueEventManager clueManager;
-    private PlayerInput playerInput;
 
     void Awake()
     {
@@ -54,6 +53,7 @@ public class GameManager : MonoBehaviour
         ClueEventManager.Instance.OnClueCollected -= SaveGame;
         ClueEventManager.Instance.OnClueSubmitted -= SaveGame;
     }
+    
 
     // <<< NEW: This is the method that sets our state from the start menu >>>
     public void SetStartState(GameStartState state)
@@ -85,8 +85,16 @@ public class GameManager : MonoBehaviour
             yield break; // Stop the coroutine
         }
         
-        ClueEventManager.Instance.OnClueCollected += SaveGame;
-        ClueEventManager.Instance.OnClueSubmitted += SaveGame;
+        // Unsubscribe first to prevent double-subscription if the scene is ever reloaded
+        if (clueManager != null)
+        {
+            clueManager.OnClueCollected -= SaveGame;
+            clueManager.OnClueSubmitted -= SaveGame;
+        }
+
+        // Subscribe to the correct, unified events
+        clueManager.OnClueCollected += SaveGame;
+        clueManager.OnClueSubmitted += SaveGame;
         
         switch (startState)
         {
@@ -119,21 +127,21 @@ public class GameManager : MonoBehaviour
     }
     private void SetPlayerControl(bool isEnabled)
     {
-        // We find the playerInput here again because it's only available after the scene loads
-        if (playerInput == null)
-        {
-            playerInput = new PlayerInput();
-        }
+        // The player components themselves manage their own input instances.
+        // We just need to enable/disable the components.
+        if (playerMovement != null) playerMovement.enabled = isEnabled;
+    
+        // Find other input-driven components and enable/disable them too
+        var lantern = FindObjectOfType<LanternController>();
+        if (lantern != null) lantern.enabled = isEnabled;
+    
+        var playerController = FindObjectOfType<PlayerMovement>(); // Assuming you have a script like this
+        if (playerController != null) playerController.enabled = isEnabled;
+        
+        var cameraController = FindObjectOfType<CameraMovement>(); // Assuming you have a script like this
+        if (cameraController != null) cameraController.enabled = isEnabled;
 
-        if (playerInput != null)
-        {
-            if (isEnabled) playerInput.Enable();
-            else playerInput.Disable();
-        } 
-        else 
-        {
-            Debug.LogError("GameManager could not find PlayerInput component in the scene!");
-        }
+        Debug.Log($"Player controls set to: {isEnabled}");
     }
 
     public void SaveGame()
@@ -194,13 +202,12 @@ public class GameManager : MonoBehaviour
         playerMovement = FindObjectOfType<PlayerMovement>();
         lanternController = FindObjectOfType<LanternController>();
         clueManager = ClueEventManager.Instance; // Singleton is reliable
-        playerInput = new PlayerInput();
 
         if (playerHealth != null)
         {
             playerTransform = playerHealth.transform;
         }
 
-        return playerHealth != null && playerMovement != null && lanternController != null && playerTransform != null && clueManager != null && playerInput != null;
+        return playerHealth != null && playerMovement != null && lanternController != null && playerTransform != null && clueManager != null;
     }
 }

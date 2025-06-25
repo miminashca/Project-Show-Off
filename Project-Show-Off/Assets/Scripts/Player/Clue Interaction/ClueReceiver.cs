@@ -1,3 +1,4 @@
+// ClueReceiver.cs
 using System;
 using UnityEngine;
 
@@ -15,37 +16,74 @@ public class ClueReceiver : MonoBehaviour
         clueGhost = Instantiate(clueGhostPrefab, this.transform);
         clueNormal = Instantiate(clueNormalPrefab, this.transform);
 
-        ClueEventManager.Instance.OnClueSubmittedWithId += SwapClueGhost;
+        if (ClueEventManager.Instance != null)
+        {
+            // Subscribe to future submissions
+            ClueEventManager.Instance.OnClueSubmittedWithId += SetToSubmittedStateIfMatching;
+            // Subscribe to the data load event
+            ClueEventManager.Instance.OnGameDataLoaded += SetInitialState;
+        }
         
-        if (ClueEventManager.Instance.IsClueSubmitted(clueID))
+        // Check initial state on load
+        if (ClueEventManager.Instance != null && ClueEventManager.Instance.IsClueSubmitted(clueID))
         {
             // This clue was already submitted in the loaded save data.
             // Immediately set the correct visual state.
-            SwapClueGhost(clueID);
+            SetToSubmittedState();
         }
         else
         {
             // Clue is not yet submitted, show the ghost.
-            clueGhost.SetActive(true);
+            clueGhost.SetActive(false);
             clueNormal.SetActive(false);
         }
     }
 
     private void OnDestroy()
     {
-        ClueEventManager.Instance.OnClueSubmittedWithId -= SwapClueGhost;
+        // Unsubscribe safely
+        if (ClueEventManager.Instance != null)
+        {
+            ClueEventManager.Instance.OnClueSubmittedWithId -= SetToSubmittedStateIfMatching;
+            ClueEventManager.Instance.OnGameDataLoaded -= SetInitialState;
+        }
+    }
+    
+    // This method runs once after the game data is confirmed to be loaded.
+    private void SetInitialState()
+    {
+        if (ClueEventManager.Instance.IsClueSubmitted(clueID))
+        {
+            SetToSubmittedState();
+        }
+        else
+        {
+            // If not submitted, show the ghost.
+            clueGhost.SetActive(true);
+        }
     }
 
     public void SubmitClue()
     {
-        ClueEventManager.Instance.RegisterClueSubmit(clueID);
-    }
-
-    private void SwapClueGhost(string pClueId)
-    {
-        if(pClueId != clueID) return;
-        clueGhost.SetActive(false);
-        clueNormal.SetActive(true);
+        if (ClueEventManager.Instance != null)
+        {
+            ClueEventManager.Instance.RegisterClueSubmit(clueID);
+        }
     }
     
+    // Renamed from SwapClueGhost to be more descriptive and check the ID
+    private void SetToSubmittedStateIfMatching(string submittedClueId)
+    {
+        if(submittedClueId == clueID)
+        {
+            SetToSubmittedState();
+        }
+    }
+    
+    // A helper method to avoid duplicating code
+    private void SetToSubmittedState()
+    {
+        if (clueGhost != null) clueGhost.SetActive(false);
+        if (clueNormal != null) clueNormal.SetActive(true);
+    }
 }
