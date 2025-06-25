@@ -13,10 +13,14 @@ public class ObjectInteraction : MonoBehaviour
     [SerializeField] private GameObject interactionPromptUI;
     [SerializeField] private GameObject interactionDotUI;
     [SerializeField] private CanvasGroup interactionPromptCanvasGroup;
-    //new code
+    //new fuel code
     [SerializeField] private GameObject fuelPickUpPromptUI;
     [SerializeField] private CanvasGroup fuelPickUpCanvasGroup;
-    //end of new code
+    //end of fuel code
+    //new offer code
+    [SerializeField] private GameObject offerPromptUI;
+    [SerializeField] private CanvasGroup offerPromptCanvasGroup;
+    //end of offer code
 
     //new code
     [SerializeField] private float fadeDuration = 0.3f;
@@ -65,6 +69,11 @@ public class ObjectInteraction : MonoBehaviour
             fuelPickUpCanvasGroup.gameObject.SetActive(false);
         }
         //end of new code
+        if (offerPromptUI != null) 
+        { 
+            offerPromptUI.SetActive(false); 
+            offerPromptCanvasGroup.gameObject.SetActive(false);
+        }
     }
 
     private void OnEnable()
@@ -101,7 +110,14 @@ public class ObjectInteraction : MonoBehaviour
             fuelPickUpCanvasGroup.gameObject.SetActive(false);
         }
         //end of new code
-
+        //new offer code
+        if (offerPromptUI != null) offerPromptUI.SetActive(false);
+        if (offerPromptCanvasGroup != null)
+        {
+            offerPromptCanvasGroup.alpha = 0f;
+            offerPromptCanvasGroup.gameObject.SetActive(false);
+        }
+        //end of offer code
         currentInteractableClue = null;
     }
 
