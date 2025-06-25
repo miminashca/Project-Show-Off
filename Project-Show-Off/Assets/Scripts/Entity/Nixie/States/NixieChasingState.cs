@@ -16,18 +16,22 @@ public class NixieChasingState : State
     public override void OnEnterState()
     {
         Debug.Log("Nixie entering CHASING state.");
+
         nixieNav.SetPeeking(true); // Head is slightly above water while chasing
+
+        NixieEventBus.NotifyChaseStart();
     }
 
     public override void Handle()
     {
+        // This logic remains the same
         if (!nixieAI.IsPlayerInMyZone)
         {
             if (nixieAI.DistanceToPlayer <= nixieAI.StaringRadius)
             {
                 SM.TransitToState(nixieSM.StaringState);
             }
-            else // Player is out of water AND out of staring range
+            else
             {
                 SM.TransitToState(nixieSM.RoamingState);
             }
@@ -36,7 +40,6 @@ public class NixieChasingState : State
 
         if (!nixieAI.PlayerStatus.IsLanternOn && nixieAI.DistanceToPlayer > nixieAI.PointBlankRadius)
         {
-            Debug.Log("Player turned off lantern, Nixie is now lurking.");
             nixieAI.PlayerLastKnownPosition = nixieAI.PlayerTransform.position;
             SM.TransitToState(nixieSM.LurkingState);
             return;
@@ -48,7 +51,6 @@ public class NixieChasingState : State
             return;
         }
 
-        // --- BEHAVIOR LOGIC ---
         nixieNav.MoveTo(nixieAI.PlayerTransform.position, nixieNav.ChasingSpeed);
         nixieNav.LookAt(nixieAI.PlayerTransform.position);
     }
@@ -56,5 +58,7 @@ public class NixieChasingState : State
     public override void OnExitState()
     {
         nixieNav.StopMoving();
+
+        NixieEventBus.NotifyChaseEnd();
     }
 }

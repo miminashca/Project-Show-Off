@@ -4,13 +4,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.VFX;
 using FMODUnity;
 using FMOD.Studio;
-using System; // <<< NEW: Add this to use the 'Action' delegate for the event.
+using System;
 
 public class LanternController : MonoBehaviour
 {
-    // <<< NEW: Declare the event that other scripts can subscribe to.
-    public event Action<float, float> OnFuelChanged;
-
     [Header("Lantern Setup")]
     public GameObject lanternPrefab;
     public Transform lanternHandAnchor;
@@ -40,10 +37,23 @@ public class LanternController : MonoBehaviour
     public float passiveDrainRate = 0.1f;
     public float activeDrainRate = 1.0f;
 
-    [Header("Interaction")]
+    [Header("Hemanneken Interaction")]
     public float hemannekenRepelRadius = 7f;
     public LayerMask hemannekenLayer;
     public float interactionCheckInterval = 0.25f;
+
+    [Header("Nixie Interaction")]
+    [Tooltip("The flicker speed when a Nixie is chasing.")]
+    public float nixieFlickerSpeed = 15f;
+    [Tooltip("The MINIMUM intensity multiplier when a Nixie is chasing.")]
+    public float nixieFlickerMinIntensity = 0.4f;
+    [Tooltip("The MAXIMUM intensity multiplier when a Nixie is chasing.")]
+    public float nixieFlickerMaxIntensity = 1.6f;
+
+    private float _originalFlickerSpeed;
+    private float _originalMinIntensity;
+    private float _originalMaxIntensity;
+    private bool _isNixieFlickerActive = false;
 
     [Header("Raise Animation")]
     public Vector3 raisedLocalPositionOffset = new Vector3(0, 0.2f, 0.05f);
@@ -72,6 +82,8 @@ public class LanternController : MonoBehaviour
     private PlayerStatus playerStatus;
 
     private HingeLimitStabilizer hinge;
+
+    public event Action<float, float> OnFuelChanged;
 
     private void Awake()
     {
@@ -131,8 +143,6 @@ public class LanternController : MonoBehaviour
         }
     }
 
-    // OnEnable, OnDisable, OnDestroy, and HandleInput remain unchanged...
-    #region Unchanged Methods
     void OnEnable()
     {
         if (playerInputActions == null)
@@ -140,23 +150,34 @@ public class LanternController : MonoBehaviour
             playerInputActions = new PlayerInput();
         }
         playerInputActions.Player.Enable();
+
+        NixieEventBus.OnNixieChaseStart += HandleNixieChaseStart;
+        NixieEventBus.OnNixieChaseEnd += HandleNixieChaseEnd;
     }
 
     void OnDisable()
     {
-        ClueEventManager.Instance.OnFuelPickedUp -= RefillFuel;
+        // Check for null in case the instance is destroyed before this object
+        if (ClueEventManager.Instance != null)
+        {
+            ClueEventManager.Instance.OnFuelPickedUp -= RefillFuel;
+        }
 
         if (playerInputActions != null)
         {
             playerInputActions.Player.Disable();
         }
 
-        StopGasBurnLoopSFX(); // Renamed from StartGasBurnLoopSFX in provided code
+        StopGasBurnLoopSFX();
 
         if (isEquipped)
         {
-            ToggleEquip(); // This will handle unequipping logic including VFX
+            ToggleEquip();
         }
+
+        // --- NEW: Unsubscribe from Nixie events to prevent memory leaks ---
+        NixieEventBus.OnNixieChaseStart -= HandleNixieChaseStart;
+        NixieEventBus.OnNixieChaseEnd -= HandleNixieChaseEnd;
     }
 
     private void OnDestroy()
@@ -362,7 +383,7 @@ public class LanternController : MonoBehaviour
         Debug.Log("Lantern Raised");
 
         if (interactionCoroutine != null) StopCoroutine(interactionCoroutine);
-        interactionCoroutine = StartCoroutine(MonsterInteractionCheck());
+        interactionCoroutine = StartCoroutine(HemannekenInteractionCheck());
 
         if (currentPhysicsSwayScript != null)
         {
@@ -407,7 +428,6 @@ public class LanternController : MonoBehaviour
             currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
         }
     }
-    #endregion
 
     void DrainFuel(float deltaTime)
     {
@@ -419,6 +439,33 @@ public class LanternController : MonoBehaviour
         OnFuelChanged?.Invoke(currentFuel, maxFuel); // <<< NEW: Notify UI of fuel change every frame.
 
         if (currentFuel <= 0) OutOfFuel();
+    }
+
+    private void StartGasBurnLoop()
+    {
+        if (isEquipped && !outOfFuel && !lanternGasBurnLoopEvent.IsNull && !gasBurnSoundInstance.isValid())
+        {
+            gasBurnSoundInstance = RuntimeManager.CreateInstance(lanternGasBurnLoopEvent);
+            if (currentLanternInstance != null)
+            {
+                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance.transform);
+                gasBurnSoundInstance.start();
+            }
+            else
+            {
+                Debug.LogError("FMOD: Tried to start gas burn loop, but currentLanternInstance is null.");
+            }
+        }
+    }
+
+    // Renaming your method from "StartGasBurnLoopSFX" to "StopGasBurnLoopSFX" for clarity, as that's what it does.
+    private void StopGasBurnLoopSFX()
+    {
+        if (gasBurnSoundInstance.isValid())
+        {
+            gasBurnSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            gasBurnSoundInstance.release();
+        }
     }
 
     void OutOfFuel()
@@ -484,8 +531,6 @@ public class LanternController : MonoBehaviour
         }
     }
 
-    // SetLightState, UpdatePlayerStatus, MonsterInteractionCheck, FMOD methods, and OnDrawGizmosSelected remain unchanged...
-    #region Unchanged Methods
     void SetLightState(bool enabled, float intensity = 0, float range = 0)
     {
         if (lanternLight == null) return;
@@ -520,7 +565,7 @@ public class LanternController : MonoBehaviour
         }
     }
 
-    IEnumerator MonsterInteractionCheck()
+    IEnumerator HemannekenInteractionCheck()
     {
         while (isRaised && !outOfFuel)
         {
@@ -536,31 +581,43 @@ public class LanternController : MonoBehaviour
         interactionCoroutine = null;
     }
 
-    private void StartGasBurnLoop()
+    /// <summary>
+    /// Called by NixieEventBus when a chase begins.
+    /// </summary>
+    private void HandleNixieChaseStart()
     {
-        if (isEquipped && !outOfFuel && !lanternGasBurnLoopEvent.IsNull && !gasBurnSoundInstance.isValid())
-        {
-            gasBurnSoundInstance = RuntimeManager.CreateInstance(lanternGasBurnLoopEvent);
-            if (currentLanternInstance != null)
-            {
-                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance.transform);
-                gasBurnSoundInstance.start();
-            }
-            else
-            {
-                Debug.LogError("FMOD: Tried to start gas burn loop, but currentLanternInstance is null.");
-            }
-        }
+        // Don't do anything if we don't have a flicker script or if it's already active
+        if (lightFlicker == null || _isNixieFlickerActive) return;
+
+        Debug.Log("Nixie chase started! Increasing lantern flicker.");
+        _isNixieFlickerActive = true;
+
+        // Store original values so we can restore them later
+        _originalFlickerSpeed = lightFlicker.flickerSpeed;
+        _originalMinIntensity = lightFlicker.minIntensityMultiplier;
+        _originalMaxIntensity = lightFlicker.maxIntensityMultiplier;
+
+        // Apply intense, panicked flicker values
+        lightFlicker.flickerSpeed = nixieFlickerSpeed;
+        lightFlicker.minIntensityMultiplier = nixieFlickerMinIntensity;
+        lightFlicker.maxIntensityMultiplier = nixieFlickerMaxIntensity;
     }
 
-    // Renaming your method from "StartGasBurnLoopSFX" to "StopGasBurnLoopSFX" for clarity, as that's what it does.
-    private void StopGasBurnLoopSFX()
+    /// <summary>
+    /// Called by NixieEventBus when a chase ends.
+    /// </summary>
+    private void HandleNixieChaseEnd()
     {
-        if (gasBurnSoundInstance.isValid())
-        {
-            gasBurnSoundInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            gasBurnSoundInstance.release();
-        }
+        // Don't do anything if we don't have a flicker script or if it isn't active
+        if (lightFlicker == null || !_isNixieFlickerActive) return;
+
+        Debug.Log("Nixie chase ended. Restoring normal lantern flicker.");
+        _isNixieFlickerActive = false;
+
+        // Restore the original flicker values
+        lightFlicker.flickerSpeed = _originalFlickerSpeed;
+        lightFlicker.minIntensityMultiplier = _originalMinIntensity;
+        lightFlicker.maxIntensityMultiplier = _originalMaxIntensity;
     }
 
     void OnDrawGizmosSelected()
@@ -578,5 +635,4 @@ public class LanternController : MonoBehaviour
             Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
         }
     }
-    #endregion
 }

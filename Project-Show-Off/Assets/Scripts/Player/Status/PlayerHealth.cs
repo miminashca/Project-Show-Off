@@ -136,14 +136,12 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Die()
+    public void Die()
     {
         Debug.Log("Player has died! Wound level reached maximum.");
         OnPlayerDied?.Invoke();
 
         // --- Player Death Logic ---
-        // This is where you would trigger a level restart or game over screen.
-        // For now, we can disable player control as a placeholder.
         if (playerMovement) playerMovement.enabled = false;
         if (playerStateController) playerStateController.enabled = false;
         if (controls != null) controls.Disable();
