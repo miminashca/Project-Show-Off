@@ -68653,6 +68653,46 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Path
+      value: event:/Player/Hurt/Player Hurt
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Path
+      value: event:/Player/Hurt/Player Injured Panting
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data1
+      value: -1508791960
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data2
+      value: 1257117217
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data3
+      value: 1114685625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data4
+      value: -376021605
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data1
+      value: -74751347
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data2
+      value: 1185789530
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data3
+      value: 1334007713
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data4
+      value: -1592821
+      objectReference: {fileID: 0}
     - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: positionSmoothTime
       value: 0.05
@@ -68664,6 +68704,26 @@ PrefabInstance:
     - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: baseFootstepInterval
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Path
+      value: event:/Player/Hurt/Player Injured Sprinting
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data1
+      value: -910728905
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data2
+      value: 1140313556
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data3
+      value: -1696058977
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data4
+      value: 1502675341
       objectReference: {fileID: 0}
     - target: {fileID: 6334661837088429990, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: interactionDotUI
@@ -73420,6 +73480,11 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 2093637540416390607, guid: 6801645619671634f80d0545ccaf8c55, type: 3}
   m_PrefabInstance: {fileID: 2002485538}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &2005037761 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8397607670107786815, guid: ace27bf931b4d6542bf5a5a4ef2f0350, type: 3}
+  m_PrefabInstance: {fileID: 1011185893}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2015301402
 PrefabInstance:
