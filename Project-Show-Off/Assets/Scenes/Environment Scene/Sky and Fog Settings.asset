@@ -236,7 +236,7 @@ MonoBehaviour:
     m_Value: 0
   type:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
   atmosphericScattering:
     m_OverrideState: 1
     m_Value: 1
@@ -384,7 +384,7 @@ MonoBehaviour:
     m_Value: {r: 0.07600568, g: 0.07767241, b: 0.09433961, a: 1}
   maxFogDistance:
     m_OverrideState: 1
-    m_Value: 200
+    m_Value: 75
   mipFogMaxMip:
     m_OverrideState: 0
     m_Value: 0.5
@@ -396,13 +396,13 @@ MonoBehaviour:
     m_Value: 1000
   baseHeight:
     m_OverrideState: 1
-    m_Value: -40
+    m_Value: 5
   maximumHeight:
     m_OverrideState: 1
-    m_Value: 150
+    m_Value: 125
   meanFreePath:
     m_OverrideState: 1
-    m_Value: 7
+    m_Value: 20
   enableVolumetricFog:
     m_OverrideState: 1
     m_Value: 1
@@ -481,7 +481,7 @@ MonoBehaviour:
     m_Value: 256
   shadowSize:
     m_OverrideState: 1
-    m_Value: 100
+    m_Value: 25
   layerA:
     cloudMap:
       m_OverrideState: 1
@@ -758,23 +758,23 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   planetRadius:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 6378.1
   renderingSpace:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 1
   centerMode:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   planetCenter:
     m_OverrideState: 1
     m_Value: {x: 0, y: -6378.1, z: 0}
   windOrientation:
     m_OverrideState: 1
-    m_Value: 79
+    m_Value: 80
   windSpeed:
     m_OverrideState: 1
-    m_Value: 230
+    m_Value: 10
   fogType:
     m_OverrideState: 1
     m_Value: 0
