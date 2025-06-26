@@ -36,4 +36,6 @@ public abstract class State
     /// Implementations should handle any cleanup or unsubscription logic here.
     /// </summary>
     public abstract void OnExitState();
+
+    public virtual void DrawGizmos() { }
 }

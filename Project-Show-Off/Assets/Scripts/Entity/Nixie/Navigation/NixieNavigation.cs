@@ -13,31 +13,103 @@ public class NixieNavigation : MonoBehaviour
     public float RoamingSpeed = 2f;
     public float ChasingSpeed = 6f;
 
+    [Header("Movement Style")]
+    [Tooltip("How frequently the Nixie weaves side-to-side while moving.")]
+    public float WeaveFrequency = 2f;
+    [Tooltip("How far the Nixie weaves side-to-side from its central path.")]
+    public float WeaveAmplitude = 0.5f;
+
     [Header("Peeking Mechanic")]
     [Tooltip("The vertical offset from the NavMesh when submerged.")]
     public float SubmergedYOffset = -0.5f;
     [Tooltip("The vertical offset from the NavMesh when peeking.")]
     public float PeekingYOffset = 0.2f;
 
+    [Header("Visuals")]
+    [Tooltip("The child transform containing the Nixie's model/renderer.")]
+    public Transform VisualsTransform;
+    [Tooltip("How smoothly the visuals follow the agent's position. Higher is faster.")]
+    public float VisualsLerpSpeed = 5f;
+
+    [Header("Gizmo Toggles")]
+    public bool ShowMovementGizmos = true;
+
+    // --- Public property for State Machine control ---
+    public bool IsLockedToSurface { get; set; } = false;
+
     // --- Private runtime variables ---
     private int currentPatrolIndex = -1;
-    private NavMeshAgent _agent; // <-- Reference to the NavMeshAgent
+    private NavMeshAgent _agent;
+    private float targetYOffset;
+    private NixieAI nixieAI;
 
-    void Awake() // <-- Use Awake instead of Start to ensure it's ready for other scripts
+    private Vector3 lastCalculatedVisualTarget;
+
+    void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        nixieAI = GetComponent<NixieAI>();
 
-        // Disable agent's own rotation updates if we want to control it manually with LookAt
         _agent.updateRotation = false;
+
+        if (nixieAI == null)
+        {
+            Debug.LogError("NixieNavigation: Could not find the required NixieAI component!", this);
+            enabled = false;
+            return;
+        }
+
+        if (VisualsTransform == null)
+        {
+            Debug.LogError("NixieNavigation: VisualsTransform is not assigned!", this);
+            enabled = false;
+            return;
+        }
+
+        // Initialize the target offset to the submerged value
+        targetYOffset = SubmergedYOffset;
     }
 
     void Update()
     {
-        // If the agent is moving, we want it to look where it's going.
-        // We do this manually because we disabled agent.updateRotation.
-        if (_agent.velocity.sqrMagnitude > 0.1f)
+        Vector3 agentPosition = transform.position;
+
+        // --- Only weave if not locked to surface and moving ---
+        Vector3 weaveOffset = Vector3.zero;
+        if (!IsLockedToSurface && _agent.velocity.sqrMagnitude > 0.1f)
         {
-            LookAt(_agent.steeringTarget);
+            Vector3 perpendicular = Vector3.Cross(_agent.velocity.normalized, Vector3.up);
+            weaveOffset = perpendicular * Mathf.Sin(Time.time * WeaveFrequency) * WeaveAmplitude;
+        }
+
+        // --- REVISED: Visual Positioning Logic ---
+        Vector3 targetVisualPosition;
+
+        // --- THIS IS THE KEY CHANGE ---
+        // We now check for MyWaterZone instead of MyNixieZone
+        if (IsLockedToSurface && nixieAI.MyWaterZone != null)
+        {
+            // If locked, use the WaterZone's surface Y level.
+            float surfaceY = nixieAI.MyWaterZone.SurfaceYLevel;
+            // The PeekingYOffset now acts as the height above the surface.
+            targetVisualPosition = new Vector3(agentPosition.x, surfaceY + PeekingYOffset, agentPosition.z);
+        }
+        else
+        {
+            // The normal logic: follow the agent's Y plus our offset.
+            targetVisualPosition = new Vector3(agentPosition.x, agentPosition.y + targetYOffset, agentPosition.z) + weaveOffset;
+        }
+
+        VisualsTransform.position = Vector3.Lerp(VisualsTransform.position, targetVisualPosition, Time.deltaTime * VisualsLerpSpeed);
+
+        lastCalculatedVisualTarget = targetVisualPosition;
+
+        // --- ROTATION LOGIC ---
+        // Let the state machine handle LookAt calls for more specific control.
+        if (_agent.velocity.sqrMagnitude > 0.1f && !IsLockedToSurface)
+        {
+            // Only auto-look where we're going if we aren't in a special state like Staring.
+            LookAt(_agent.steeringTarget + weaveOffset);
         }
     }
 
@@ -66,53 +138,49 @@ public class NixieNavigation : MonoBehaviour
 
     public void SetPeeking(bool shouldPeek)
     {
-        // The NavMeshAgent's baseOffset is the perfect tool for this!
-        _agent.baseOffset = shouldPeek ? PeekingYOffset : SubmergedYOffset;
+        // Instead of setting baseOffset, we now control our custom targetYOffset.
+        targetYOffset = shouldPeek ? PeekingYOffset : SubmergedYOffset;
     }
 
     public void LookAt(Vector3 targetPosition)
     {
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        direction.y = 0; // Keep the Nixie level (don't have it pitch up/down)
+        Vector3 direction = (targetPosition - VisualsTransform.position).normalized; // <-- Look from the visuals' position
+        direction.y = 0;
         if (direction != Vector3.zero)
         {
-            // Use Slerp for smoother rotation
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _agent.angularSpeed);
+            // Apply rotation to the VISUALS, not the parent agent.
+            VisualsTransform.rotation = Quaternion.Slerp(VisualsTransform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _agent.angularSpeed);
         }
     }
 
-    void OnDrawGizmosSelected()
+    void OnDrawGizmos()
     {
-        // Don't draw anything if the list is null or empty.
-        if (PatrolNodes == null || PatrolNodes.Count == 0)
+        if (!ShowMovementGizmos || !Application.isPlaying || _agent == null) return;
+
+        // --- 1. Draw the NavMeshAgent's current path ---
+        if (_agent.hasPath)
         {
-            return;
-        }
-
-        // Set the color for our patrol path gizmos.
-        Gizmos.color = Color.green;
-
-        // Loop through all patrol nodes.
-        for (int i = 0; i < PatrolNodes.Count; i++)
-        {
-            Transform currentNode = PatrolNodes[i];
-
-            // Check if the reference to the node is not broken.
-            if (currentNode != null)
+            Gizmos.color = Color.cyan;
+            var corners = _agent.path.corners;
+            for (int i = 0; i < corners.Length - 1; i++)
             {
-                // Draw the wire sphere at the node's position.
-                Gizmos.DrawWireSphere(currentNode.position, 1.0f);
-
-                // Find the next node in the list.
-                // The modulo (%) operator makes the path wrap around, connecting the last node to the first.
-                Transform nextNode = PatrolNodes[(i + 1) % PatrolNodes.Count];
-
-                // If the next node also exists, draw a line between them.
-                if (nextNode != null)
-                {
-                    Gizmos.DrawLine(currentNode.position, nextNode.position);
-                }
+                Gizmos.DrawLine(corners[i], corners[i + 1]);
+                Gizmos.DrawSphere(corners[i], 0.1f);
             }
+            if (corners.Length > 0)
+                Gizmos.DrawSphere(corners[corners.Length - 1], 0.1f);
         }
+
+        // --- 2. Draw where the Visuals are trying to go ---
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(lastCalculatedVisualTarget, 0.25f);
+
+        // --- 3. Draw a line from the actual agent to the visual target ---
+        // This line shows the smoothing + weave offset clearly.
+        Gizmos.DrawLine(VisualsTransform.position, lastCalculatedVisualTarget);
+
+        // --- 4. Draw a line from agent to the actual visual's position
+        Gizmos.color = new Color(0, 0.5f, 0); // Dark Green
+        Gizmos.DrawLine(transform.position, VisualsTransform.position);
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 [RequireComponent(typeof(NixieStateMachine), typeof(NixieNavigation), typeof(AudioSource))]
 public class NixieAI : MonoBehaviour
@@ -25,10 +24,14 @@ public class NixieAI : MonoBehaviour
     [Header("Environment")]
     [Tooltip("The specific WaterZone this Nixie lives in. It will only react to the player entering this zone.")]
     public NixieZone MyNixieZone;
+    [Tooltip("The WaterZone this Nixie inhabits. Used to determine water surface level.")]
+    public WaterZone MyWaterZone;
 
-    [Header("Vocalizations & SFX")]
-    // public List<AudioClip> LuringVocalizations; -- THIS IS NOW HANDLED BY FMOD
-    public AudioClip AttackSound;
+    [Header("Gizmo Toggles")]
+    public bool ShowRadiuses = true;
+    public bool ShowLineToPlayer = true;
+    public bool ShowLastKnownPosition = true;
+    public bool ShowStateSpecificGizmos = true;
 
     // --- Component & Runtime References ---
     public NixieStateMachine StateMachine { get; private set; }
@@ -129,82 +132,62 @@ public class NixieAI : MonoBehaviour
         }
     }
 
-    //public void PlayLuringSound()
-    //{
-    //    if (LuringVocalizations == null || LuringVocalizations.Count == 0) return;
-    //    AudioClip clip = LuringVocalizations[Random.Range(0, LuringVocalizations.Count)];
-    //    AudioSource.PlayOneShot(clip);
-    //}
-
-    //public void PlayAttackSound()
-    //{
-    //    if (AttackSound == null) return;
-    //    // AudioSource.PlayOneShot(AttackSound);
-    //}
-
     void OnDrawGizmosSelected()
     {
         Vector3 pos = transform.position;
 
         // --- Draw Radiuses ---
-
-        // Staring Radius (Blue)
-        Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(pos, StaringRadius);
-        DrawGizmoLabel(pos + Vector3.up * StaringRadius, "Staring Radius", Color.blue);
-
-        // Attack Range (Red)
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(pos, AttackRange);
-        DrawGizmoLabel(pos + Vector3.up * AttackRange, "Attack Range", Color.red);
-
-        // Point-Blank Radius (White)
-        Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(pos, PointBlankRadius);
-        DrawGizmoLabel(pos - Vector3.up * PointBlankRadius, "Point-Blank", Color.white);
-
-        // Detection Radius - shows the currently active one
-        // We use DrawWireSphere here as well for consistency
-        bool lanternOn = (Application.isPlaying && PlayerStatus != null && PlayerStatus.IsLanternOn);
-        if (lanternOn)
+        if (ShowRadiuses)
         {
-            // Lantern Detection Radius (Orange)
-            Gizmos.color = new Color(1f, 0.5f, 0f); // Orange
-            Gizmos.DrawWireSphere(pos, DetectionRadiusLantern);
-            DrawGizmoLabel(pos + Vector3.forward * DetectionRadiusLantern, "Detection (Lantern)", Gizmos.color);
-        }
-        else
-        {
-            // Normal Detection Radius (Yellow)
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireSphere(pos, DetectionRadiusNormal);
-            DrawGizmoLabel(pos + Vector3.forward * DetectionRadiusNormal, "Detection (Normal)", Gizmos.color);
+            // Staring Radius (Blue)
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(pos, StaringRadius);
+
+            // Attack Range (Red)
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(pos, AttackRange);
+
+            // Point-Blank Radius (White)
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(pos, PointBlankRadius);
+
+            // Detection Radius - shows the currently active one
+            bool lanternOn = (Application.isPlaying && PlayerStatus != null && PlayerStatus.IsLanternOn);
+            if (lanternOn)
+            {
+                Gizmos.color = new Color(1f, 0.5f, 0f); // Orange
+                Gizmos.DrawWireSphere(pos, DetectionRadiusLantern);
+            }
+            else
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(pos, DetectionRadiusNormal);
+            }
         }
 
         // --- Draw Lines ---
         if (PlayerTransform != null)
         {
             // Line to player for clarity
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawLine(pos, PlayerTransform.position);
+            if (ShowLineToPlayer)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(pos, PlayerTransform.position);
+            }
 
             // Line to Last Known Position if lurking
-            if (Application.isPlaying && StateMachine.CurrentState == StateMachine.LurkingState)
+            if (ShowLastKnownPosition && Application.isPlaying && StateMachine.CurrentState == StateMachine.LurkingState)
             {
                 Gizmos.color = Color.magenta;
                 Gizmos.DrawLine(pos, PlayerLastKnownPosition);
                 Gizmos.DrawSphere(PlayerLastKnownPosition, 0.5f);
-                DrawGizmoLabel(PlayerLastKnownPosition, "LKP", Color.magenta);
             }
         }
-    }
 
-    // Helper method to draw text labels in the scene view
-    private void DrawGizmoLabel(Vector3 position, string text, Color color)
-    {
-#if UNITY_EDITOR
-        UnityEditor.Handles.color = color;
-        UnityEditor.Handles.Label(position, text);
-#endif
+        // --- NEW: Draw Gizmos for the Current State ---
+        if (ShowStateSpecificGizmos && Application.isPlaying && StateMachine != null && StateMachine.CurrentState != null)
+        {
+            StateMachine.CurrentState.DrawGizmos();
+        }
     }
 }
