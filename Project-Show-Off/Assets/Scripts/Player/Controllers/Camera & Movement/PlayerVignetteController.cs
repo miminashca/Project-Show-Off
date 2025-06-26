@@ -1,4 +1,4 @@
-// --- START OF FILE PlayerVignetteController.cs ---
+
 
 using UnityEngine;
 using UnityEngine.Rendering;
