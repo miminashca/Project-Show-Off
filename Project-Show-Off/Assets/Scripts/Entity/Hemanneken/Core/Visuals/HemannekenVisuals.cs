@@ -39,12 +39,7 @@ public class HemannekenVisuals : MonoBehaviour
     // Optional: If you have a specific particle system just for death, you could add:
     // [SerializeField] private ParticleSystem _deathSpecificParticleSystem;
 
-    //new code
-    [Header("Vignette visuals")]
-    [SerializeField] private float vignetteIntensity; // attach post-processing vignette intensity
-    Volume postProcessingVolume; // reference to the PostProcessingVolume component
-   // Vignette vignette; // reference to the Vignette effect
-    //end
+   
 
     private Coroutine _activeStunBehaviorCoroutine;
     private bool _isStunBehaviorActive = false; // Flag to control the stun coroutine's loops
@@ -63,7 +58,7 @@ public class HemannekenVisuals : MonoBehaviour
     private AgentMovement agentMovement;
     public void Initialize()
     {
-        postProcessingVolume = GameObject.FindGameObjectWithTag("Volume").GetComponent<UnityEngine.Rendering.Volume>();
+        
 
            _playerSensor = GetComponent<HemannekenPlayerSensor>();
         if (_playerSensor == null)
@@ -82,9 +77,9 @@ public class HemannekenVisuals : MonoBehaviour
         agentMovement = GetComponent<AgentMovement>();
         //new vignette innitialization code
         //  PostProcessVolume postProcessVolume = FindAnyObjectByType<PostProcessVolume>();
-        UnityEngine.Rendering.HighDefinition.Vignette tmp;
-        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
-        tmp.active = false;
+        
+       
+       
 
 
         
@@ -108,33 +103,8 @@ public class HemannekenVisuals : MonoBehaviour
         // --- END ADDED ---
     }
 
-    //new ode for Vignette Effect
-    public void EnableVignette()
-    {
-        UnityEngine.Rendering.HighDefinition.Vignette tmp;
-        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
-        tmp.active = true;
-        tmp.intensity.Override(.5f);
-        tmp.smoothness.Override(.4f);
-
-
-        /*
-        if(vignette != null)
-        {
-            vignette.enabled.Override(true);
-            vignette.intensity.Override(vignetteIntensity); // Set vignette intensity
-            Debug.Log("HemannekenVisuals: Vignette enabled");
-        }
-        */
-    }
-    public void DisableVignette()
-    {
-        UnityEngine.Rendering.HighDefinition.Vignette tmp;
-        postProcessingVolume.profile.TryGet<UnityEngine.Rendering.HighDefinition.Vignette>(out tmp);
-        tmp.active = false;
-        tmp.intensity.Override(0f);
-    }
-    //end
+    
+    
     private void OnDestroy()
     {
         if(agentMovement) agentMovement._eventBus.OnRabbitHopStart -= PlayHopAnimation;

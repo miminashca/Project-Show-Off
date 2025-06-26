@@ -35,6 +35,8 @@ public class PlayerHealth : MonoBehaviour
     public static event Action<int, int> OnWoundLevelChanged; // Sends Current, Max
     public static event Action<float, float> OnChokeTimerChanged;
     public static event Action OnPlayerDied;
+    public static event Action OnPlayerTookDamage; // <-- NEW EVENT
+
 
     public int CurrentWoundLevel => currentWoundLevel;
     public int MaxWoundLevel => maxWoundLevel;
@@ -77,6 +79,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentWoundLevel++;
         OnWoundLevelChanged?.Invoke(currentWoundLevel, maxWoundLevel);
+        OnPlayerTookDamage?.Invoke(); // <-- INVOKE THE NEW EVENT HERE
         Debug.Log($"Player was shot! New wound level: {currentWoundLevel}/{maxWoundLevel}");
 
         if (currentWoundLevel >= maxWoundLevel)

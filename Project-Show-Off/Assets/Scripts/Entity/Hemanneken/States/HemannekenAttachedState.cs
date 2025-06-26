@@ -25,7 +25,7 @@ public class HemannekenAttachedState : State
         HSM.PerformAttachmentToPlayer();
         HemannekenEventBus.AttachHemanneken();
         HSM.Visuals.PlayReplyHeySound();
-        HSM.Visuals.EnableVignette();
+        //HSM.Visuals.EnableVignette();
         HSM.PlayerHealth.IncrementAttachedHemannekens();
     }
 
@@ -50,7 +50,7 @@ public class HemannekenAttachedState : State
 
         HSM.PerformDetachmentFromPlayer();
         HemannekenEventBus.DetachHemanneken();
-        HSM.Visuals.DisableVignette();
+        //HSM.Visuals.DisableVignette();
         HSM.PlayerHealth.DecrementAttachedHemannekens();
     }
     
