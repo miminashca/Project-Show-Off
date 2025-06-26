@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 1066200544536370512}
   - component: {fileID: 8194570042842489309}
   - component: {fileID: 861061448298034872}
-  - component: {fileID: 7652064823968303585}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -179,6 +178,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1048576
   interactionCheckInterval: 0.25
+  nixieFlickerSpeed: 15
+  nixieFlickerMinIntensity: 0.4
+  nixieFlickerMaxIntensity: 1.6
   raisedLocalPositionOffset: {x: 0, y: 0.2, z: 0.05}
   lanternPullOutSoundEvent:
     Guid:
@@ -226,6 +228,8 @@ MonoBehaviour:
   interactionPromptCanvasGroup: {fileID: 0}
   fuelPickUpPromptUI: {fileID: 0}
   fuelPickUpCanvasGroup: {fileID: 0}
+  offerPromptUI: {fileID: 0}
+  offerPromptCanvasGroup: {fileID: 0}
   fadeDuration: 0.3
 --- !u!114 &7025771011646699498
 MonoBehaviour:
@@ -304,6 +308,21 @@ MonoBehaviour:
   timeToRegenerateOneLevel: 30
   adrenalineDuration: 10
   adrenalineSpeedBoost: 0.5
+  timeToChoke: 10
+  playerHurtArghSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  injuredBreathingLoopEvent:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
 --- !u!114 &4004112240833274223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,23 +448,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &7652064823968303585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495666101020983991}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5c162ba45d7fdc4ea04440b5aa6b4c4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxWoundLevel: 3
-  currentWoundLevel: 0
-  timeToRegenerateOneLevel: 30
-  adrenalineDuration: 10
-  adrenalineSpeedBoost: 0.5
 --- !u!1 &2177276955475158849
 GameObject:
   m_ObjectHideFlags: 0

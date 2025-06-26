@@ -13,7 +13,7 @@ public class PlayerVignetteController : MonoBehaviour
     [SerializeField] private Color chokeColor = new Color(0.1f, 0.2f, 0.8f); // A deep blue
     [SerializeField] private Color damageColor = new Color(0.8f, 0.1f, 0.1f); // A blood red
     [SerializeField, Range(0f, 1f)] private float maxIntensity = 0.5f;
-    [SerializeField, Range(0.1f, 2f)] private float damageFlashDuration = 1.0f;
+    [SerializeField, Range(0.1f, 10f)] private float damageFlashDuration = 5.0f;
     [SerializeField, Range(1f, 20f)] private float fadeSpeed = 5f;
 
     private Vignette vignette;
