@@ -16,12 +16,14 @@ public class NixieLurkingState : State
         nixieSM = (NixieStateMachine)SM;
         nixieAI = nixieSM.NixieAI;
         nixieNav = nixieSM.NixieNav;
-        nixieSoundController = nixieAI.SoundController; // --- ADDED: Get the sound controller from the AI
     }
 
     public override void OnEnterState()
     {
         Debug.Log("Nixie entering LURKING state.");
+
+        nixieSoundController = nixieAI.SoundController; // --- ADDED: Get the sound controller from the AI
+
         lurkTimer = LURK_DURATION;
         nixieNav.SetPeeking(true); // Peek above water to investigate
 
