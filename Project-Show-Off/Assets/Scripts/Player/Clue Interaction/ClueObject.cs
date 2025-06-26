@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ClueObject : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class ClueObject : MonoBehaviour
     private Renderer objectRenderer;
     private Color originalColor;
     [SerializeField] private Color highlightColor = new Color(1f, 1f, 0.5f, 1f); // A light yellow
+
+    [SerializeField] private FirefliesVfxController fireflies;
 
     void Awake()
     {
@@ -43,6 +47,25 @@ public class ClueObject : MonoBehaviour
         else
         {
             Debug.LogWarning($"ClueObject '{gameObject.name}' is missing a Renderer or Material for highlighting.", this);
+        }
+    }
+    void Start()
+    {
+        if (ClueEventManager.Instance != null)
+        {
+            ClueEventManager.Instance.OnGameDataLoaded += CheckStatusOnLoad;
+        }
+        else
+        {
+            Debug.LogError($"ClueObject '{clueID}' cannot subscribe to load event because ClueEventManager.Instance is null.");
+        }
+
+        // Check if this clue has already been collected OR submitted in the loaded save data.
+        if (ClueEventManager.Instance.IsClueCollected(clueID) || ClueEventManager.Instance.IsClueSubmitted(clueID))
+        {
+            Debug.Log($"ClueObject '{clueID}' has already been processed. Destroying this instance.");
+            // If it's already in the player's inventory or has been submitted, it should not be in the world.
+            Destroy(gameObject);
         }
     }
 
@@ -81,5 +104,28 @@ public class ClueObject : MonoBehaviour
             ClueEventManager.Instance.RegisterClueCollected(clueID);
         }
         Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        if(fireflies) fireflies.TurnOff();
+        
+        if (ClueEventManager.Instance != null)
+        {
+            ClueEventManager.Instance.OnGameDataLoaded -= CheckStatusOnLoad;
+        }
+    }
+    
+    // This method will be called after the GameManager has loaded the data.
+    private void CheckStatusOnLoad()
+    {
+        // It's possible this object was destroyed by other means before the event fired.
+        if (!this) return; 
+
+        if (ClueEventManager.Instance.IsClueCollected(clueID) || ClueEventManager.Instance.IsClueSubmitted(clueID))
+        {
+            Debug.Log($"ClueObject '{clueID}' is already processed. Destroying this instance post-load.");
+            Destroy(gameObject);
+        }
     }
 }

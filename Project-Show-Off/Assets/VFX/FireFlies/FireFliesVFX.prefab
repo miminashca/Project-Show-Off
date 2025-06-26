@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4249271126814857619}
   - component: {fileID: 7450963380357800136}
   - component: {fileID: 4454754919587197388}
+  - component: {fileID: 7758288637769259622}
   m_Layer: 0
   m_Name: FireFliesVFX
   m_TagString: Untagged
@@ -151,5 +152,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 583417ff9f31b1446aecd8a262a88bf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
+  target: {fileID: 0}
   disableDistance: 50
+--- !u!114 &7758288637769259622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5722931105102757609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 865a0905d7b4741dd9cc9161afbf6228, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fireflyVFX: {fileID: 0}
