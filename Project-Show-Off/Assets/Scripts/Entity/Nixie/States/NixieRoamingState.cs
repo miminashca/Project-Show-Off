@@ -70,7 +70,7 @@ public class NixieRoamingState : State
         lureTimer -= Time.deltaTime;
         if (lureTimer <= 0)
         {
-            nixieAI.PlayLuringSound();
+            //nixieAI.PlayLuringSound();
             ResetLureTimer();
         }
     }

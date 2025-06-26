@@ -27,13 +27,14 @@ public class NixieAI : MonoBehaviour
     public NixieZone MyNixieZone;
 
     [Header("Vocalizations & SFX")]
-    public List<AudioClip> LuringVocalizations;
+    // public List<AudioClip> LuringVocalizations; -- THIS IS NOW HANDLED BY FMOD
     public AudioClip AttackSound;
 
     // --- Component & Runtime References ---
     public NixieStateMachine StateMachine { get; private set; }
     public NixieNavigation Navigation { get; private set; }
-    public AudioSource AudioSource { get; private set; }
+    public NixieSoundController SoundController { get; private set; } // --- ADDED: Reference to your FMOD sound controller
+    // public AudioSource AudioSource { get; private set; }
     public Transform PlayerTransform { get; private set; }
     public PlayerStatus PlayerStatus { get; private set; }
     public float DistanceToPlayer { get; private set; }
@@ -65,7 +66,9 @@ public class NixieAI : MonoBehaviour
     {
         StateMachine = GetComponent<NixieStateMachine>();
         Navigation = GetComponent<NixieNavigation>();
-        AudioSource = GetComponent<AudioSource>();
+        // AudioSource = GetComponent<AudioSource>();
+
+        SoundController = GetComponent<NixieSoundController>(); // --- ADDED: Get the sound controller component
 
         GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
         if (playerObj != null)
@@ -126,18 +129,18 @@ public class NixieAI : MonoBehaviour
         }
     }
 
-    public void PlayLuringSound()
-    {
-        if (LuringVocalizations == null || LuringVocalizations.Count == 0) return;
-        AudioClip clip = LuringVocalizations[Random.Range(0, LuringVocalizations.Count)];
-        AudioSource.PlayOneShot(clip);
-    }
+    //public void PlayLuringSound()
+    //{
+    //    if (LuringVocalizations == null || LuringVocalizations.Count == 0) return;
+    //    AudioClip clip = LuringVocalizations[Random.Range(0, LuringVocalizations.Count)];
+    //    AudioSource.PlayOneShot(clip);
+    //}
 
-    public void PlayAttackSound()
-    {
-        if (AttackSound == null) return;
-        AudioSource.PlayOneShot(AttackSound);
-    }
+    //public void PlayAttackSound()
+    //{
+    //    if (AttackSound == null) return;
+    //    // AudioSource.PlayOneShot(AttackSound);
+    //}
 
     void OnDrawGizmosSelected()
     {

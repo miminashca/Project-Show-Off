@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 1566054081511409867}
   - component: {fileID: 7491102178693577291}
   - component: {fileID: 4121802084019985749}
+  - component: {fileID: 7665163923694900553}
   m_Layer: 21
   m_Name: Nixie_With_Scripts
   m_TagString: Untagged
@@ -228,7 +229,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2254981500337511560}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -318,3 +319,55 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &7665163923694900553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2254981500337511560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0c9e4c26b47f134491faedc7ee228a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  luringSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  provocativeGruntSound:
+    Guid:
+      Data1: 1955501360
+      Data2: 1279943375
+      Data3: 1688273845
+      Data4: -2107223924
+    Path: event:/Enemies/Nixie/Nix Grunt
+  chaseGruntSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  killGruntSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  hurtGruntSound:
+    Guid:
+      Data1: 0
+      Data2: 0
+      Data3: 0
+      Data4: 0
+    Path: 
+  minLuringInterval: 25
+  maxLuringInterval: 45
+  minProvocativeInterval: 5
+  maxProvocativeInterval: 15
+  luringDistanceThreshold: 40
