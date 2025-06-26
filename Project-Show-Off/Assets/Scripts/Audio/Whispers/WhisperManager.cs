@@ -10,13 +10,17 @@ using System.Collections.Generic;
 public class WhisperManager : MonoBehaviour
 {
     // --- Singleton Pattern ---
-    // This allows any script to access the manager easily via WhisperManager.Instance
     public static WhisperManager Instance { get; private set; }
 
+    // --- CHANGED ---: Replaced the single interval with a min/max range.
     [Header("Playback Settings")]
     [SerializeField]
-    [Tooltip("How often (in seconds) the whisper sound will be triggered from the closest source.")]
-    private float soundPlayInterval = 120f;
+    [Tooltip("The minimum time (in seconds) to wait before playing a whisper.")]
+    private float minSoundPlayInterval = 90f;
+
+    [SerializeField]
+    [Tooltip("The maximum time (in seconds) to wait before playing a whisper.")]
+    private float maxSoundPlayInterval = 150f;
 
     [Header("System Settings")]
     [SerializeField]
@@ -60,13 +64,12 @@ public class WhisperManager : MonoBehaviour
             return;
         }
 
-        // Initialize timers
-        soundPlayTimer = soundPlayInterval; // Start with the full interval
+        // --- CHANGED ---: Initialize the first timer with a random value from the start.
+        ResetSoundTimer();
     }
 
     private void Update()
     {
-        // Don't run if there are no sources to check
         if (activeSources.Count == 0)
         {
             return;
@@ -84,19 +87,27 @@ public class WhisperManager : MonoBehaviour
         soundPlayTimer -= Time.deltaTime;
         if (soundPlayTimer <= 0f)
         {
-            soundPlayTimer = soundPlayInterval;
+            // --- CHANGED ---: Play the sound and then reset the timer to a new random value.
             PlayWhisperFromClosestSource();
+            ResetSoundTimer();
         }
+    }
+
+    // --- NEW ---: A helper method to get a new random interval.
+    /// <summary>
+    /// Sets the sound timer to a new random value between the min and max intervals.
+    /// </summary>
+    private void ResetSoundTimer()
+    {
+        soundPlayTimer = Random.Range(minSoundPlayInterval, maxSoundPlayInterval);
     }
 
     private void PlayWhisperFromClosestSource()
     {
-        // If we have a valid closest source with a valid FMOD event...
         if (currentClosestSource != null && !currentClosestSource.WhisperEvent.IsNull)
         {
-            // ...play the one-shot sound attached to that source's GameObject.
             RuntimeManager.PlayOneShotAttached(currentClosestSource.WhisperEvent, currentClosestSource.gameObject);
-            Debug.Log($"Playing whisper from {currentClosestSource.name}");
+            Debug.Log($"Playing whisper from {currentClosestSource.name}. Next whisper in approx {soundPlayTimer:F1} seconds.");
         }
     }
 
@@ -113,7 +124,7 @@ public class WhisperManager : MonoBehaviour
 
         foreach (var source in activeSources)
         {
-            if (source == null) continue; // Safety check for destroyed objects
+            if (source == null) continue;
 
             float distanceSq = (source.transform.position - playerTransform.position).sqrMagnitude;
             if (distanceSq < minDistanceSq)
@@ -122,7 +133,6 @@ public class WhisperManager : MonoBehaviour
                 closest = source;
             }
         }
-
         currentClosestSource = closest;
     }
 
@@ -140,6 +150,24 @@ public class WhisperManager : MonoBehaviour
         if (activeSources.Contains(source))
         {
             activeSources.Remove(source);
+        }
+    }
+
+    // --- NEW ---: Editor-only validation to prevent invalid values.
+    /// <summary>
+    /// This function is called in the editor when the script is loaded or a value is changed in the Inspector.
+    /// </summary>
+    private void OnValidate()
+    {
+        // Ensure min value is never negative.
+        if (minSoundPlayInterval < 0)
+        {
+            minSoundPlayInterval = 0;
+        }
+        // Ensure max value is never less than the min value.
+        if (maxSoundPlayInterval < minSoundPlayInterval)
+        {
+            maxSoundPlayInterval = minSoundPlayInterval;
         }
     }
 }
