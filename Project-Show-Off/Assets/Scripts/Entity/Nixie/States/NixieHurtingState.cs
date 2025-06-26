@@ -16,7 +16,7 @@ public class NixieHurtingState : State
     public override void OnEnterState()
     {
         Debug.Log("Nixie entering HURTING state.");
-        nixieAI.PlayAttackSound();
+        //nixieAI.PlayAttackSound();
 
         // --- NEW: INSTA-KILL LOGIC ---
         // Find the PlayerHealth component on the player object.
