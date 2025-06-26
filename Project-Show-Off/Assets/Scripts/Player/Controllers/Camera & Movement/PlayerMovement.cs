@@ -46,18 +46,25 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField, Range(0.1f, 1.0f)] private float sprintFootstepMultiplier = 0.7f;
     [SerializeField, Range(1.0f, 3.0f)] private float crouchFootstepMultiplier = 1.5f;
 
-    // NEW CHANGE
-    [Header("FMOD Sprinting Sounds")]
-    [Tooltip("FMOD Event for continuous breathing while sprinting. Should have a loop region.")]
+    // NEW FMOD CHANGE
+    [Header("FMOD Breathing Sounds")]
+    [Tooltip("FMOD Event for continuous breathing while sprinting (when healthy).")]
     [SerializeField] private EventReference sprintingBreathEventPath;
+    [Tooltip("FMOD Event for continuous breathing while sprinting (when injured).")]
+    [SerializeField] private EventReference injuredSprintingBreathEventPath;
     [Tooltip("FMOD Event for one-shot breath sound after sprinting stops.")]
     [SerializeField] private EventReference afterSprintingBreathEventPath;
 
     private EventInstance sprintingBreathInstance;
-    private EventInstance afterSprintingBreathInstance; // Instance for the one-shot after-sprint breath
-    private bool previousIsSprintingState = false;
-    private bool staminaDroppedBelowHalfDuringThisSprint = false; // Flag to track if stamina dropped below half during the current sprint
-    // END CHANGE
+    private EventInstance injuredSprintingBreathInstance;
+    private EventInstance afterSprintingBreathInstance;
+    private bool staminaDroppedBelowHalfDuringThisSprint = false;
+    private bool previousIsSprintingState = false; // Flag to detect state changes frame-to-frame.
+
+    private PlayerHealth playerHealth;
+    // END FMOD CHANGE
+
+
 
     //const
     private float gravity = -9.81f;
@@ -121,20 +128,36 @@ public class PlayerMovement : MonoBehaviour
         timeToNextFootstep = 0f;
         currentStamina = maxStamina;
 
-        // NEW CHANGE
+        // NEW FMOD CHANGE
+        // Get a reference to the PlayerHealth component.
+        playerHealth = GetComponent<PlayerHealth>();
+        if (playerHealth == null)
+        {
+            Debug.LogError("PlayerMovement could not find the PlayerHealth component!", this);
+        }
+
+        // Initialize the regular sprinting breath instance
         if (!sprintingBreathEventPath.IsNull)
         {
             sprintingBreathInstance = RuntimeManager.CreateInstance(sprintingBreathEventPath);
-            RuntimeManager.AttachInstanceToGameObject(sprintingBreathInstance, gameObject);
+            //RuntimeManager.AttachInstanceToGameObject(sprintingBreathInstance, gameObject);
         }
+
+        // Initialize the NEW injured sprinting breath instance
+        if (!injuredSprintingBreathEventPath.IsNull)
+        {
+            injuredSprintingBreathInstance = RuntimeManager.CreateInstance(injuredSprintingBreathEventPath);
+            //RuntimeManager.AttachInstanceToGameObject(injuredSprintingBreathInstance, gameObject);
+        }
+
         // Initialize FMOD event instance for after-sprinting breath
         if (!afterSprintingBreathEventPath.IsNull)
         {
             afterSprintingBreathInstance = RuntimeManager.CreateInstance(afterSprintingBreathEventPath);
-            RuntimeManager.AttachInstanceToGameObject(afterSprintingBreathInstance, gameObject);
+            //RuntimeManager.AttachInstanceToGameObject(afterSprintingBreathInstance, gameObject);
         }
-        staminaDroppedBelowHalfDuringThisSprint = false; // Explicitly initialize, though default is false
-        // END CHANGE
+        staminaDroppedBelowHalfDuringThisSprint = false;
+        // END FMOD CHANGE
     }
 
     private void OnEnable()
@@ -145,41 +168,60 @@ public class PlayerMovement : MonoBehaviour
     private void OnDisable()
     {
         controls.Disable();
-        // NEW CHANGE
+        // NEW FMOD CHANGE
         // Stop sounds with fadeout when disabled
-        if (sprintingBreathInstance.isValid())
-        {
-            sprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        }
-        if (afterSprintingBreathInstance.isValid())
-        {
-            afterSprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        }
+        StopEventInstanceFMOD(sprintingBreathInstance);
+        StopEventInstanceFMOD(injuredSprintingBreathInstance);
+        StopEventInstanceFMOD(afterSprintingBreathInstance);
         isSprinting = false;
-        previousIsSprintingState = false;
-        staminaDroppedBelowHalfDuringThisSprint = false; // Reset flag on disable
-        // END CHANGE
+        staminaDroppedBelowHalfDuringThisSprint = false;
+        previousIsSprintingState = false; // <-- SUGGESTED ADDITION
+        // END FMOD CHANGE
     }
 
     // NEW CHANGE
     private void OnDestroy()
     {
-        // Release FMOD event instances
+        // Release ALL FMOD event instances
         if (sprintingBreathInstance.isValid())
         {
             sprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             sprintingBreathInstance.release();
+        }
+        if (injuredSprintingBreathInstance.isValid()) // <-- RELEASE NEW INSTANCE
+        {
+            injuredSprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            injuredSprintingBreathInstance.release();
         }
         if (afterSprintingBreathInstance.isValid())
         {
             afterSprintingBreathInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             afterSprintingBreathInstance.release();
         }
+
     }
     // END CHANGE
 
     private void Update()
     {
+        // NEW FMOD CHANGE
+        // Manually update the 3D attributes of all managed instances every frame.
+        // This is the most robust way to ensure the sounds follow the player.
+        if (sprintingBreathInstance.isValid())
+        {
+            sprintingBreathInstance.set3DAttributes(RuntimeUtils.To3DAttributes(transform));
+        }
+        if (injuredSprintingBreathInstance.isValid())
+        {
+            injuredSprintingBreathInstance.set3DAttributes(RuntimeUtils.To3DAttributes(transform));
+        }
+        // It's good practice to update the after-sprint one-shot as well, in case it has a long tail.
+        if (afterSprintingBreathInstance.isValid())
+        {
+            afterSprintingBreathInstance.set3DAttributes(RuntimeUtils.To3DAttributes(transform));
+        }
+        // END FMOD CHANGE
+
         ReadInput();
         Crouch();
         UpdateVisibilityPointPositions();
@@ -215,38 +257,70 @@ public class PlayerMovement : MonoBehaviour
         eventInstance.stop(stopMode);
     }
 
-    // Renamed from HandleSprintingAudio and updated with new logic
+    // NEW FMOD CHANGE
+    /// <summary>
+    /// Manages all sprinting-related breathing sounds based on player state (sprinting, health).
+    /// This is the final, correct version.
+    /// </summary>
     private void HandleSprintingAudioFMOD()
     {
         bool justStartedSprinting = isSprinting && !previousIsSprintingState;
         bool justStoppedSprinting = !isSprinting && previousIsSprintingState;
 
+        // --- Handle Transitions ---
+
         if (justStartedSprinting)
         {
-            // Player started sprinting
-            StartEventInstanceFMOD(sprintingBreathInstance);
+            // Stop the after-sprint sound immediately if it was playing.
+            StopEventInstanceFMOD(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.IMMEDIATE);
 
-            // Stop the "after sprinting" breath if it was playing (e.g. player quickly stops/starts)
-            StopEventInstanceFMOD(afterSprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            bool isInjured = playerHealth != null && playerHealth.CurrentWoundLevel > 0;
+            if (isInjured)
+            {
+                StartEventInstanceFMOD(injuredSprintingBreathInstance);
+            }
+            else
+            {
+                StartEventInstanceFMOD(sprintingBreathInstance);
+            }
         }
         else if (justStoppedSprinting)
         {
-            // Player stopped sprinting
-            StopEventInstanceFMOD(sprintingBreathInstance, FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            // Stop whichever sprinting sound was playing.
+            StopEventInstanceFMOD(sprintingBreathInstance);
+            StopEventInstanceFMOD(injuredSprintingBreathInstance);
 
-            // NEW CHANGE
-            // Play the one-shot "after sprinting" breath ONLY if stamina dropped below half during that sprint
+            // Play the "out of breath" sound if stamina condition was met.
             if (staminaDroppedBelowHalfDuringThisSprint)
             {
                 StartEventInstanceFMOD(afterSprintingBreathInstance);
             }
-            // staminaDroppedBelowHalfDuringThisSprint will be reset by HandleStamina when a new sprint starts.
-            // END CHANGE
         }
 
+        // --- Handle State Changes During a Sprint ---
+        // This handles the case where the player gets INJURED or HEALED *while* already sprinting.
+        if (isSprinting)
+        {
+            bool isInjured = playerHealth != null && playerHealth.CurrentWoundLevel > 0;
+            if (isInjured)
+            {
+                // We are injured and sprinting, make sure the injured sound is playing and the healthy one is not.
+                StartEventInstanceFMOD(injuredSprintingBreathInstance);
+                StopEventInstanceFMOD(sprintingBreathInstance);
+            }
+            else
+            {
+                // We are healthy and sprinting, make sure the healthy sound is playing and the injured one is not.
+                StartEventInstanceFMOD(sprintingBreathInstance);
+                StopEventInstanceFMOD(injuredSprintingBreathInstance);
+            }
+        }
+
+        // IMPORTANT: Update the previous state flag at the end for the next frame's comparison.
         previousIsSprintingState = isSprinting;
     }
-    // END CHANGE
+    // END FMOD CHANGE
+
 
     private void HandleStamina()
     {
