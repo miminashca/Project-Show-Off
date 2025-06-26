@@ -1,56 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &729002256423801945
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6079153192362735457}
-  - component: {fileID: 8707074505100678751}
-  m_Layer: 15
-  m_Name: RedHatAudioEmitter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6079153192362735457
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 729002256423801945}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4366514081552452914}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8707074505100678751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 729002256423801945}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b26113c5bfa06b244a6d047640fbd896, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  whisperEvent:
-    Guid:
-      Data1: 357154168
-      Data2: 1075593827
-      Data3: 1342028957
-      Data4: 355040668
-    Path: event:/Enemies/Nixie/Creepy Kid Sound 2
 --- !u!1001 &4256535041172155097
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -129,10 +78,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: d9f0b7f752440cf4092c77d9cedbbe72, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6079153192362735457}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d9f0b7f752440cf4092c77d9cedbbe72, type: 3}
       insertIndex: -1
@@ -164,6 +110,7 @@ MonoBehaviour:
   inspectionRotationOffset: {x: 0, y: 0, z: 0}
   inspectionScaleFactor: 1
   highlightColor: {r: 1, g: 1, b: 0.5, a: 1}
+  fireflies: {fileID: 0}
 --- !u!65 &613463714244631115
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -185,8 +132,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.486627, y: 0.54720515, z: 2.4972577}
   m_Center: {x: -0.004879296, y: 0.24231853, z: -0.0101946}
---- !u!4 &4366514081552452914 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d9f0b7f752440cf4092c77d9cedbbe72, type: 3}
-  m_PrefabInstance: {fileID: 4256535041172155097}
-  m_PrefabAsset: {fileID: 0}

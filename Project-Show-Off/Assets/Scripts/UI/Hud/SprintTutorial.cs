@@ -10,6 +10,8 @@ public class SprintTutorial : MonoBehaviour
     [SerializeField] private float displayDuration = 5f;
     private bool hasBeenShown = false;
 
+
+
     private void Awake()
     {
         if (SprintTutorialUI != null)
