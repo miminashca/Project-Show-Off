@@ -132,13 +132,13 @@ public class GameManager : MonoBehaviour
         if (playerMovement != null) playerMovement.enabled = isEnabled;
     
         // Find other input-driven components and enable/disable them too
-        var lantern = FindObjectOfType<LanternController>();
+        var lantern = FindFirstObjectByType<LanternController>();
         if (lantern != null) lantern.enabled = isEnabled;
     
-        var playerController = FindObjectOfType<PlayerMovement>(); // Assuming you have a script like this
+        var playerController = FindFirstObjectByType<PlayerMovement>(); // Assuming you have a script like this
         if (playerController != null) playerController.enabled = isEnabled;
         
-        var cameraController = FindObjectOfType<CameraMovement>(); // Assuming you have a script like this
+        var cameraController = FindFirstObjectByType<CameraMovement>(); // Assuming you have a script like this
         if (cameraController != null) cameraController.enabled = isEnabled;
 
         Debug.Log($"Player controls set to: {isEnabled}");
@@ -198,9 +198,9 @@ public class GameManager : MonoBehaviour
 
     private bool FindPlayerComponents()
     {
-        playerHealth = FindObjectOfType<PlayerHealth>();
-        playerMovement = FindObjectOfType<PlayerMovement>();
-        lanternController = FindObjectOfType<LanternController>();
+        playerHealth = FindFirstObjectByType<PlayerHealth>();
+        playerMovement = FindFirstObjectByType<PlayerMovement>();
+        lanternController = FindFirstObjectByType<LanternController>();
         clueManager = ClueEventManager.Instance; // Singleton is reliable
 
         if (playerHealth != null)

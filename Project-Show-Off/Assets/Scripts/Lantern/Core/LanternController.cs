@@ -448,7 +448,7 @@ public class LanternController : MonoBehaviour
             gasBurnSoundInstance = RuntimeManager.CreateInstance(lanternGasBurnLoopEvent);
             if (currentLanternInstance != null)
             {
-                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance.transform);
+                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance); // Updated to use GameObject instead of Transform
                 gasBurnSoundInstance.start();
             }
             else
