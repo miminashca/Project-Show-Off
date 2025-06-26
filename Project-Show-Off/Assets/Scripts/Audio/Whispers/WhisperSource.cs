@@ -1,9 +1,4 @@
-// WhisperSource.cs
-//
-// Attach this script to each individual audio emitter GameObject (the child of a clue).
-// Its only purpose is to register itself with the WhisperManager when it's created
-// and unregister itself when it's destroyed.
-
+// WhisperSource.cs - (More Robust Version)
 using UnityEngine;
 using FMODUnity;
 
@@ -14,29 +9,44 @@ public class WhisperSource : MonoBehaviour
     [SerializeField]
     private EventReference whisperEvent;
 
-    // A public property so the Manager can get the event from this source.
     public EventReference WhisperEvent => whisperEvent;
+
+    // --- NEW ---
+    private bool isRegistered = false;
 
     private void OnEnable()
     {
-        // When this object is enabled, find the manager and register this source.
+        // We still try to register here for objects that are enabled/disabled at runtime.
         if (WhisperManager.Instance != null)
         {
             WhisperManager.Instance.RegisterSource(this);
+            isRegistered = true;
         }
-        else
+    }
+
+    // --- NEW ---
+    private void Start()
+    {
+        // If we failed to register in OnEnable (due to execution order),
+        // try again now. Start() is guaranteed to run after all Awake() methods.
+        if (!isRegistered && WhisperManager.Instance != null)
         {
-            Debug.LogWarning("WhisperManager.Instance not found. A WhisperSource was enabled but could not register itself.", this);
+            WhisperManager.Instance.RegisterSource(this);
+            isRegistered = true;
+        }
+        // If the manager still doesn't exist, something is wrong.
+        else if (WhisperManager.Instance == null)
+        {
+            Debug.LogWarning("WhisperSource could not find the WhisperManager in OnEnable or Start. Make sure a WhisperManager exists in the scene.", this);
         }
     }
 
     private void OnDisable()
     {
-        // When this object is disabled or destroyed, unregister it from the manager.
-        // We must check if the Instance still exists, as it might be destroyed first when closing the game.
         if (WhisperManager.Instance != null)
         {
             WhisperManager.Instance.UnregisterSource(this);
+            isRegistered = false; // Reset the flag
         }
     }
 }
