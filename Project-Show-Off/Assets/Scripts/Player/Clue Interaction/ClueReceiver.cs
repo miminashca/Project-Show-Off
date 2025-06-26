@@ -24,19 +24,21 @@ public class ClueReceiver : MonoBehaviour
             ClueEventManager.Instance.OnGameDataLoaded += SetInitialState;
         }
         
-        // Check initial state on load
-        if (ClueEventManager.Instance != null && ClueEventManager.Instance.IsClueSubmitted(clueID))
-        {
-            // This clue was already submitted in the loaded save data.
-            // Immediately set the correct visual state.
-            SetToSubmittedState();
-        }
-        else
-        {
-            // Clue is not yet submitted, show the ghost.
-            clueGhost.SetActive(false);
-            clueNormal.SetActive(false);
-        }
+        
+        SetInitialState();
+        // // Check initial state on load
+        // if (ClueEventManager.Instance != null && ClueEventManager.Instance.IsClueSubmitted(clueID))
+        // {
+        //     // This clue was already submitted in the loaded save data.
+        //     // Immediately set the correct visual state.
+        //     SetToSubmittedState();
+        // }
+        // else
+        // {
+        //     // Clue is not yet submitted, show the ghost.
+        //     clueGhost.SetActive(false);
+        //     clueNormal.SetActive(false);
+        // }
     }
 
     private void OnDestroy()
