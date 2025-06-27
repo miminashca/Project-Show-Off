@@ -60,7 +60,11 @@ MonoBehaviour:
   StunDuration: 3
   MaxTensionDuration: 10
   MyNixieZone: {fileID: 0}
-  AttackSound: {fileID: 0}
+  MyWaterZone: {fileID: 0}
+  ShowRadiuses: 1
+  ShowLineToPlayer: 1
+  ShowLastKnownPosition: 1
+  ShowStateSpecificGizmos: 1
 --- !u!114 &1207136943921125070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,6 +91,7 @@ MonoBehaviour:
   PeekingYOffset: 0.2
   VisualsTransform: {fileID: 7730879988559779406}
   VisualsLerpSpeed: 20
+  ShowMovementGizmos: 1
 --- !u!114 &5223042645164847231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,11 +118,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   luringSound:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: 357154168
+      Data2: 1075593827
+      Data3: 1342028957
+      Data4: 355040668
+    Path: event:/Enemies/Nixie/Creepy Kid Sound 2
   provocativeGruntSound:
     Guid:
       Data1: 1955501360
@@ -148,8 +153,8 @@ MonoBehaviour:
     Path: 
   minLuringInterval: 25
   maxLuringInterval: 45
-  minProvocativeInterval: 5
-  maxProvocativeInterval: 15
+  minProvocativeInterval: 10
+  maxProvocativeInterval: 20
 --- !u!195 &8319817040119715842
 NavMeshAgent:
   m_ObjectHideFlags: 0
