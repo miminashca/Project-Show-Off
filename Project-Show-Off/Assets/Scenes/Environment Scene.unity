@@ -63830,76 +63830,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6801645619671634f80d0545ccaf8c55, type: 3}
---- !u!1 &1716768372
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1716768375}
-  - component: {fileID: 1716768374}
-  - component: {fileID: 1716768373}
-  m_Layer: 0
-  m_Name: SprintPopUpTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1716768373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716768372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f6e0c5a93be93074c9e9de85ab07461a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SprintTutorialUI: {fileID: 1011185895}
-  SprintCanvas: {fileID: 1011185896}
-  fadeDuration: 0.5
-  displayDuration: 5
---- !u!65 &1716768374
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716768372}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 4.831878, y: 4.8512993, z: 11.343188}
-  m_Center: {x: 0.601192, y: 1.9256285, z: 0.11175398}
---- !u!4 &1716768375
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1716768372}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.32326484, z: -0, w: 0.94630855}
-  m_LocalPosition: {x: 144.91, y: 6.22, z: -144.47}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 37.721, z: 0}
 --- !u!1 &1719501465
 GameObject:
   m_ObjectHideFlags: 0
@@ -69960,17 +69890,14 @@ PrefabInstance:
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
       value: -3.6912785
-      value: 176.35
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
       value: 12.633
-      value: 7.67
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
       value: -3.9
-      value: -170
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w
@@ -80105,7 +80032,7 @@ PrefabInstance:
       objectReference: {fileID: 1011185895}
     - target: {fileID: 7591503752764419214, guid: bc4efdf165492c1448f4621ce6b89443, type: 3}
       propertyPath: m_Name
-      value: Sprint Tutorial
+      value: SprintPopUpTrigger
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
