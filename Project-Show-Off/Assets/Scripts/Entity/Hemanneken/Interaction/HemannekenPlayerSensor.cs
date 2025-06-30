@@ -87,7 +87,7 @@ public class HemannekenPlayerSensor : MonoBehaviour
     {
         if (PlayerTransform == null)
         {
-            Debug.LogWarning("Attempted to GetPlayerCurrentPosition, but playerTransform is null. Returning last known.", this);
+            Debug.LogWarning("Attempted to GetPlayerCurrentPosition, but PlayerTransform is null. Returning last known.", this);
             return PlayerLastKnownPosition;
         }
         return PlayerTransform.position;
@@ -97,7 +97,7 @@ public class HemannekenPlayerSensor : MonoBehaviour
     {
         if (PlayerTransform == null)
         {
-            Debug.LogWarning("Attempted to GetPlayerCameraPosition, but playerTransform is null. Returning last known.", this);
+            Debug.LogWarning("Attempted to GetPlayerCameraPosition, but PlayerTransform is null. Returning last known.", this);
             return PlayerLastKnownPosition;
         }
         return PlayerTransform.gameObject.GetComponentInChildren<Camera>().transform.position;
