@@ -2,7 +2,13 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
+
 [RequireComponent(typeof(HemannekenPlayerSensor), typeof(AgentMovement), typeof(HemannekenVisuals))]
+// NEW FMOD CHANGE
+[RequireComponent(typeof(HemannekenSoundController))]
+// END FMOD CHANGE
+
 public class HemannekenStateMachine : StateMachine
 {
     [Header("Configuration")]
@@ -15,6 +21,11 @@ public class HemannekenStateMachine : StateMachine
     public PlayerStateController Interactor { get; private set; }
     public LanternController PlayerLanternController { get; private set; }
     public PlayerHealth PlayerHealth { get; private set; }
+
+    // NEW FMOD CHANGE
+    public HemannekenSoundController SoundController { get; private set; }
+    // END FMOD CHANGE
+
 
     // Internal state properties, managed by this SM or its components
     public bool IsInitiallyTrueForm { get; set; } // Set by HemannekenManager on spawn
@@ -48,6 +59,11 @@ public class HemannekenStateMachine : StateMachine
         Movement = GetComponent<AgentMovement>();
         Visuals = GetComponent<HemannekenVisuals>();
         Interactor = FindFirstObjectByType<PlayerStateController>();
+
+        // NEW FMOD CHANGE
+        SoundController = GetComponent<HemannekenSoundController>();
+        // END FMOD CHANGE
+
 
         if (Sensor == null) Debug.LogError("PlayerSensor not found!", this);
         else Sensor.Initialize(aiConfig, this.transform);
