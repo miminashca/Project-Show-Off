@@ -6,7 +6,6 @@ public class HemannekenSoundController : MonoBehaviour
 {
     [Header("FMOD Event Paths - Hemanneken")]
     [SerializeField] private EventReference idleSound;
-    // Removed direct PlayFarHeySound and PlayMidHeySound as they are now chosen by RespondToPlayerHey
     [SerializeField] private EventReference farHeySound; // Used by RespondToPlayerHey
     [SerializeField] private EventReference midHeySound; // Used by RespondToPlayerHey
     [SerializeField] private EventReference stunnedSound;
@@ -16,6 +15,10 @@ public class HemannekenSoundController : MonoBehaviour
 
     [Header("Sound Settings")]
     [SerializeField] private float closeHeyInterval = 5f;
+    // NEW FMOD CHANGE
+    [Tooltip("The time in seconds between each automatic 'Hey' response from the Hemanneken during its periodic loop.")]
+    [SerializeField] private float periodicHeyInterval = 60f;
+    // END FMOD CHANGE
 
     [Header("Distance Thresholds")]
     [Tooltip("Distance beyond which the 'Far Hey' sound is used for player callback.")]
@@ -24,6 +27,11 @@ public class HemannekenSoundController : MonoBehaviour
     private StudioEventEmitter idleEventEmitter;
     private Coroutine closeHeyCoroutineInstance;
     private FMOD.Studio.EventInstance closeHeyEventInstance;
+
+    // NEW FMOD CHANGE
+    private Coroutine periodicHeyCoroutineInstance;
+    private Transform playerTransform; // Cache the player's transform for performance
+    // END FMOD CHANGE
 
     void Awake()
     {
@@ -39,6 +47,19 @@ public class HemannekenSoundController : MonoBehaviour
         {
             Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is set, but no StudioEventEmitter component found on {gameObject.name}.");
         }
+
+        // NEW FMOD CHANGE
+        // Find the player's transform to be used by the periodic hey response.
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            playerTransform = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogError($"HemannekenSoundController on {gameObject.name}: Could not find a GameObject with the 'Player' tag. Periodic 'Hey' sounds will not work.");
+        }
+        // END FMOD CHANGE
     }
 
     // --- Public Methods ---
@@ -114,6 +135,54 @@ public class HemannekenSoundController : MonoBehaviour
     }
     #endregion
 
+    // NEW FMOD CHANGE
+    #region Periodic Hey Loop
+    /// <summary>
+    /// Starts a loop that makes the Hemanneken automatically respond with a 'Hey' at a regular interval.
+    /// </summary>
+    public void StartPeriodicHeyLoop()
+    {
+        if (periodicHeyCoroutineInstance == null)
+        {
+            if (playerTransform != null)
+            {
+                Debug.Log($"<color=green>SOUND:</color> Starting Periodic Hey Loop on {gameObject.name}.");
+                periodicHeyCoroutineInstance = StartCoroutine(PeriodicHeyCoroutine());
+            }
+            else
+            {
+                Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: Cannot start PeriodicHeyLoop because Player Transform was not found.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Stops the periodic 'Hey' response loop.
+    /// </summary>
+    public void StopPeriodicHeyLoop()
+    {
+        if (periodicHeyCoroutineInstance != null)
+        {
+            Debug.Log($"<color=green>SOUND:</color> Stopping Periodic Hey Loop on {gameObject.name}.");
+            StopCoroutine(periodicHeyCoroutineInstance);
+            periodicHeyCoroutineInstance = null;
+        }
+    }
+
+    private IEnumerator PeriodicHeyCoroutine()
+    {
+        while (true)
+        {
+            // Wait for the specified interval before playing the sound
+            yield return new WaitForSeconds(periodicHeyInterval);
+
+            // Call the existing response method, using the cached player transform
+            RespondToPlayerHey(playerTransform);
+        }
+    }
+    #endregion
+    // END FMOD CHANGE
+
     #region State Sounds
     public void PlayStunnedSound()
     {
@@ -188,6 +257,9 @@ public class HemannekenSoundController : MonoBehaviour
     {
         StopIdleSound();
         StopCloseHeyLoop();
+        // NEW FMOD CHANGE
+        StopPeriodicHeyLoop();
+        // END FMOD CHANGE
     }
 
     void OnDestroy()
