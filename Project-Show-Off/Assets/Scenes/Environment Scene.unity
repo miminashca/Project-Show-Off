@@ -8244,7 +8244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9432,6 +9432,7 @@ GameObject:
   - component: {fileID: 257389982}
   - component: {fileID: 257389983}
   - component: {fileID: 257389984}
+  - component: {fileID: 257389985}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -9518,6 +9519,37 @@ MonoBehaviour:
   maxSoundPlayInterval: 60
   distanceCheckInterval: 4
   playerTag: Player
+--- !u!114 &257389985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257389980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1151012315
+      Data2: 1088840956
+      Data3: -1816812406
+      Data4: -1633175395
+    Path: event:/Muting Snapshot
+  Event: 
+  EventPlayTrigger: 1
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &258459545
 GameObject:
   m_ObjectHideFlags: 0
@@ -36974,6 +37006,7 @@ Transform:
   - {fileID: 1202342645}
   - {fileID: 792284935}
   - {fileID: 205689843}
+  - {fileID: 1212996904}
   m_Father: {fileID: 297864443}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &939294521
@@ -70969,15 +71002,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -3.6912785
+      value: 178.51
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.633
+      value: 6.27
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.9
+      value: -170.21
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w
