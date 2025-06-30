@@ -2589,7 +2589,6 @@ GameObject:
   - component: {fileID: 3654517222590359366}
   - component: {fileID: 7393334718967032232}
   - component: {fileID: 6055557041492792667}
-  - component: {fileID: 3163869772860014768}
   - component: {fileID: 1356360969041273350}
   - component: {fileID: 6166247150070953329}
   m_Layer: 19
@@ -2808,91 +2807,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &3163869772860014768
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7876340740082008496}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fba00b72a0b61bb4a980c78b5c42f008, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  poemMonologueSound:
-    Guid:
-      Data1: -1335721727
-      Data2: 1235955613
-      Data3: 208302251
-      Data4: 1695295673
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/Echoes Drown
-  aggressiveYellSound:
-    Guid:
-      Data1: 1561153696
-      Data2: 1324661579
-      Data3: 1441975229
-      Data4: 33400211
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH Yell
-  idleGruntSound:
-    Guid:
-      Data1: 240652729
-      Data2: 1326968673
-      Data3: 2045414027
-      Data4: -2083178377
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/Seeking Mumbles
-  investigativeGruntSound:
-    Guid:
-      Data1: 240652729
-      Data2: 1326968673
-      Data3: 2045414027
-      Data4: -2083178377
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/Seeking Mumbles
-  chaseYellSound:
-    Guid:
-      Data1: 1426586461
-      Data2: 1131576932
-      Data3: -1390942313
-      Data4: -809641019
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/THere he is
-  focusGruntSound:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
-  gunCockSound:
-    Guid:
-      Data1: -1738828896
-      Data2: 1130069701
-      Data3: 1402679951
-      Data4: 943404023
-    Path: event:/Enemies/Thimble Hunter/Gun Cock
-  gunFireSound:
-    Guid:
-      Data1: 255676975
-      Data2: 1262104730
-      Data3: -1409848942
-      Data4: 1445907451
-    Path: event:/Enemies/Thimble Hunter/Gunshot Far
-  damnMissedSound:
-    Guid:
-      Data1: -535569254
-      Data2: 1335250690
-      Data3: 1615521688
-      Data4: 573964433
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH DAMN!
-  gotchaHitSound:
-    Guid:
-      Data1: 1858992669
-      Data2: 1159720964
-      Data3: 556815021
-      Data4: -2100356666
-    Path: event:/Enemies/Thimble Hunter/Voice Lines/TH Curse
-  poemMonologueEmitter: {fileID: 0}
-  minIdleGruntInterval: 20
-  maxIdleGruntInterval: 40
 --- !u!82 &1356360969041273350
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3075,38 +2989,6 @@ MonoBehaviour:
   poemMonologueEmitter: {fileID: 0}
   minIdleGruntInterval: 10
   maxIdleGruntInterval: 20
---- !u!1 &9024259558427234861
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 7145941349948846306}
-  m_Layer: 0
-  m_Name: jnt_neck_b
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &7145941349948846306
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8000671407378338152}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -14.139756, y: -1.1832914e-30, z: 1.0658141e-14}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 3137444102795062202}
-  m_Father: {fileID: 1743275950477370216}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8147468196873045605
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,6 +3214,38 @@ Transform:
   m_Children:
   - {fileID: 8444883717540002767}
   m_Father: {fileID: 975162958295537492}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9024259558427234861
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7145941349948846306}
+  m_Layer: 0
+  m_Name: jnt_neck_b
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7145941349948846306
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9024259558427234861}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -14.139756, y: -1.1832914e-30, z: 1.0658141e-14}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 3137444102795062202}
+  m_Father: {fileID: 1743275950477370216}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9113606421102564576
 GameObject:
