@@ -10,7 +10,16 @@ public class HemannekenRoamingState : State
     public override void OnEnterState()
     {
         Debug.Log("Entered Roaming State");
-        
+
+        // --- Sound Setup ---
+        // Start the ambient idle sound and the periodic 'Hey' loop for this state.
+        if (HSM.SoundController != null)
+        {
+            //HSM.SoundController.StartIdleSound();
+            HSM.SoundController.StartPeriodicHeyLoop();
+        }
+        // -------------------
+
         if (HSM.Visuals.IsTrueForm)
         {
             HSM.Movement.RoamWaypoints(MovementStyle.SplineWave, false, false);
@@ -42,7 +51,7 @@ public class HemannekenRoamingState : State
                 Debug.Log("Real rabbit? " + HSM.isRealRabbit);
 
                 if (HSM.isRealRabbit)
-                { 
+                {
                     SM.TransitToState(new RabbitEscapeState(SM));
                     return;
                 }
@@ -50,18 +59,18 @@ public class HemannekenRoamingState : State
                 {
                     SM.TransitToState(new HemannekenEnchantixState(SM));
                 }
-                return; 
+                return;
             }
         }
     }
-    
+
     // Called when global "Hey" event fires
     private void HandleHeyTriggered(Vector3 pos)
     {
         if (HSM.Sensor.IsPlayerInInvestigateDistance())
         {
             HSM.Sensor.PlayerLastKnownPosition = pos;
-            if (HSM.Visuals.IsTrueForm) 
+            if (HSM.Visuals.IsTrueForm)
             {
                 SM.TransitToState(new HemannekenInvestigatingState(SM));
             }
@@ -76,7 +85,17 @@ public class HemannekenRoamingState : State
     public override void OnExitState()
     {
         Debug.Log("Exited Roaming State");
-        
+
+        // --- Sound Cleanup ---
+        // Stop the looping sounds that were started by this state to ensure
+        // they don't leak into the next state (e.g., Chasing).
+        if (HSM.SoundController != null)
+        {
+            //HSM.SoundController.StopIdleSound();
+            HSM.SoundController.StopPeriodicHeyLoop();
+        }
+        // ---------------------
+
         HSM.Movement.StopAgentCompletely(true);
 
         HSM.Sensor.OnPlayerDetected -= HandlePlayerDirectlyDetected;
