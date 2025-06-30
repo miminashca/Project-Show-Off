@@ -9502,6 +9502,9 @@ MonoBehaviour:
     m_Bits: 2621440
   monsterMaxDetectionRange: 40
   monsterMaxTensionRange: 10
+  shotTensionAmount: 1
+  shotLingerDuration: 10
+  shotTensionRampUpSpeed: 0.5
   tensionSmoothingSpeed: 2
 --- !u!114 &257389984
 MonoBehaviour:
@@ -71002,15 +71005,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 178.51
+      value: -5.33
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.27
+      value: 8.73
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -170.21
+      value: -34.48
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w
