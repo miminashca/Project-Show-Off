@@ -17,12 +17,13 @@ public class HunterStateMachine : StateMachine
         HunterAI = GetComponent<HunterAI>();
         if (HunterAI == null)
         {
-            Debug.LogError("ThimbleHunterStateMachine requires a ThimbleHunterAI component on the same GameObject!", this);
+            Debug.LogError("HunterStateMachine requires a ThimbleHunterAI component on the same GameObject!", this);
             enabled = false;
             return;
         }
 
-        // Initialize all states, passing 'this' (the StateMachine)
+        // Initialize all states for Phase II: Active Hunter
+
         RoamingState = new HunterRoamingState(this);
         InvestigatingState = new HunterInvestigatingState(this);
         ChasingState = new HunterChasingState(this);
@@ -31,18 +32,10 @@ public class HunterStateMachine : StateMachine
         ShootingState = new HunterShootingState(this);
     }
 
-    // Implementation of the abstract property from your base StateMachine
+    // The InitialState is now ALWAYS the RoamingState.
+    // When this GameObject is enabled, it's hostile.
     protected override State InitialState
     {
-        get
-        {
-            if (RoamingState == null)
-            {
-                Debug.LogError("RoamingState not initialized when InitialState was accessed!", this);
-                // Fallback or force re-initialization if critical
-                Awake();
-            }
-            return RoamingState;
-        }
+        get { return RoamingState; }
     }
 }

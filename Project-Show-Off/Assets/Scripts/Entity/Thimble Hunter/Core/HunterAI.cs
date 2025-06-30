@@ -289,11 +289,6 @@ public class HunterAI : MonoBehaviour
         ProcessSensorsAndDetectionLogic();
     }
 
-    void LateUpdate()
-    {
-
-    }
-
     void ProcessSensorsAndDetectionLogic()
     {
         // Exit early if we have no target
