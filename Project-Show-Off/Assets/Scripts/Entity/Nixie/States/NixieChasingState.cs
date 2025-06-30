@@ -49,10 +49,12 @@ public class NixieChasingState : State
 
         lastCalculatedTarget = nixieAI.transform.position;
 
+        // NEW FMOD CHANGE
         if (nixieSoundController != null)
         {
             nixieSoundController.PlayChaseGrunt();
         }
+        // END FMOD CHANGE
     }
 
     public override void Handle()
