@@ -7,9 +7,15 @@ public class LadySpawner : MonoBehaviour
     [SerializeField] private LadyAIConfig config;
     [Tooltip("How often (in seconds) to check for player proximity.")]
     [SerializeField] private float proximityCheckInterval = 2.0f;
+    [SerializeField] private float dieToSpawnInterval = 30f;
 
     private Transform playerTransform;
     private bool isActivated = false;
+
+    private float timer;
+
+    private LadyStateMachine currentLady;
+    private bool canBeSpawned = true;
 
     private void Awake()
     {
@@ -19,6 +25,12 @@ public class LadySpawner : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.OnGameLoaded -= Init;
+    }
+
+    private void Update()
+    {
+        timer += Time.deltaTime;
+        if (timer >= dieToSpawnInterval) canBeSpawned = true;
     }
 
     private void Init()
@@ -47,7 +59,7 @@ public class LadySpawner : MonoBehaviour
     {
         float distance = Vector3.Distance(playerTransform.position, transform.position);
 
-        if (distance <= config.activationDistance)
+        if (distance <= config.activationDistance && canBeSpawned)
         {
             if (!isActivated)
             {
@@ -82,11 +94,14 @@ public class LadySpawner : MonoBehaviour
         GameObject ladyInstance = Instantiate(whiteLadyPrefab, transform.position, transform.rotation);
         GameManager.Instance.isWhiteLadyActive = true;
 
+        canBeSpawned = false;
+        
         // Pass essential references to the newly spawned AI
-        var aiController = ladyInstance.GetComponent<LadyStateMachine>();
-        if (aiController != null)
+        currentLady = ladyInstance.GetComponent<LadyStateMachine>();
+        if (currentLady != null)
         {
-            aiController.Initialize(config, playerTransform);
+            currentLady.Initialize(config, playerTransform);
+            currentLady.OnLadyDie += StartSpawnWaitTimer;
         }
         else
         {
@@ -103,5 +118,13 @@ public class LadySpawner : MonoBehaviour
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(transform.position, config.activationDistance);
         }
+    }
+
+    private void StartSpawnWaitTimer()
+    {
+        currentLady.OnLadyDie -= StartSpawnWaitTimer;
+        canBeSpawned = false;
+        currentLady = null;
+        timer = 0f;
     }
 }

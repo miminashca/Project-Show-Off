@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 074515eed28fb40a4b171bbc6a230410, type: 3}
   m_Name: LadyAIConfig
   m_EditorClassIdentifier: 
-  activationDistance: 5
-  timeToTriggerSeen: 4
-  timeToDissipate: 5
-  despawnDelay: 1.5
+  activationDistance: 12.45
+  timeToTriggerSeen: 1
+  timeToDissipate: 10
+  timeToReturnCreeping: 1
+  despawnDelay: 1
   timeToDamage: 5
   timeToDeath: 10
-  minFovValue: 10
-  fovTransitionDuration: 3
-  cameraPullStrength: 1
+  fovTransitionDuration: 0.1
+  dollyZoomTargetScale: 0.4
+  dynamicFovSmoothing: 1
+  minCameraPullLerp: 0
+  maxCameraPullLerp: 0.19
   gazeDamageAmount: 1
   creepingAudioEvent: event:/SFX/WhiteLady/Creeping
   playerBreathAudioEvent: event:/SFX/Player/FearBreath
