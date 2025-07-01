@@ -45,6 +45,7 @@ public class GazeSystem : MonoBehaviour
 
         // Req 3.1.3: Perform the two visibility checks
         IsTargetVisible = IsInFrustum() && IsNotOccluded();
+        Debug.Log("Visible: " + IsTargetVisible);
     }
 
     private bool IsInFrustum()
