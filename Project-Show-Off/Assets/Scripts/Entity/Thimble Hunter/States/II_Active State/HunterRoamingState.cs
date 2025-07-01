@@ -24,13 +24,10 @@ public class HunterRoamingState : State
 
         SetNewRoamDestination();
 
-        // NEW FMOD CHANGE
-        // Tell the sound controller to begin the periodic idle grunt routine.
         if (_hunterAI.SoundController != null)
         {
             _hunterAI.SoundController.StartIdleGrunts();
         }
-        // END FMOD CHANGE
     }
 
     public override void Handle()
@@ -46,6 +43,7 @@ public class HunterRoamingState : State
         if (_hunterAI.CanHearPlayerAlert)
         {
             Debug.Log($"{_hunterAI.gameObject.name} (Roaming): Heard player alert. Transitioning to Investigate.");
+
             _hunterAI.AcknowledgePlayerAlert();
             SM.TransitToState(_hunterSM.InvestigatingState);
             return;
@@ -75,6 +73,7 @@ public class HunterRoamingState : State
         if (superpositionNode != null)
         {
             Debug.Log($"{_hunterAI.gameObject.name}: Superpositioning to {superpositionNode.name} because player is far and not looking.");
+
             if (_hunterAI.NavAgent.Warp(superpositionNode.position))
             {
                 SetNewRoamDestination();
@@ -108,6 +107,7 @@ public class HunterRoamingState : State
             else
             {
                 Debug.LogWarning($"{_hunterAI.gameObject.name} is not on a NavMesh. Cannot set roam destination.", _hunterAI);
+
                 _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
             }
         }
@@ -121,13 +121,9 @@ public class HunterRoamingState : State
     {
         if (_hunterAI == null) return;
 
-        // NEW FMOD CHANGE
-        // Tell the sound controller to stop the periodic idle grunt routine
-        // to ensure it doesn't play during other states (like chasing).
         if (_hunterAI.SoundController != null)
         {
             _hunterAI.SoundController.StopIdleGrunts();
         }
-        // END FMOD CHANGE
     }
 }

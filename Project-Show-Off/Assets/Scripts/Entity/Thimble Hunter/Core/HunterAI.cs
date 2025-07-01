@@ -77,14 +77,6 @@ public class HunterAI : MonoBehaviour
     public float BodyTurnSpeedInAim = 10f; // How fast the Hunter's body orients while aiming
     private Vector3 actualFiringDirection;
 
-    [Header("Procedural Aiming Rig")]
-    [Tooltip("The chain of bones to rotate for procedural aiming, from the lowest spine bone to the head.")]
-    public Transform[] SpineAndNeckBones;
-    [Tooltip("How much of the total rotation should be applied. 1 = full tracking, 0 = no tracking.")]
-    [Range(0f, 1f)]
-    public float AimingWeight = 1.0f;
-    private Quaternion[] lastBoneRotations; // To store the rotations for smooth slerping
-
     [Header("Timers")]
     public float AimTime = 2.0f;
     public float ReloadTime = 3.0f;
@@ -165,11 +157,6 @@ public class HunterAI : MonoBehaviour
         if (EyeLevelTransform == null) EyeLevelTransform = transform;
         if (GunMuzzleTransform == null) GunMuzzleTransform = transform;
 
-        if (SpineAndNeckBones != null && SpineAndNeckBones.Length > 0)
-        {
-            lastBoneRotations = new Quaternion[SpineAndNeckBones.Length];
-        }
-
         CurrentSuperpositionCooldownTimer = 0f;
     }
 
@@ -190,12 +177,12 @@ public class HunterAI : MonoBehaviour
 
     void Update()
     {
+        // Update timers and other non-transform logic
         if (CurrentSuperpositionCooldownTimer > 0) CurrentSuperpositionCooldownTimer -= Time.deltaTime;
         if (AimAttemptCooldownTimer > 0) AimAttemptCooldownTimer -= Time.deltaTime;
 
         if (PlayerTransform == null || TargetPlayerStatus == null)
         {
-            // If player doesn't exist, decay detection
             if (DetectionProgress > 0)
             {
                 DetectionProgress -= DetectionDecayRate * Time.deltaTime;
@@ -203,71 +190,6 @@ public class HunterAI : MonoBehaviour
                 UpdateFullySpottedStatus();
             }
             return;
-        }
-
-        // Exit if the rig is not set up
-        if (SpineAndNeckBones == null || SpineAndNeckBones.Length == 0 || lastBoneRotations == null)
-        {
-            return;
-        }
-
-        // Check the animator's "IsAiming" boolean. This is our master switch.
-        bool isCurrentlyAiming = HunterAnimator.GetBool("IsAiming");
-
-        if (isCurrentlyAiming)
-        {
-            // --- AIMING LOGIC ---
-
-            // Get the direction from the hunter's base to the confirmed target point.
-            Vector3 aimDirection = (CurrentConfirmedAimTarget - transform.position).normalized;
-            if (aimDirection == Vector3.zero) return; // Avoid aiming at origin if target is lost
-
-            // Calculate the total rotation needed for the whole body to face the target.
-            // This is an "offset" from the character's natural forward direction.
-            Quaternion totalRotationOffset = Quaternion.FromToRotation(transform.forward, aimDirection);
-
-            // Distribute this total offset among the bones.
-            // We use Slerp with Quaternion.identity to get a fraction of the total rotation.
-            // This makes the spine bend naturally rather than having one joint do all the work.
-            Quaternion perBoneRotation = Quaternion.Slerp(Quaternion.identity, totalRotationOffset, AimingWeight / SpineAndNeckBones.Length);
-
-            // Apply the calculated rotation to each bone in the chain.
-            for (int i = 0; i < SpineAndNeckBones.Length; i++)
-            {
-                if (SpineAndNeckBones[i] == null) continue;
-
-                // The goal is to add our calculated "per bone" offset to the bone's base rotation.
-                // A bone's base rotation is its rotation from the previous frame's animation.
-                // By using its current localRotation, we are correctly adding to the animator's work.
-                Quaternion goalRotation = perBoneRotation * SpineAndNeckBones[i].localRotation;
-
-                // Smoothly interpolate from the bone's current rotation to its new goal rotation.
-                // This makes the aim feel weighty and not robotic, controlled by AimCatchUpSpeed.
-                Quaternion smoothedRotation = Quaternion.Slerp(SpineAndNeckBones[i].localRotation, goalRotation, Time.deltaTime * AimCatchUpSpeed);
-
-                // Apply the final, smoothed rotation and store it for the next frame.
-                SpineAndNeckBones[i].localRotation = smoothedRotation;
-                lastBoneRotations[i] = smoothedRotation; // Store the result
-            }
-        }
-        else
-        {
-            // --- NOT AIMING / RETURN TO REST LOGIC ---
-
-            // If not aiming, we must smoothly return the bones to their default animated position.
-            // We do this by interpolating back to the "at rest" pose provided by the animator.
-            for (int i = 0; i < SpineAndNeckBones.Length; i++)
-            {
-                if (SpineAndNeckBones[i] == null) continue;
-
-                // `lastBoneRotations[i]` holds the pose from the last frame we were aiming.
-                // `SpineAndNeckBones[i].localRotation` holds the pose the animator wants THIS frame.
-                // We smoothly blend between them to avoid a "snap" when aiming stops.
-                SpineAndNeckBones[i].localRotation = Quaternion.Slerp(lastBoneRotations[i], SpineAndNeckBones[i].localRotation, Time.deltaTime * AimCatchUpSpeed);
-
-                // Update the stored rotation to the new, closer-to-rest pose.
-                lastBoneRotations[i] = SpineAndNeckBones[i].localRotation;
-            }
         }
 
         ProcessSensorsAndDetectionLogic();
@@ -478,12 +400,18 @@ public class HunterAI : MonoBehaviour
         HunterAnimator.SetTrigger("Shoot");
         HunterEventBus.HunterFiredShot();
 
+        if (PlayerTransform == null || GunMuzzleTransform == null) return;
+
+        Vector3 idealShotDirection = (CurrentConfirmedAimTarget - GunMuzzleTransform.position).normalized;
+        if (idealShotDirection == Vector3.zero)
+        {
+            idealShotDirection = transform.forward; // Failsafe
+        }
+
         if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
         {
             Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, Quaternion.LookRotation(actualFiringDirection), GunMuzzleTransform);
         }
-
-        if (PlayerTransform == null || GunMuzzleTransform == null) return;
 
         // --- Apply Weapon Spread ---
         Quaternion spreadRotation = Quaternion.Euler(
@@ -491,7 +419,7 @@ public class HunterAI : MonoBehaviour
             Random.Range(-WeaponSpreadAngle / 2f, WeaponSpreadAngle / 2f),
             0f
         );
-        Vector3 finalShotDirection = spreadRotation * actualFiringDirection; 
+        Vector3 finalShotDirection = spreadRotation * actualFiringDirection;
 
         // --- Submergence Check (for the PLAYER'S general position, not the exact aim point) ---
         Vector3 playerCheckPosForSubmergence = GetPlayerAimPoint();
@@ -622,17 +550,15 @@ public class HunterAI : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (GizmoToggles.ShowVisionCone)
+        if (GizmoToggles.ShowVisionCone && EyeLevelTransform != null)
         {
-            if (EyeLevelTransform != null)
-            {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
-                Vector3 fovLine1 = Quaternion.AngleAxis(VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
-                Vector3 fovLine2 = Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward * VisionConeRange;
-                Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine1);
-                Gizmos.DrawLine(EyeLevelTransform.position, EyeLevelTransform.position + fovLine2);
-            }
+            Gizmos.color = Color.yellow;
+            // Use Handles for a filled cone for better visibility
+#if UNITY_EDITOR
+            UnityEditor.Handles.color = new Color(1, 1, 0, 0.1f);
+            UnityEditor.Handles.DrawSolidArc(EyeLevelTransform.position, EyeLevelTransform.up, Quaternion.AngleAxis(-VisionConeAngle / 2, EyeLevelTransform.up) * EyeLevelTransform.forward, VisionConeAngle, VisionConeRange);
+#endif
+            Gizmos.DrawWireSphere(EyeLevelTransform.position, VisionConeRange);
         }
 
         if (GizmoToggles.ShowVolumetricLoSLines)
@@ -711,24 +637,14 @@ public class HunterAI : MonoBehaviour
         {
             Gizmos.color = new Color(0.8f, 0.5f, 0.2f, 0.7f);
             Gizmos.DrawWireSphere(transform.position, MaxSuperpositionDistance);
-            if (PlayerTransform != null && Vector3.Distance(transform.position, PlayerTransform.position) > MaxSuperpositionDistance)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position, PlayerTransform.position);
-            }
         }
-
         if (GizmoToggles.ShowLastKnownPlayerPosition && LastKnownPlayerPosition != Vector3.zero)
         {
             Gizmos.color = Color.magenta;
             Gizmos.DrawSphere(LastKnownPlayerPosition, 0.5f);
-        }
-
-        if (GizmoToggles.ShowCurrentAimTarget && CurrentConfirmedAimTarget != Vector3.zero)
-        {
-            Gizmos.color = Color.white;
-            Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.2f);
-            if (GunMuzzleTransform != null) Gizmos.DrawLine(GunMuzzleTransform.position, CurrentConfirmedAimTarget);
+#if UNITY_EDITOR
+            UnityEditor.Handles.Label(LastKnownPlayerPosition + Vector3.up, "Last Known Position");
+#endif
         }
 
         if (GizmoToggles.ShowWaterLevelAndSubmergence && PlayerTransform != null)
@@ -755,6 +671,27 @@ public class HunterAI : MonoBehaviour
             {
                 Gizmos.color = Color.yellow;
                 Gizmos.DrawSphere(currentAimGizmoPoint, 0.25f);
+            }
+        }
+
+        if (Application.isPlaying && HunterAnimator != null && HunterAnimator.GetBool("IsAiming"))
+        {
+            // 1. Show the Current Confirmed Aim Target
+            if (GizmoToggles.ShowCurrentAimTarget && CurrentConfirmedAimTarget != Vector3.zero)
+            {
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(CurrentConfirmedAimTarget, 0.2f);
+#if UNITY_EDITOR
+                UnityEditor.Handles.Label(CurrentConfirmedAimTarget, "Aim Target");
+#endif
+
+                if (GunMuzzleTransform != null)
+                {
+                    // 2. Draw the ACTUAL Firing Direction (red line)
+                    // This includes sway and is the most important for debugging.
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawRay(GunMuzzleTransform.position, actualFiringDirection * VisionConeRange);
+                }
             }
         }
     }

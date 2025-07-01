@@ -25,23 +25,14 @@ public class HunterChasingState : State
 
         _hunterAI.HunterAnimator.SetFloat("MovementSpeed", _hunterAI.MovementSpeedChasing);
 
-        // This logic prevents the sound from playing repeatedly if we are just cycling
-        // between Chasing and Aiming/Suppressing. The yell should only happen once
-        // at the start of the encounter.
         if (SM.PreviousState is not HunterAimingState and not HunterSuppressingState)
         {
             HunterEventBus.HunterSpottedPlayer(_hunterAI.PlayerTransform.gameObject);
 
-            // We comment out the old sound system call...
-            // _hunterAI.PlaySound(_hunterAI.SpottedPlayerSound);
-
-            // NEW FMOD CHANGE
-            // ...and replace it with our new FMOD event call.
             if (_hunterAI.SoundController != null)
             {
                 _hunterAI.SoundController.PlayChaseYell();
             }
-            // END FMOD CHANGE
         }
 
         timeSinceLostSight = 0f; // Reset the grace period timer
@@ -52,11 +43,11 @@ public class HunterChasingState : State
         if (_hunterAI == null || _hunterAI.PlayerTransform == null)
         {
             Debug.LogWarning($"{_hunterAI.gameObject.name} lost player reference in ChasingState. Transitioning to Investigate.");
+
             SM.TransitToState(_hunterSM.InvestigatingState);
             return;
         }
 
-        // --- Core Logic Reordering ---
         _hunterAI.NavAgent.SetDestination(_hunterAI.LastKnownPlayerPosition);
 
         if (_hunterAI.IsPlayerFullySpotted)
@@ -71,28 +62,22 @@ public class HunterChasingState : State
 
         float distanceToLKP = Vector3.Distance(_hunterAI.transform.position, _hunterAI.LastKnownPlayerPosition);
 
-        // --- Transition Checks (in new priority order) ---
+        // --- Transition Checks ---
 
-        // 1. To MELEE (or point-blank shot)
-        if (distanceToLKP <= _hunterAI.MeleeRange)
-        {
-            Debug.LogWarning($"{_hunterAI.gameObject.name} Player IN MELEE RANGE. Transitioning to Aiming for a point-blank shot.");
-            SM.TransitToState(_hunterSM.AimingState);
-            return;
-        }
-
-        // 2. To AIMING
+        // 1. To AIMING
         if (_hunterAI.AimAttemptCooldownTimer <= 0f && distanceToLKP <= _hunterAI.ShootingRange)
         {
             Debug.Log($"{_hunterAI.gameObject.name}: In range of LKP. Transitioning to Aiming to assess the situation.");
+
             SM.TransitToState(_hunterSM.AimingState);
             return;
         }
 
-        // 3. To INVESTIGATING
+        // 2. To INVESTIGATING
         if (timeSinceLostSight > GRACE_PERIOD_BEFORE_INVESTIGATING)
         {
             Debug.Log($"{_hunterAI.gameObject.name} lost sight of player for more than grace period. Transitioning to Investigate.");
+
             SM.TransitToState(_hunterSM.InvestigatingState);
             return;
         }

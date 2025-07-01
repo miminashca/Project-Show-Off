@@ -21,6 +21,7 @@ public class HunterAimingState : State
     public override void OnEnterState()
     {
         if (_hunterAI == null) return;
+
         Debug.Log($"{_hunterAI.gameObject.name} entering AIMING state.");
 
         _hunterAI.NavAgent.isStopped = true;
@@ -47,16 +48,10 @@ public class HunterAimingState : State
         swayOffsetX = Random.Range(0f, 100f);
         swayOffsetY = Random.Range(0f, 100f);
 
-        // This line uses the old system. We will replace it.
-        // _hunterAI.PlaySound(_hunterAI.StartAimingSound); 
-
-        // NEW FMOD CHANGE
-        // Play the FMOD gun cock sound when entering the aiming state.
         if (_hunterAI.SoundController != null)
         {
             _hunterAI.SoundController.PlayGunCockSound();
         }
-        // END FMOD CHANGE
     }
 
     public override void Handle()
@@ -67,18 +62,23 @@ public class HunterAimingState : State
             return;
         }
 
+        // Always keep the target point updated
         if (_hunterAI.IsPlayerFullySpotted)
         {
             _playerAimPointInternal = _hunterAI.GetPlayerAimPoint();
-            _hunterAI.LastKnownPlayerPosition = _playerAimPointInternal;
+            _hunterAI.LastKnownPlayerPosition = _hunterAI.PlayerTransform.position; // Keep LKP fresh
         }
         else
         {
+            // If sight is lost, keep aiming at the last place we knew they were.
             _playerAimPointInternal = _hunterAI.LastKnownPlayerPosition;
         }
+
         _hunterAI.CurrentConfirmedAimTarget = _playerAimPointInternal;
 
+        //---Body & Gun Rotation-- -
         Vector3 directionToTarget = (_playerAimPointInternal - _hunterAI.transform.position).normalized;
+
         if (directionToTarget != Vector3.zero)
         {
             Quaternion lookRotation = Quaternion.LookRotation(new Vector3(directionToTarget.x, 0, directionToTarget.z));
@@ -91,11 +91,11 @@ public class HunterAimingState : State
         currentGunDirection = Vector3.Slerp(currentGunDirection, idealGunDirection, Time.deltaTime * _hunterAI.AimCatchUpSpeed);
         float swayX = (Mathf.PerlinNoise(swayOffsetX + Time.time * _hunterAI.AimSwaySpeed, 0f) * 2f - 1f) * _hunterAI.MaxAimSwayAngle;
         float swayY = (Mathf.PerlinNoise(0f, swayOffsetY + Time.time * _hunterAI.AimSwaySpeed) * 2f - 1f) * _hunterAI.MaxAimSwayAngle;
-        Quaternion unsweptGunWorldRotation = Quaternion.LookRotation(currentGunDirection);
-        Quaternion localSwayRotation = Quaternion.Euler(swayY, swayX, 0f);
-        Quaternion swayedGunWorldRotation = unsweptGunWorldRotation * localSwayRotation;
+        Quaternion swayedGunWorldRotation = Quaternion.LookRotation(currentGunDirection) * Quaternion.Euler(swayY, swayX, 0f);
         Vector3 finalSwayedGunDirection = swayedGunWorldRotation * Vector3.forward;
+        _hunterAI.SetActualFiringDirection(finalSwayedGunDirection);
 
+        // --- Confidence Calculation ---
         float angleToIdealTarget = Vector3.Angle(finalSwayedGunDirection, idealGunDirection);
         if (angleToIdealTarget <= _hunterAI.MinAngleForShotConfidence) timeOnTarget += Time.deltaTime;
         else timeOnTarget -= Time.deltaTime * 0.5f;
@@ -105,33 +105,38 @@ public class HunterAimingState : State
         _currentAimTime -= Time.deltaTime;
         _hunterAI.CurrentAimTimer = _currentAimTime;
 
-        bool shouldTakeShot = false;
-        if (currentShotConfidence >= _hunterAI.ShotConfidenceThreshold) shouldTakeShot = true;
-        else if (_currentAimTime <= 0f)
-        {
-            shouldTakeShot = true;
-        }
+        // --- DECISION LOGIC ---
+        bool patienceExpired = _currentAimTime <= 0f;
+        bool hasEnoughConfidence = currentShotConfidence >= _hunterAI.ShotConfidenceThreshold;
 
-        if (shouldTakeShot)
+        if (patienceExpired || hasEnoughConfidence)
         {
+            // Decision time! Check if we have a clear, lethal shot.
+            // We check IsPlayerFullySpotted to ensure the player hasn't been gone for too long.
             if (_hunterAI.IsPlayerFullySpotted && _hunterAI.IsPathToPlayerClearForShot(_playerAimPointInternal))
             {
-                Debug.Log($"{_hunterAI.gameObject.name} AIMING: Path is clear, taking lethal shot.");
+                Debug.Log($"{_hunterAI.gameObject.name} AIMING: Path is clear, taking lethal shot. Confidence: {currentShotConfidence}, Patience Expired: {patienceExpired}");
+
                 _hunterAI.SetActualFiringDirection(finalSwayedGunDirection);
                 SM.TransitToState(_hunterSM.ShootingState);
             }
             else
             {
-                Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Path blocked or player not visible. Transitioning to SUPPRESSING.");
+                // Path is blocked or we lost direct sight. The player is likely behind cover.
+                // This is the perfect time for suppressive fire.
+                Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Path blocked or player not fully visible. Transitioning to SUPPRESSING.");
+
                 SM.TransitToState(_hunterSM.SuppressingState);
             }
-            return;
+            return; // Exit after making a decision
         }
 
-        if (!_hunterAI.IsPlayerFullySpotted && _currentAimTime <= 0f)
+        // Fallback: If we're still aiming but the player has genuinely vanished (detection dropped significantly)
+        // then we should stop aiming and start searching.
+        if (!_hunterAI.IsPlayerFullySpotted && _hunterAI.DetectionProgress < _hunterAI.FullySpottedLossThreshold)
         {
-            Debug.Log($"{_hunterAI.gameObject.name}: Aim timer expired and player not visible. Returning to Chase.");
-            SM.TransitToState(_hunterSM.ChasingState);
+            Debug.Log($"{_hunterAI.gameObject.name}: Player has vanished while aiming. Transitioning to Investigate.");
+            SM.TransitToState(_hunterSM.InvestigatingState);
         }
     }
 
