@@ -24,7 +24,7 @@ public class CutsceneTrigger : MonoBehaviour
     public Camera playerCamera;
 
     [Tooltip("The camera that the timeline will use for the cutscene. The transition will move the player camera to match this camera's initial state.")]
-    public Camera cutsceneCamera;
+    public GameObject cutsceneCamera;
 
     [Header("Transition Settings")]
     [Tooltip("How long the blend from player camera to cutscene camera should take.")]
@@ -122,9 +122,9 @@ public class CutsceneTrigger : MonoBehaviour
             playerController.enabled = false;
         }
 
-        cutsceneCamera.transform.position = playerCamera.transform.position;
-        cutsceneCamera.gameObject.SetActive(true);
-        playerCamera.gameObject.SetActive(false);
+   //     cutsceneCamera.transform.position = playerCamera.transform.position;
+    //    cutsceneCamera.gameObject.SetActive(true);
+   //     playerCamera.gameObject.SetActive(false);
         cutsceneDirector.Play();
 
         //this doesn't need to be a coroutine so I just break at the end
