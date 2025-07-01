@@ -18,7 +18,7 @@ Material:
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
   stringTagMap:
@@ -34,8 +34,8 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: ab5a6de7787ab694e81ccdc778ff0625, type: 3}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: 55c974713d9decb4fb189d9e78cc4ae5, type: 3}
+        m_Scale: {x: 5, y: 5}
         m_Offset: {x: 0, y: 0}
     - _RippleMap:
         m_Texture: {fileID: 0}
@@ -60,17 +60,20 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
-    - _Alpha: 0.8
+    - _Alpha: 0.63
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSoftEnd: 0.9
     - _AlphaSoftStart: 0.1
     - _AlphaSrcBlend: 1
     - _AlphaSwitch: 0.01
-    - _AngleOfShape: 5.08
+    - _AngleOfShape: 4.75
     - _Blablabla: 4.71
     - _BlendMode: 0
-    - _ColorSmoothing: 0.5
+    - _ColorSmoothing: 0.71
+    - _ColorSmoothingA: -0.34
+    - _ColorSmoothingB: 0.11
+    - _ColorSwitch: 0.0001
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 2
     - _CullModeForward: 2
@@ -81,31 +84,41 @@ Material:
     - _DoubleSidedNormalMode: 2
     - _DstBlend: 10
     - _DstBlend2: 10
+    - _EdgeFalloff: 0.1
+    - _EdgeFalloffA: 0.14
+    - _EdgeFalloffB: -0.03
+    - _EdgeSmooth: 2.58
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 1
     - _ExcludeFromTUAndAA: 0
-    - _IndexOfRefraction: 1.26
+    - _IndexOfRefraction: 1
     - _MaterialID: 1
     - _MaterialTypeMask: 2
     - _Metallic: 0
-    - _NoiseSpotScale: 10
-    - _NormalScale: 1.47
+    - _NoiseSpotScale: 9.99
+    - _NormalScale: 0.15
     - _NormalSwitch: 0
     - _OpaqueCullMode: 2
     - _PerPixelSorting: 0
+    - _Radius: 0
+    - _RadiusAlpha: 1
+    - _RadiusColor: 1
     - _RayTracing: 0
     - _ReceivesSSR: 1
     - _ReceivesSSRTransparent: 0
     - _RefractionModel: 1
     - _RenderQueueType: 4
     - _RequireSplitLighting: 0
+    - _ReverseDistance: 1.87
     - _RippleStrength: 1
-    - _ScaleTurbulence1: 100
-    - _ScaleTurbulence2: 84.85
-    - _ScaleTurbulence3: 15.3
-    - _Size_Voronoi: 2.33
-    - _Smoothness: 0.9
-    - _SpotDarkness: 0.8
+    - _ScaleTurbulence1: 565.33
+    - _ScaleTurbulence2: 300
+    - _ScaleTurbulence3: 10
+    - _Size_Voronoi: 1
+    - _SmoothGradientA: -0.3
+    - _SmoothGradientB: 3
+    - _Smoothness: 0.66
+    - _SpotDarkness: 0.54
     - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 16
@@ -119,7 +132,7 @@ Material:
     - _StencilWriteMaskMV: 41
     - _SupportDecals: 1
     - _SurfaceType: 1
-    - _Thickness: 0.1
+    - _Thickness: 0
     - _TransmissionEnable: 1
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
@@ -135,17 +148,24 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _Amplitude: {r: 0, g: 0, b: 0, a: 0}
-    - _DeepColor: {r: 0.90188676, g: 0.16471057, b: 0.12762536, a: 0.69803923}
+    - _CenterUV: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _CenterUV_Alpha: {r: 4, g: 0.5, b: -110.613, a: 0}
+    - _CenterUV_Color: {r: 0.48, g: 0.55, b: 0, a: 0}
+    - _DeepColor: {r: 0.105539255, g: 0.10637263, b: 0.23018858, a: 1}
     - _Direction: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FlowSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _GradientEnd: {r: 0.6, g: 1, b: 0, a: 0}
+    - _GradientStart: {r: 1.08, g: 0.32, b: 0, a: 0}
+    - _LakeCenter: {r: 124.77, g: 1.03, b: -111.74065, a: 0}
     - _NoiseSpotScaleUV: {r: 10, g: 10, b: 0, a: 0}
     - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _ShallowColor: {r: 0, g: 1, b: 0.54352236, a: 0}
+    - _ShallowColor: {r: 0.233001, g: 0.37691796, b: 0.4490565, a: 1}
     - _Speed: {r: 0, g: 0, b: 0, a: 0}
     - _TineColor: {r: 0.73333335, g: 0, b: 0, a: 1}
-    - _TineColorA: {r: 0.056781713, g: 0.5471698, b: 0.18902525, a: 1}
-    - _TineColorB: {r: 0.02432893, g: 0.060308255, b: 0.19245276, a: 1}
+    - _TineColorA: {r: 0.22054109, g: 0.3962264, b: 0.29298866, a: 1}
+    - _TineColorB: {r: 0.21726593, g: 0.3207547, b: 0.2621416, a: 1}
     - _WaveParamA: {r: 0.1, g: 0.05, b: 1, a: 0.5}
     - _WaveParamB: {r: 1, g: 1, b: 1, a: 1}
     - _WaveParamC: {r: 1, g: 1, b: 0, a: 0}
