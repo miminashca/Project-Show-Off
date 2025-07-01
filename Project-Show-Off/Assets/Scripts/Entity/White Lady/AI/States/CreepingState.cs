@@ -18,11 +18,8 @@ public class CreepingState : State
         SM.FeedbackController.StopAllEffects();
 
         _gazeBuildupTimer = 0f;
-
-        SM.GazeSystem.PlayerCaughtSightOfLady -= TriggerTargetVisible;
-        SM.GazeSystem.PlayerCaughtSightOfLady += TriggerTargetVisible;
         
-        // Req 3.1.1: Trigger player feedback
+        // Req 3.1.1: Trigger player feedbackx
         SM.FeedbackController.StartCreepingEffects();
 
         // Req 3.1.1: Play spatialized weeping/humming (FMOD template)
@@ -36,6 +33,12 @@ public class CreepingState : State
         // Req 3.1.3: Transition to SEEN
         _gazeBuildupTimer += Time.deltaTime;
 
+        if (SM.GazeSystem.IsTargetVisible != targetCurrentlyVisible)
+        {
+            _gazeBuildupTimer = 0f;
+            targetCurrentlyVisible = SM.GazeSystem.IsTargetVisible;
+        }
+        
         if (targetCurrentlyVisible)
         {
             if (_gazeBuildupTimer >= SM.Config.timeToTriggerSeen)
@@ -61,7 +64,7 @@ public class CreepingState : State
 
     private void TriggerTargetVisible(bool visible)
     {
-        //Debug.LogError("Lady visible: " + visible);
+        Debug.LogError("Lady visible: " + visible);
         _gazeBuildupTimer = 0f;
         targetCurrentlyVisible = visible;
     }
