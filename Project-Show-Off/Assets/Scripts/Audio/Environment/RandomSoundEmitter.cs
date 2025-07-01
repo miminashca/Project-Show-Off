@@ -27,20 +27,20 @@ public class RandomSoundEmitter : MonoBehaviour
         if (playerObject != null)
         {
             playerTransform = playerObject.transform;
-            // Debug.Log($"RandomSoundEmitter ({gameObject.name}): Found player transform: {playerTransform.name}");
+            // Debug.Log($"RandomSoundEmitter ({gameObject.name}): Found player transform: {PlayerTransform.name}");
         }
         else
         {
             // Option 2: If the player is the main camera, you could use this:
             // if (Camera.main != null)
             // {
-            //     playerTransform = Camera.main.transform;
+            //     PlayerTransform = Camera.main.transform;
             //     Debug.LogWarning($"RandomSoundEmitter ({gameObject.name}): Player with tag 'Player' not found. Using Main Camera as player reference.");
             // }
             // else
             // {
             Debug.LogError($"RandomSoundEmitter ({gameObject.name}): Player GameObject with tag 'Player' not found! " +
-                           "Please ensure your player has the 'Player' tag or assign 'playerTransform' manually in the inspector. " +
+                           "Please ensure your player has the 'Player' tag or assign 'PlayerTransform' manually in the inspector. " +
                            "Sounds will play without distance checks until a player is found.");
             // }
         }
@@ -72,7 +72,7 @@ public class RandomSoundEmitter : MonoBehaviour
             }
             else
             {
-                // If playerTransform is null (e.g., player wasn't found in Awake),
+                // If PlayerTransform is null (e.g., player wasn't found in Awake),
                 // we'll proceed to play the sound without a distance check.
                 // A warning would have been logged in Awake for this.
             }
@@ -80,7 +80,7 @@ public class RandomSoundEmitter : MonoBehaviour
             // If we reach this point, either the player is far enough away,
             // or the player reference wasn't found (and we decided to play anyway).
             RuntimeManager.PlayOneShot(fmodEvent, transform.position);
-            // Debug.Log($"RandomSoundEmitter ({gameObject.name}): Played sound. Distance to player: {(playerTransform != null ? Vector3.Distance(transform.position, playerTransform.position).ToString("F2") + "m" : "N/A")}");
+            // Debug.Log($"RandomSoundEmitter ({gameObject.name}): Played sound. Distance to player: {(PlayerTransform != null ? Vector3.Distance(transform.position, PlayerTransform.position).ToString("F2") + "m" : "N/A")}");
         }
     }
 

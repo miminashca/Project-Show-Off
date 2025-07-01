@@ -6,6 +6,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public enum GameStartState
 {
@@ -25,8 +26,13 @@ public class GameManager : MonoBehaviour
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private LanternController lanternController;
-    private Transform playerTransform;
+    [NonSerialized] public Transform PlayerTransform;
     private ClueEventManager clueManager;
+    
+    //probably have to move to game state manager in future...
+    public bool isWhiteLadyActive = false;
+
+    public event Action OnGameLoaded;
 
     void Awake()
     {
@@ -84,6 +90,8 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Could not find player components on scene load. Aborting start logic.");
             yield break; // Stop the coroutine
         }
+        
+        OnGameLoaded?.Invoke();
         
         // Unsubscribe first to prevent double-subscription if the scene is ever reloaded
         if (clueManager != null)
@@ -152,8 +160,8 @@ public class GameManager : MonoBehaviour
         data.woundLevel = playerHealth.CurrentWoundLevel;
         data.currentStamina = playerMovement.CurrentStamina;
         data.lanternFuel = lanternController.currentFuel;
-        data.playerPosition = playerTransform.position;
-        data.playerRotation = playerTransform.rotation;
+        data.playerPosition = PlayerTransform.position;
+        data.playerRotation = PlayerTransform.rotation;
         data.collectedClueIDs = clueManager.GetCollectedClueIDs();
         data.submittedClueIDs = clueManager.GetSubmittedClueIDs();
 
@@ -180,18 +188,18 @@ public class GameManager : MonoBehaviour
         lanternController.ApplyLoadedFuel(data.lanternFuel);
         clueManager.LoadClues(data.collectedClueIDs, data.submittedClueIDs);
         
-        CharacterController cc = playerTransform.GetComponent<CharacterController>();
+        CharacterController cc = PlayerTransform.GetComponent<CharacterController>();
         if (cc != null)
         {
             cc.enabled = false;
-            playerTransform.position = data.playerPosition;
-            playerTransform.rotation = data.playerRotation;
+            PlayerTransform.position = data.playerPosition;
+            PlayerTransform.rotation = data.playerRotation;
             cc.enabled = true;
         }
         else
         {
-            playerTransform.position = data.playerPosition;
-            playerTransform.rotation = data.playerRotation;
+            PlayerTransform.position = data.playerPosition;
+            PlayerTransform.rotation = data.playerRotation;
         }
         Debug.Log("<color=lime>Game Loaded Successfully!</color>");
     }
@@ -205,9 +213,9 @@ public class GameManager : MonoBehaviour
 
         if (playerHealth != null)
         {
-            playerTransform = playerHealth.transform;
+            PlayerTransform = playerHealth.transform;
         }
 
-        return playerHealth != null && playerMovement != null && lanternController != null && playerTransform != null && clueManager != null;
+        return playerHealth != null && playerMovement != null && lanternController != null && PlayerTransform != null && clueManager != null;
     }
 }

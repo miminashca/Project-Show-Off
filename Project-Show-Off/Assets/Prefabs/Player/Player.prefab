@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7584315435622049681}
   - component: {fileID: 9220622035088159376}
   - component: {fileID: 4542596350648536079}
+  - component: {fileID: 1768335137489469695}
   - component: {fileID: 6956735422866284977}
   - component: {fileID: 6334661837088429990}
   - component: {fileID: 7025771011646699498}
@@ -143,11 +144,11 @@ MonoBehaviour:
     Path: event:/Player/Breathing/While Sprinting Breath
   injuredSprintingBreathEventPath:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -910728905
+      Data2: 1140313556
+      Data3: -1696058977
+      Data4: 1502675341
+    Path: event:/Player/Hurt/Player Injured Sprinting
   afterSprintingBreathEventPath:
     Guid:
       Data1: 769222642
@@ -155,6 +156,24 @@ MonoBehaviour:
       Data3: -1981184342
       Data4: -1325676451
     Path: event:/Player/Breathing/Post Sprinting Breath
+--- !u!114 &1768335137489469695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495666101020983991}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 069e94acf54452248a789ef0b2d13612, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  postProcessingVolume: {fileID: 0}
+  chokeColor: {r: 0.1, g: 0.2, b: 0.8, a: 1}
+  damageColor: {r: 0.8, g: 0.1, b: 0.1, a: 1}
+  maxIntensity: 0.5
+  damageFlashDuration: 5
+  fadeSpeed: 2
 --- !u!114 &6956735422866284977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,7 +310,8 @@ MonoBehaviour:
   woodMaterialNames:
   - WoodFloor_Shed 2
   - New Material
-  - BridgeVer_1
+  - Bridge_Ver1
+  - Bridge_Ver2
   playerFeetYOffset: 0
   minDepthForShallowEffect: 0.05
   fullShallowDepth: 0.2
@@ -318,18 +338,18 @@ MonoBehaviour:
   timeToChoke: 10
   playerHurtArghSound:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -1508791960
+      Data2: 1257117217
+      Data3: 1114685625
+      Data4: -376021605
+    Path: event:/Player/Hurt/Player Hurt
   injuredBreathingLoopEvent:
     Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+      Data1: -74751347
+      Data2: 1185789530
+      Data3: 1334007713
+      Data4: -1592821
+    Path: event:/Player/Hurt/Player Injured Panting
 --- !u!114 &4004112240833274223
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,7 +506,7 @@ Transform:
   m_GameObject: {fileID: 2177276955475158849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.69, z: 0.044}
+  m_LocalPosition: {x: 0, y: 1.69, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -574,7 +594,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
-  m_AllowDynamicResolution: 0
+  m_AllowDynamicResolution: 1
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -598,7 +618,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   volumeAnchorOverride: {fileID: 0}
-  antialiasing: 2
+  antialiasing: 1
   SMAAQuality: 2
   dithering: 1
   stopNaNs: 0
@@ -624,7 +644,7 @@ MonoBehaviour:
   flipYMode: 0
   xrRendering: 1
   fullscreenPassthrough: 0
-  allowDynamicResolution: 0
+  allowDynamicResolution: 1
   customRenderingSettings: 0
   invertFaceCulling: 0
   probeLayerMask:
@@ -1930,6 +1950,14 @@ PrefabInstance:
       propertyPath: lanternHoldTarget
       value: 
       objectReference: {fileID: 898289023747647211}
+    - target: {fileID: 5876773660240513517, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: positionSmoothTime
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 5876773660240513517, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: rotationSmoothTime
+      value: 0.06
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3107329627100570387, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
     m_RemovedGameObjects:

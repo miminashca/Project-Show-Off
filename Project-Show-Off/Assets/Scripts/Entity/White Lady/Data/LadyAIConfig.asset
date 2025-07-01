@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 074515eed28fb40a4b171bbc6a230410, type: 3}
+  m_Name: LadyAIConfig
+  m_EditorClassIdentifier: 
+  activationDistance: 5
+  timeToTriggerSeen: 4
+  timeToDissipate: 5
+  despawnDelay: 1.5
+  timeToDamage: 5
+  timeToDeath: 10
+  minFovValue: 10
+  fovTransitionDuration: 3
+  cameraPullStrength: 1
+  gazeDamageAmount: 1
+  creepingAudioEvent: event:/SFX/WhiteLady/Creeping
+  playerBreathAudioEvent: event:/SFX/Player/FearBreath
+  gazeDamageAudioEvent: event:/SFX/Player/GazeDamage

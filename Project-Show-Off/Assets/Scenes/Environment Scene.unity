@@ -13964,7 +13964,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6956735422866284977, guid: 283fb1960314846ef9346666a94e4541, type: 3}
   m_PrefabInstance: {fileID: 1848607432}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1848607434}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6884a92649b8a984fbd481b8d546f758, type: 3}
@@ -15925,7 +15925,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
   m_PrefabInstance: {fileID: 1848607432}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1848607434}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ee7a73d0cddf4af0b261b1a7999b45f, type: 3}
@@ -71288,22 +71288,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 728297902924428524, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: dithering
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 728297902924428524, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: antialiasing
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 728297902924428524, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: allowDynamicResolution
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 728297902924428524, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: customRenderingSettings
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1495666101020983991, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_Name
       value: Player
@@ -71388,6 +71372,10 @@ PrefabInstance:
       propertyPath: injuredSprintingBreathEventPath.Guid.Data4
       value: 1502675341
       objectReference: {fileID: 0}
+    - target: {fileID: 1768335137489469695, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: postProcessingVolume
+      value: 
+      objectReference: {fileID: 236427721}
     - target: {fileID: 6334661837088429990, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: offerPromptUI
       value: 
@@ -71416,26 +71404,6 @@ PrefabInstance:
       propertyPath: interactionPromptCanvasGroup
       value: 
       objectReference: {fileID: 400000739}
-    - target: {fileID: 6996782995239445616, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: m_AllowDynamicResolution
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7415741483018008006, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: woodMaterialNames.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 7415741483018008006, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: 'woodMaterialNames.Array.data[2]'
-      value: Bridge_Ver1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7415741483018008006, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: 'woodMaterialNames.Array.data[3]'
-      value: Bridge_Ver2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7584315435622049681, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
       value: 107.95
@@ -71478,50 +71446,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9101562233397386704, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9220622035088159376, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1495666101020983991, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-      insertIndex: 4
-      addedObject: {fileID: 1848607435}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 283fb1960314846ef9346666a94e4541, type: 3}
 --- !u!4 &1848607433 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8051487970766793092, guid: 283fb1960314846ef9346666a94e4541, type: 3}
   m_PrefabInstance: {fileID: 1848607432}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1848607434 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1495666101020983991, guid: 283fb1960314846ef9346666a94e4541, type: 3}
-  m_PrefabInstance: {fileID: 1848607432}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1848607435
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1848607434}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 069e94acf54452248a789ef0b2d13612, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  postProcessingVolume: {fileID: 236427721}
-  chokeColor: {r: 0.1, g: 0.2, b: 0.8, a: 1}
-  damageColor: {r: 0.8, g: 0.1, b: 0.1, a: 1}
-  maxIntensity: 0.5
-  damageFlashDuration: 5
-  fadeSpeed: 2
 --- !u!1001 &1848667023
 PrefabInstance:
   m_ObjectHideFlags: 0
