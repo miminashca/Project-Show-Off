@@ -6,6 +6,10 @@ public class NixieHurtingState : State
     private NixieStateMachine nixieSM;
     private NixieAI nixieAI;
 
+    // NEW FMOD CHANGE
+    private NixieSoundController nixieSoundController;
+    // END FMOD CHANGE
+
     // Updated constructor
     public NixieHurtingState(StateMachine pSM) : base(pSM)
     {
@@ -17,6 +21,10 @@ public class NixieHurtingState : State
     {
         Debug.Log("Nixie entering HURTING state.");
         //nixieAI.PlayAttackSound();
+
+        // NEW FMOD CHANGE
+        nixieSoundController = nixieAI.SoundController;
+        // END FMOD CHANGE
 
         // --- NEW: INSTA-KILL LOGIC ---
         // Find the PlayerHealth component on the player object.
@@ -35,6 +43,13 @@ public class NixieHurtingState : State
         // Transition to the stunned state after the attack. The player is already "dead",
         // but this completes the Nixie's state loop gracefully.
         SM.TransitToState(nixieSM.StuntedState);
+
+        // NEW FMOD CHANGE
+        if (nixieSoundController != null)
+        {
+            nixieSoundController.PlayHurtGrunt();
+        }
+        // END FMOD CHANGE
     }
 
     // This state has no ongoing logic, so Handle is empty.

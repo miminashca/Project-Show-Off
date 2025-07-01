@@ -8,6 +8,8 @@ public class NixieChasingState : State
     private NixieStateMachine nixieSM;
     private NixieAI nixieAI;
     private NixieNavigation nixieNav;
+    //NEW FMOD CHANGE
+    private NixieSoundController nixieSoundController;
 
     // --- Strafing Logic Variables ---
     private float strafeTimer;
@@ -30,6 +32,12 @@ public class NixieChasingState : State
     public override void OnEnterState()
     {
         Debug.Log("Nixie entering CHASING state.");
+
+        // NEW FMOD CHANGE
+        nixieSoundController = nixieAI.SoundController;
+        // END FMOD CHANGE
+
+
         nixieNav.SetPeeking(true);
         NixieEventBus.NotifyChaseStart();
 
@@ -40,6 +48,13 @@ public class NixieChasingState : State
         strafeDirection = (Random.value > 0.5f) ? 1 : -1;
 
         lastCalculatedTarget = nixieAI.transform.position;
+
+        // NEW FMOD CHANGE
+        if (nixieSoundController != null)
+        {
+            nixieSoundController.PlayChaseGrunt();
+        }
+        // END FMOD CHANGE
     }
 
     public override void Handle()

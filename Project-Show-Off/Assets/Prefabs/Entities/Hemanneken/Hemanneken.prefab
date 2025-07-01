@@ -10,10 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1741672982412060041}
   - component: {fileID: 4459889473469353627}
-  - component: {fileID: 381907839171290958}
   - component: {fileID: 5403740640629636576}
   - component: {fileID: 7745754292186392169}
   - component: {fileID: 8643986500449592445}
+  - component: {fileID: 3635897011840396046}
   m_Layer: 0
   m_Name: Hemanneken
   m_TagString: Untagged
@@ -50,19 +50,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aiConfig: {fileID: 11400000, guid: 286a82ff654a04ea4aa28e655a29d542, type: 2}
---- !u!114 &381907839171290958
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7024320941259705108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4686a9dcce3124e74998a19328a890b8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerLastKnownPosition: {x: 0, y: 0, z: 0}
+  isRealRabbit: 0
 --- !u!114 &5403740640629636576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,7 +96,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7024320941259705108}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 37a7d74b99cba574e865623d77efe13c, type: 3}
   m_Name: 
@@ -163,7 +151,22 @@ MonoBehaviour:
       Data4: 1835875883
     Path: event:/Enemies/Hemanneken/CloseHey
   closeHeyInterval: 5
+  minPeriodicHeyInterval: 100
+  maxPeriodicHeyInterval: 200
   farHeyResponseThreshold: 50
+--- !u!114 &3635897011840396046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7024320941259705108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b3c7538c7210344a83c8fdcd0185be9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerLastKnownPosition: {x: 0, y: 0, z: 0}
 --- !u!1001 &164931640669794013
 PrefabInstance:
   m_ObjectHideFlags: 0

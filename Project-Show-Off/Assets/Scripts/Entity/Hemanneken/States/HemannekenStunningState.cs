@@ -10,9 +10,16 @@ public class HemannekenStunningState : State
     public override void OnEnterState()
     {
         Debug.Log("Entered Stunning State");
-        HSM.Movement.StopAgentCompletely(); // Stop movement
-        //HSM.Movement.EnableAgent(false); // Disable agent for stun duration
 
+        // Stop all looping sounds from previous states (like idle or the 'close hey' loop)
+        HSM.SoundController.StopAllHemannekenSounds();
+
+        // --- ADDED: Play the one-shot stunned sound ---
+        // This is called immediately when the Hemanneken becomes stunned.
+        HSM.SoundController.PlayStunnedSound();
+        // --------------------------------------------------
+
+        HSM.Movement.StopAgentCompletely(); // Stop movement
         _stunEndTime = Time.time + HSM.aiConfig.stunEffectDuration;
         HSM.Visuals.StartStunEffectsAndBehavior();
     }

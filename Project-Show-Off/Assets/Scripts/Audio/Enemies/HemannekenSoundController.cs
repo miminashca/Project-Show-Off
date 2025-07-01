@@ -6,7 +6,6 @@ public class HemannekenSoundController : MonoBehaviour
 {
     [Header("FMOD Event Paths - Hemanneken")]
     [SerializeField] private EventReference idleSound;
-    // Removed direct PlayFarHeySound and PlayMidHeySound as they are now chosen by RespondToPlayerHey
     [SerializeField] private EventReference farHeySound; // Used by RespondToPlayerHey
     [SerializeField] private EventReference midHeySound; // Used by RespondToPlayerHey
     [SerializeField] private EventReference stunnedSound;
@@ -17,6 +16,13 @@ public class HemannekenSoundController : MonoBehaviour
     [Header("Sound Settings")]
     [SerializeField] private float closeHeyInterval = 5f;
 
+    // --- MODIFIED: Changed to a min/max range for more natural timing ---
+    [Tooltip("The minimum time (in seconds) between each automatic 'Hey' call.")]
+    [SerializeField] private float minPeriodicHeyInterval = 45f;
+    [Tooltip("The maximum time (in seconds) between each automatic 'Hey' call.")]
+    [SerializeField] private float maxPeriodicHeyInterval = 75f;
+    // --- END MODIFIED ---
+
     [Header("Distance Thresholds")]
     [Tooltip("Distance beyond which the 'Far Hey' sound is used for player callback.")]
     [SerializeField] private float farHeyResponseThreshold = 50f;
@@ -24,6 +30,9 @@ public class HemannekenSoundController : MonoBehaviour
     private StudioEventEmitter idleEventEmitter;
     private Coroutine closeHeyCoroutineInstance;
     private FMOD.Studio.EventInstance closeHeyEventInstance;
+
+    private Coroutine periodicHeyCoroutineInstance;
+    private Transform playerTransform; // Cache the player's transform for performance
 
     void Awake()
     {
@@ -39,9 +48,17 @@ public class HemannekenSoundController : MonoBehaviour
         {
             Debug.LogWarning($"HemannekenSoundController: Idle sound EventReference is set, but no StudioEventEmitter component found on {gameObject.name}.");
         }
-    }
 
-    // --- Public Methods ---
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject != null)
+        {
+            playerTransform = playerObject.transform;
+        }
+        else
+        {
+            Debug.LogError($"HemannekenSoundController on {gameObject.name}: Could not find a GameObject with the 'Player' tag. Periodic 'Hey' sounds will not work.");
+        }
+    }
 
     #region Idle Sound
     public void StartIdleSound()
@@ -74,11 +91,6 @@ public class HemannekenSoundController : MonoBehaviour
     #endregion
 
     #region Player Hey! Callback
-    /// <summary>
-    /// Called when the Hemanneken should respond to the player's 'Hey!'.
-    /// Plays either farHeySound or midHeySound based on distance to the player.
-    /// </summary>
-    /// <param name="playerTransform">The Transform of the player who shouted.</param>
     public void RespondToPlayerHey(Transform playerTransform)
     {
         if (playerTransform == null)
@@ -100,7 +112,7 @@ public class HemannekenSoundController : MonoBehaviour
                 Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'farHeySound' FMOD Event is not assigned for player callback.");
             }
         }
-        else // Mid-range or closer for the callback (but not the 'attached' closeHeySound)
+        else
         {
             if (!midHeySound.IsNull)
             {
@@ -112,6 +124,53 @@ public class HemannekenSoundController : MonoBehaviour
             }
         }
     }
+    #endregion
+
+    #region Periodic Hey Loop
+    public void StartPeriodicHeyLoop()
+    {
+        if (periodicHeyCoroutineInstance == null)
+        {
+            if (playerTransform != null)
+            {
+                Debug.Log($"<color=green>SOUND:</color> Starting Periodic Hey Loop on {gameObject.name}.");
+                periodicHeyCoroutineInstance = StartCoroutine(PeriodicHeyCoroutine());
+            }
+            else
+            {
+                Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: Cannot start PeriodicHeyLoop because Player Transform was not found.");
+            }
+        }
+    }
+
+    public void StopPeriodicHeyLoop()
+    {
+        if (periodicHeyCoroutineInstance != null)
+        {
+            Debug.Log($"<color=green>SOUND:</color> Stopping Periodic Hey Loop on {gameObject.name}.");
+            StopCoroutine(periodicHeyCoroutineInstance);
+            periodicHeyCoroutineInstance = null;
+        }
+    }
+
+    // --- MODIFIED COROUTINE ---
+    private IEnumerator PeriodicHeyCoroutine()
+    {
+        // 1. Initial random delay to de-synchronize all Hemanneken at the start.
+        // This waits for a random time between 1 and 20 seconds before the first call.
+        yield return new WaitForSeconds(Random.Range(100.0f, 200.0f));
+
+        while (true)
+        {
+            // Call the existing response method, using the cached player transform
+            RespondToPlayerHey(playerTransform);
+
+            // 2. Wait for a new random interval before the next call.
+            float waitTime = Random.Range(minPeriodicHeyInterval, maxPeriodicHeyInterval);
+            yield return new WaitForSeconds(waitTime);
+        }
+    }
+    // --- END MODIFIED ---
     #endregion
 
     #region State Sounds
@@ -134,7 +193,7 @@ public class HemannekenSoundController : MonoBehaviour
     #endregion
 
     #region Attach Sounds (Periodic Close Hey)
-    public void PlayAttachSound() // Sound for the moment of attachment
+    public void PlayAttachSound()
     {
         if (!attachSound.IsNull)
             RuntimeManager.PlayOneShotAttached(attachSound, gameObject);
@@ -142,7 +201,7 @@ public class HemannekenSoundController : MonoBehaviour
             Debug.LogWarning($"HemannekenSoundController on {gameObject.name}: 'attachSound' FMOD Event is not assigned.");
     }
 
-    public void StartCloseHeyLoop() // Periodic 'Hey' when attached
+    public void StartCloseHeyLoop()
     {
         if (closeHeyCoroutineInstance == null)
         {
@@ -188,6 +247,7 @@ public class HemannekenSoundController : MonoBehaviour
     {
         StopIdleSound();
         StopCloseHeyLoop();
+        StopPeriodicHeyLoop();
     }
 
     void OnDestroy()
@@ -197,6 +257,19 @@ public class HemannekenSoundController : MonoBehaviour
         {
             closeHeyEventInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
             closeHeyEventInstance.release();
+        }
+    }
+
+    // --- ADDED: OnValidate to keep inspector values logical ---
+    private void OnValidate()
+    {
+        if (minPeriodicHeyInterval < 1.0f)
+        {
+            minPeriodicHeyInterval = 1.0f;
+        }
+        if (maxPeriodicHeyInterval < minPeriodicHeyInterval)
+        {
+            maxPeriodicHeyInterval = minPeriodicHeyInterval + 1.0f;
         }
     }
 }

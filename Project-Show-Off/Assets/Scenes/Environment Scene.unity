@@ -9503,6 +9503,7 @@ GameObject:
   - component: {fileID: 257389982}
   - component: {fileID: 257389983}
   - component: {fileID: 257389984}
+  - component: {fileID: 257389985}
   m_Layer: 0
   m_Name: AudioManager
   m_TagString: Untagged
@@ -9572,6 +9573,9 @@ MonoBehaviour:
     m_Bits: 2621440
   monsterMaxDetectionRange: 40
   monsterMaxTensionRange: 10
+  shotTensionAmount: 1
+  shotLingerDuration: 10
+  shotTensionRampUpSpeed: 0.5
   tensionSmoothingSpeed: 2
 --- !u!114 &257389984
 MonoBehaviour:
@@ -9589,6 +9593,37 @@ MonoBehaviour:
   maxSoundPlayInterval: 60
   distanceCheckInterval: 4
   playerTag: Player
+--- !u!114 &257389985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 257389980}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: -1151012315
+      Data2: 1088840956
+      Data3: -1816812406
+      Data4: -1633175395
+    Path: event:/Muting Snapshot
+  Event: 
+  EventPlayTrigger: 1
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1 &258459545
 GameObject:
   m_ObjectHideFlags: 0
@@ -71282,6 +71317,10 @@ PrefabInstance:
       value: event:/Player/Hurt/Player Hurt
       objectReference: {fileID: 0}
     - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: timeToRegenerateOneLevel
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: injuredBreathingLoopEvent.Path
       value: event:/Player/Hurt/Player Injured Panting
       objectReference: {fileID: 0}
@@ -78036,8 +78075,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.7052184, y: 3.9085271, z: 0.8169204}
-  m_Center: {x: 0.028522946, y: -2.5457385, z: 0.10887467}
+  m_Size: {x: 0.7052184, y: 5.088053, z: 0.8169204}
+  m_Center: {x: 0.028522946, y: -1.9559833, z: 0.10887467}
 --- !u!114 &2072512354
 MonoBehaviour:
   m_ObjectHideFlags: 0
