@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
@@ -10,7 +11,10 @@ public class LadyStateMachine : StateMachine
     [HideInInspector] public Renderer AiRenderer;
     [HideInInspector] public Collider AiCollider;
     [HideInInspector] public Transform PlayerTransform;
-    
+    public Transform PullTargetTransform;
+
+    public event Action OnLadyDie;
+
     // State-persistent timers
     public float ContinuousGazeTimer { get; set; }
 
@@ -71,6 +75,8 @@ public class LadyStateMachine : StateMachine
         {
             GameManager.Instance.isWhiteLadyActive = false;
         }
+        
+        OnLadyDie?.Invoke();
     }
 
     public void DeSpawn()

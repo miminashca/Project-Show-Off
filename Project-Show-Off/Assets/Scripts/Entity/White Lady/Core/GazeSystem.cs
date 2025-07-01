@@ -1,3 +1,5 @@
+using System;
+using NUnit.Framework;
 using UnityEngine;
 
 public class GazeSystem : MonoBehaviour
@@ -10,6 +12,9 @@ public class GazeSystem : MonoBehaviour
     private Plane[] cameraFrustumPlanes;
 
     public bool IsTargetVisible { get; private set; }
+    private bool IsTargetCurrentlyVisible = false;
+
+    public event Action<bool> PlayerCaughtSightOfLady;
 
     private void Start()
     {
@@ -45,7 +50,13 @@ public class GazeSystem : MonoBehaviour
 
         // Req 3.1.3: Perform the two visibility checks
         IsTargetVisible = IsInFrustum() && IsNotOccluded();
-        Debug.Log("Visible: " + IsTargetVisible);
+        if (IsTargetCurrentlyVisible != IsTargetVisible)
+        {
+            if(IsTargetVisible) PlayerCaughtSightOfLady?.Invoke(true);
+            else PlayerCaughtSightOfLady?.Invoke(false);
+        }
+        IsTargetCurrentlyVisible = IsTargetVisible;
+        //Debug.Log("Visible: " + IsTargetVisible);
     }
 
     private bool IsInFrustum()

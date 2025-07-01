@@ -131,9 +131,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 6863246415695266844, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+    - target: {fileID: 3735818347177886910, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6863246415695266844, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
@@ -177,7 +181,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9114698074851284873, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -262,6 +266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 4862291}
+  cameraMovement: {fileID: 1391380340}
   breathVFXPrefab: {fileID: 0}
 --- !u!114 &267743051
 MonoBehaviour:
@@ -339,7 +344,7 @@ GameObject:
   - component: {fileID: 1277341508}
   - component: {fileID: 1277341507}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: White Lady Zone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -360,6 +365,7 @@ MonoBehaviour:
   whiteLadyPrefab: {fileID: 516915659096450392, guid: 27a8d4399028c42d3bac0c40144c1fa9, type: 3}
   config: {fileID: 11400000, guid: 8971a673f8b584ab4832ae382271c9ec, type: 2}
   proximityCheckInterval: 2
+  dieToSpawnInterval: 10
 --- !u!4 &1277341508
 Transform:
   m_ObjectHideFlags: 0
@@ -375,6 +381,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1391380340 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2971575580998436342, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+  m_PrefabInstance: {fileID: 4862289}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9336957ad10141c380ce2a56931bece, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1505293624
 GameObject:
   m_ObjectHideFlags: 0

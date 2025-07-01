@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+
 public class CameraMovement : MonoBehaviour
 {
     [Header("Camera Settings")]
@@ -7,12 +8,14 @@ public class CameraMovement : MonoBehaviour
     [SerializeField, Range(0f, 1f)] public float mouseSensitivity = 0.5f;
     [SerializeField, Range(1f, 20f)] private float lookLerpSpeed = 10f;
 
-    private float targetYaw;
-    private float targetPitch;
-    private float smoothYaw;
-    private float smoothPitch;
+    public bool IsGazePullActive { get; set; } = false;
     
-    //references
+    private Vector3 _gazePullDirection;
+    private float _gazePullLerpFactor;
+
+    private float targetYaw, targetPitch;
+    private float smoothYaw, smoothPitch;
+    
     private PlayerInput controls;
     private Transform playerBody;
 
@@ -30,34 +33,56 @@ public class CameraMovement : MonoBehaviour
         controls.Enable();
     }
 
-    void Update()
+    void LateUpdate()
     {
-        ReadValue();
-        Look();
+        // This is now a single, unified function.
+        ProcessAndApplyLook();
     }
 
-    private void ReadValue()
+    private void ProcessAndApplyLook()
     {
-        // read raw input
+        // 1. Read raw player input
         Vector2 raw = controls.Player.Look.ReadValue<Vector2>();
         float scaledX = raw.x * (mouseSensitivity / Screen.dpi * 100f);
         float scaledY = raw.y * (mouseSensitivity / Screen.dpi * 100f);
 
-        // update target angles
+        // 2. Apply player's input to the RAW target angles
         targetYaw += scaledX;
         targetPitch -= scaledY;
+
+        // 3. --- THE CRITICAL FIX IS HERE ---
+        // If the pull is active, we LERP the RAW target angles, NOT the smoothed ones.
+        if (IsGazePullActive)
+        {
+            Quaternion targetLookRotation = Quaternion.LookRotation(_gazePullDirection);
+            float gazeTargetYaw = targetLookRotation.eulerAngles.y;
+            float gazeTargetPitch = targetLookRotation.eulerAngles.x;
+            if (gazeTargetPitch > 180) gazeTargetPitch -= 360;
+
+            // Blend the player's raw target with the lady's target
+            targetYaw = Mathf.LerpAngle(targetYaw, gazeTargetYaw, _gazePullLerpFactor);
+            targetPitch = Mathf.LerpAngle(targetPitch, gazeTargetPitch, _gazePullLerpFactor);
+        }
+
+        // 4. Clamp the final target pitch
         targetPitch = Mathf.Clamp(targetPitch, -verticalLookClamp, verticalLookClamp);
 
-        
-        // smooth actual angles toward target
-        smoothYaw = Mathf.LerpAngle(smoothYaw,   targetYaw,   Time.deltaTime * lookLerpSpeed);
+        // 5. NOW, we apply the final smoothing to the (potentially modified) target angles.
+        smoothYaw = Mathf.LerpAngle(smoothYaw, targetYaw, Time.deltaTime * lookLerpSpeed);
         smoothPitch = Mathf.LerpAngle(smoothPitch, targetPitch, Time.deltaTime * lookLerpSpeed);
-    }
-    private void Look()
-    {
-        // apply
+
+        // 6. Apply the final smoothed rotation to the transforms
         transform.localRotation = Quaternion.Euler(smoothPitch, 0f, 0f);
         playerBody.rotation = Quaternion.Euler(0f, smoothYaw, 0f);
+    }
+
+    /// <summary>
+    /// Public method for the FeedbackController to provide pull data.
+    /// </summary>
+    public void UpdateGazeData(Vector3 direction, float lerpFactor)
+    {
+        _gazePullDirection = direction;
+        _gazePullLerpFactor = lerpFactor;
     }
     
     private void OnDisable()
