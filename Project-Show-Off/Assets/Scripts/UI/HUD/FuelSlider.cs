@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections;
 
 public class FuelSlider : MonoBehaviour
 {
     [Header("UI References")]
+    [Tooltip("The main Slider component. Its value will represent the current fuel.")]
     [SerializeField] private Slider FuelBar;
+
+    [Tooltip("The Image that lags behind, showing the change in fuel.")]
     [SerializeField] private Image LerpBar;
 
     [Header("References")]
@@ -18,10 +21,29 @@ public class FuelSlider : MonoBehaviour
     [Tooltip("How quickly the delayed bar animates when fuel is DRAINED.")]
     [SerializeField] private float drainSpeed = 3f;
 
+    // References to our running coroutines so we can stop them.
+    private Coroutine _fillAnimationCoroutine;
+    private Coroutine _drainAnimationCoroutine;
+
+    /// <summary>
+    /// Awake runs before Start. We use it to set the initial state
+    /// so the UI appears full immediately on scene load.
+    /// </summary>
+    private void Awake()
+    {
+        // FIX 1: Set the UI to be full by default when the game starts.
+        if (FuelBar != null)
+        {
+            FuelBar.value = FuelBar.maxValue;
+        }
+        if (LerpBar != null)
+        {
+            LerpBar.fillAmount = 1f;
+        }
+    }
+
     private void OnEnable()
     {
-        // --- This is where the magic happens ---
-        // We subscribe our UpdateFuelBar method to the lantern's OnFuelChanged event.
         if (lanternController != null)
         {
             lanternController.OnFuelChanged += HandleFuelChanged;
@@ -30,83 +52,74 @@ public class FuelSlider : MonoBehaviour
 
     private void OnDisable()
     {
-        // --- Crucial for preventing errors and memory leaks ---
-        // We unsubscribe when this UI object is disabled or destroyed.
         if (lanternController != null)
         {
             lanternController.OnFuelChanged -= HandleFuelChanged;
         }
     }
-    private void Start()
-    {
-        if (lanternController == null || FuelBar == null || LerpBar == null)
-        {
-            Debug.LogError("FuelSlider is missing required references!", this);
-            return;
-        }
 
-        // Initialize both bars to the starting fuel value instantly.
-        // Note: This requires your LanternController to have public properties for its fuel.
-        float initialFuel = lanternController.currentFuel;
-        float maxFuel = lanternController.maxFuel;
+    // We no longer need Update() for the animation logic.
 
-        FuelBar.maxValue = maxFuel;
-        FuelBar.value = initialFuel;
-
-        LerpBar.fillAmount = initialFuel / maxFuel;
-    }
-
-    private void Update()
-    {
-        // Safety check
-        if (FuelBar == null || LerpBar == null) return;
-
-        // --- THE CORE ANIMATION LOGIC ---
-
-        // Case 1: Fuel was GAINED.
-        // The LerpBar is now at the target, and the main FuelBar needs to catch up.
-        if (FuelBar.value < LerpBar.fillAmount * FuelBar.maxValue)
-        {
-            FuelBar.value = Mathf.Lerp(FuelBar.value, LerpBar.fillAmount * FuelBar.maxValue, fillSpeed * Time.deltaTime);
-        }
-
-        // Case 2: Fuel was DRAINED.
-        // The main FuelBar is now at the target, and the LerpBar needs to catch up.
-        if (LerpBar.fillAmount > FuelBar.normalizedValue)
-        {
-            LerpBar.fillAmount = Mathf.Lerp(LerpBar.fillAmount, FuelBar.normalizedValue, drainSpeed * Time.deltaTime);
-        }
-    }
     /// <summary>
-    /// This method is called automatically by the OnFuelChanged event.
-    /// It updates the slider's max and current values.
+    /// This method is called by the OnFuelChanged event.
+    /// It now stops any running animations and starts the correct new one.
     /// </summary>
-    /// <param name="current">The lantern's current fuel level.</param>
-    /// <param name="max">The lantern's maximum fuel capacity.</param>
     private void HandleFuelChanged(float current, float max)
     {
         if (FuelBar == null || LerpBar == null) return;
 
-        // Ensure the max value is set correctly first.
+        // Ensure the max value is set correctly if it ever changes mid-game.
         if (FuelBar.maxValue != max)
         {
             FuelBar.maxValue = max;
         }
 
-        // Check if fuel was lost or gained by comparing with the current slider value
-        if (current < FuelBar.value)
+        // Stop any animations that are currently running. This is crucial
+        // for handling rapid changes in fuel.
+        StopAllCoroutines();
+
+        float previousFuelValue = FuelBar.value;
+
+        // Determine if fuel was lost or gained
+        if (current < previousFuelValue)
         {
             // --- FUEL DECREASED ---
-            // Instantly update the main slider's value.
-            // The LerpBar will catch up in the Update() method.
-            FuelBar.value = current;
+            FuelBar.value = current; // Instantly update the main slider.
+            // Start the coroutine to make the LerpBar catch up.
+            _drainAnimationCoroutine = StartCoroutine(AnimateLerpBarDrain());
         }
-        else if (current > FuelBar.value)
+        else if (current > previousFuelValue)
         {
             // --- FUEL INCREASED ---
-            // Instantly update the LerpBar's fill amount.
-            // The main FuelBar will catch up in the Update() method.
-            LerpBar.fillAmount = current / max;
+            LerpBar.fillAmount = current / max; // Instantly update the LerpBar.
+            // Start the coroutine to make the main FuelBar catch up.
+            _fillAnimationCoroutine = StartCoroutine(AnimateFuelBarFill());
         }
+    }
+
+    private IEnumerator AnimateLerpBarDrain()
+    {
+        float targetFill = FuelBar.normalizedValue;
+        // Loop until the lerp bar is close enough to the target.
+        while (LerpBar.fillAmount > targetFill)
+        {
+            LerpBar.fillAmount = Mathf.Lerp(LerpBar.fillAmount, targetFill, drainSpeed * Time.deltaTime);
+            yield return null; // Wait for the next frame
+        }
+        // Snap to the final value to ensure it's precise.
+        LerpBar.fillAmount = targetFill;
+    }
+
+    private IEnumerator AnimateFuelBarFill()
+    {
+        float targetValue = LerpBar.fillAmount * FuelBar.maxValue;
+        // Loop until the fuel bar is close enough to the target.
+        while (FuelBar.value < targetValue)
+        {
+            FuelBar.value = Mathf.Lerp(FuelBar.value, targetValue, fillSpeed * Time.deltaTime);
+            yield return null; // Wait for the next frame
+        }
+        // Snap to the final value to ensure it's precise.
+        FuelBar.value = targetValue;
     }
 }

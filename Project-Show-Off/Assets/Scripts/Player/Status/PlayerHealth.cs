@@ -38,6 +38,13 @@ public class PlayerHealth : MonoBehaviour
     private EventInstance injuredBreathingInstance;
     // END FMOD CHANGE
 
+    //death screen implementation
+    [Header("Death Screen")]
+    [Tooltip("The UI panel that shows when the player dies.")]
+    [SerializeField] private GameObject deathScreenPanel;
+    
+    //end death screen implementation
+
     // --- Component References ---
     private PlayerMovement playerMovement;
     private PlayerStateController playerStateController;
@@ -58,6 +65,8 @@ public class PlayerHealth : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         playerStateController = GetComponent<PlayerStateController>();
         controls = new PlayerInput();
+        deathScreenPanel.SetActive(false);
+        
 
         if (playerMovement == null || playerStateController == null)
         {
@@ -174,6 +183,8 @@ public class PlayerHealth : MonoBehaviour
         if (playerStateController) playerStateController.enabled = false;
         if (controls != null) controls.Disable();
         this.enabled = false;
+        
+        deathScreenPanel.SetActive(true);
     }
 
     public void SetWoundLevel(int level)
