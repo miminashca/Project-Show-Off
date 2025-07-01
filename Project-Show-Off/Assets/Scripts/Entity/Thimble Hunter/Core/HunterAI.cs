@@ -9,7 +9,6 @@ public struct GizmoSettings
     public bool ShowVisionCone;
     public bool ShowAuditoryRange;
     public bool ShowShootingRange;
-    public bool ShowMeleeRange;
     public bool ShowSuperpositionRange;
 
     [Header("Dynamic State & Debugging")]
@@ -22,17 +21,15 @@ public struct GizmoSettings
 
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(Animator))]
-[RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(HunterStateMachine))]
 public class HunterAI : MonoBehaviour
 {
     [Header("Core Attributes")]
     public float MaxSuperpositionDistance = 50f;
-    public float VisionConeAngle = 90f;
+    public float VisionConeAngle = 140f;
     public float VisionConeRange = 30f;
     public float AuditoryDetectionRange = 20f;
     public float ShootingRange = 15f;
-    public float MeleeRange = 1.5f;
     public int GunDamage = 100;
 
     [Header("Movement Speeds")]
@@ -42,7 +39,7 @@ public class HunterAI : MonoBehaviour
 
     [Header("Detection System")]
     public float BaseDetectionRate = 0.5f; // Units: progress/second (0 to 1)
-    public float DetectionDecayRate = 0.3f; // Units: progress/second
+    public float DetectionDecayRate = 0.15f; // Units: progress/second
     [Range(0f, 1f)]
     public float DetectionProgress { get; private set; } = 0f;
     public bool IsPlayerFullySpotted { get; private set; } = false;
@@ -105,28 +102,21 @@ public class HunterAI : MonoBehaviour
     [Header("Gizmo Display Settings")]
     public GizmoSettings GizmoToggles;
 
-    [Header("VFX/SFX (Assign in Inspector)")]
+    [Header("VFX (Assign in Inspector)")]
     public GameObject MuzzleFlashPrefab;
     public GameObject BulletImpactPlayerPrefab;
     public GameObject BulletImpactObstaclePrefab;
     public GameObject BulletImpactWaterPrefab;
-    public AudioClip GunshotSound;
-    public AudioClip ReloadSound;
-    public AudioClip SpottedPlayerSound;
-    public AudioClip HeardNoiseSound;
-    public AudioClip StartAimingSound;
 
     // --- Component References (public properties for states to access) ---
     public NavMeshAgent NavAgent { get; private set; }
     public HunterNavigation Navigation { get; private set; }
     public Animator HunterAnimator { get; private set; }
-    public AudioSource HunterAudioSource { get; private set; }
     public PlayerStatus TargetPlayerStatus { get; private set; }
 
     // --- Runtime AI Data (public properties for states to access) ---
     public Vector3 LastKnownPlayerPosition { get; set; }
     public bool IsActivelyScanning { get; set; } = false;
-
     public bool CanHearPlayerAlert { get; private set; }
     public float CurrentInvestigationTimer { get; set; }
     public float AimAttemptCooldownTimer { get; private set; }
@@ -136,25 +126,19 @@ public class HunterAI : MonoBehaviour
     public Transform CurrentTargetNode { get; set; }
     public Vector3 CurrentConfirmedAimTarget { get; set; }
 
-    // NEW FMOD CHANGE
     public HunterSoundController SoundController { get; private set; }
-    // END FMOD CHANGE
 
 
     void Awake()
     {
         NavAgent = GetComponent<NavMeshAgent>();
         HunterAnimator = GetComponent<Animator>();
-        HunterAudioSource = GetComponent<AudioSource>();
 
-        // NEW FMOD EVENT
-        // Find and assign the HunterSoundController component on this GameObject
         SoundController = GetComponent<HunterSoundController>();
         if (SoundController == null)
         {
             Debug.LogError("HunterAI is missing a HunterSoundController component!", this.gameObject);
         }
-        // END FMOD EVENT
 
         if (PlayerTransform == null)
         {
@@ -463,7 +447,6 @@ public class HunterAI : MonoBehaviour
         actualFiringDirection = direction.normalized;
     }
 
-    // Auditory detection might give a direct boost to DetectionProgress
     private void HandlePlayerShoutEvent(Vector3 shoutPosition)
     {
         if (this == null || !enabled || !gameObject.activeInHierarchy) return;
@@ -472,12 +455,12 @@ public class HunterAI : MonoBehaviour
         {
             CanHearPlayerAlert = true; // Still useful for investigating state
             LastKnownPlayerPosition = shoutPosition;
-            PlaySound(HeardNoiseSound);
 
             // Add a boost to detection based on noise
-            float noiseDetectionBoost = 0.3f; // Example
+            float noiseDetectionBoost = 0.3f;
             DetectionProgress = Mathf.Clamp01(DetectionProgress + noiseDetectionBoost);
-            UpdateFullySpottedStatus(); // Re-evaluate if this shout made them fully spotted
+            UpdateFullySpottedStatus();
+
             Debug.Log($"{gameObject.name} heard player shout. LKP updated. Detection boosted to {DetectionProgress}. CanHearPlayerAlert = true");
         }
     }
@@ -488,20 +471,12 @@ public class HunterAI : MonoBehaviour
         Debug.Log($"{gameObject.name} acknowledged player alert. CanHearPlayerAlert = false");
     }
 
-    public void PlaySound(AudioClip clip)
-    {
-        if (clip != null && HunterAudioSource != null)
-        {
-            HunterAudioSource.PlayOneShot(clip);
-        }
-    }
-
     public void FireGun()
     {
         Debug.Log($"{gameObject.name}: BANG!");
+
         HunterAnimator.SetTrigger("Shoot");
         HunterEventBus.HunterFiredShot();
-        //PlaySound(GunshotSound);
 
         if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
         {
@@ -516,23 +491,19 @@ public class HunterAI : MonoBehaviour
             Random.Range(-WeaponSpreadAngle / 2f, WeaponSpreadAngle / 2f),
             0f
         );
-        Vector3 finalShotDirection = spreadRotation * actualFiringDirection; // actualFiringDirection should be world space
-                                                                             // If actualFiringDirection was relative to hunter's transform, it'd be:
-                                                                             // finalShotDirection = GunMuzzleTransform.rotation * spreadRotation * (Quaternion.LookRotation(actualFiringDirection) * Vector3.forward);
-
+        Vector3 finalShotDirection = spreadRotation * actualFiringDirection; 
 
         // --- Submergence Check (for the PLAYER'S general position, not the exact aim point) ---
-        // We are shooting in a general direction. The main concern for water is if the *player* is mostly submerged.
-        // Let's use the player's *base* position or a primary visibility point for a quick submergence check.
         Vector3 playerCheckPosForSubmergence = GetPlayerAimPoint();
         if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(playerCheckPosForSubmergence))
         {
             Debug.Log($"{gameObject.name} SHOT FIRED towards generally submerged player area. Impacting water near player.");
-            // Logic to spawn water impact near player's surface position
+
             if (BulletImpactWaterPrefab != null)
             {
                 Plane waterPlane = new Plane(Vector3.up, new Vector3(0, WaterSurfaceYLevel, 0));
-                Ray waterImpactRay = new Ray(GunMuzzleTransform.position, finalShotDirection); // Use the spread direction
+                Ray waterImpactRay = new Ray(GunMuzzleTransform.position, finalShotDirection);
+
                 if (waterPlane.Raycast(waterImpactRay, out float enterDist))
                 {
                     if (enterDist <= ShootingRange * 1.2f)
@@ -546,14 +517,13 @@ public class HunterAI : MonoBehaviour
 
         // --- Raycast with the final spread direction ---
         float shotDistance = ShootingRange * 1.2f;
-        RaycastHit hit;
         int hunterLayer = LayerMask.NameToLayer("Hunter");
         LayerMask shootableMask = ~(1 << hunterLayer);
 
-        Debug.DrawRay(GunMuzzleTransform.position, finalShotDirection * shotDistance, Color.red, 2.0f); // Visualize actual shot
+        Debug.DrawRay(GunMuzzleTransform.position, finalShotDirection * shotDistance, Color.red, 2.0f);
 
         // Raycast
-        if (Physics.Raycast(GunMuzzleTransform.position, finalShotDirection, out hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(GunMuzzleTransform.position, finalShotDirection, out RaycastHit hit, shotDistance, shootableMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider.transform.IsChildOf(PlayerTransform) || hit.collider.transform == PlayerTransform)
             {
@@ -561,16 +531,18 @@ public class HunterAI : MonoBehaviour
                 if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point))
                 {
                     Debug.Log($"{gameObject.name} SHOT HIT Player's submerged part at {hit.point}. Impacting water.");
+
                     if (BulletImpactWaterPrefab != null) Instantiate(BulletImpactWaterPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
                 else
                 {
                     Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name} at {hit.point}");
+
                     PlayerHealth playerHealth = hit.collider.GetComponentInParent<PlayerHealth>();
+
                     if (playerHealth != null)
                     {
-                        // --- THIS IS THE ONLY CHANGE NEEDED IN THIS FILE ---
-                        playerHealth.RegisterShot(); // Changed from TakeDamage(GunDamage)
+                        playerHealth.RegisterShot();
                     }
                     if (BulletImpactPlayerPrefab != null) Instantiate(BulletImpactPlayerPrefab, hit.point, Quaternion.LookRotation(hit.normal));
                 }
@@ -734,11 +706,6 @@ public class HunterAI : MonoBehaviour
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(transform.position, ShootingRange);
-        }
-        if (GizmoToggles.ShowMeleeRange)
-        {
-            Gizmos.color = new Color(1f, 0f, 1f, 0.5f);
-            Gizmos.DrawWireSphere(transform.position, MeleeRange);
         }
         if (GizmoToggles.ShowSuperpositionRange)
         {
