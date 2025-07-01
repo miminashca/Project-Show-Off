@@ -1,4 +1,5 @@
 using UnityEngine;
+using FMODUnity;
 
 public class HunterActivationManager : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class HunterActivationManager : MonoBehaviour
     [Header("Activation Condition")]
     [Tooltip("How many clues must be collected to trigger the activation.")]
     [SerializeField] private int cluesNeededForActivation = 3;
+
+    [SerializeField] private EventReference hunterActivationYell;
+
+    [SerializeField] private Vector3 yellOrigin = new Vector3(116f, 5f, -107f);
 
     // A flag to ensure we only activate once.
     private bool isHunterActivated = false;
@@ -97,6 +102,9 @@ public class HunterActivationManager : MonoBehaviour
 
     public void PlayActivationSFX()
     {
-
+        if (!hunterActivationYell.IsNull)
+        {
+            RuntimeManager.PlayOneShot(hunterActivationYell, yellOrigin);
+        }
     }
 }
