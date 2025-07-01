@@ -158,7 +158,7 @@ public class HemannekenSoundController : MonoBehaviour
     {
         // 1. Initial random delay to de-synchronize all Hemanneken at the start.
         // This waits for a random time between 1 and 20 seconds before the first call.
-        yield return new WaitForSeconds(Random.Range(1.0f, 20.0f));
+        yield return new WaitForSeconds(Random.Range(100.0f, 200.0f));
 
         while (true)
         {
