@@ -1,5 +1,3 @@
-
-
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -13,18 +11,30 @@ public class PlayerVignetteController : MonoBehaviour
     [SerializeField] private Color chokeColor = new Color(0.1f, 0.2f, 0.8f); // A deep blue
     [SerializeField] private Color damageColor = new Color(0.8f, 0.1f, 0.1f); // A blood red
     [SerializeField, Range(0f, 1f)] private float maxIntensity = 0.5f;
-    [SerializeField, Range(0.1f, 10f)] private float damageFlashDuration = 5.0f;
+    // [SerializeField, Range(0.1f, 10f)] private float damageFlashDuration = 5.0f; // REMOVED: No longer needed
     [SerializeField, Range(1f, 20f)] private float fadeSpeed = 5f;
 
     private Vignette vignette;
     private bool isChokeActive = false;
-    private float damageFlashTimer = 0f;
+    // private float damageFlashTimer = 0f; // REMOVED: No longer needed
+
+    // --- ADDED: Wound level tracking ---
+    private PlayerHealth playerHealth;
+    private int currentWoundLevel = 0;
+    private int maxWoundLevel = 3;
+    // ---
 
     private Color targetColor;
     private float targetIntensity;
 
     private void Awake()
     {
+        // --- ADDED: Cache PlayerHealth and get initial state ---
+        playerHealth = GetComponent<PlayerHealth>();
+        currentWoundLevel = playerHealth.CurrentWoundLevel;
+        maxWoundLevel = playerHealth.MaxWoundLevel > 0 ? playerHealth.MaxWoundLevel : 1; // Avoid division by zero
+        // ---
+
         if (postProcessingVolume == null)
         {
             Debug.LogError("PlayerVignetteController: Post Processing Volume is not assigned!", this);
@@ -32,7 +42,6 @@ public class PlayerVignetteController : MonoBehaviour
             return;
         }
 
-        // Cache the Vignette effect from the volume's profile
         if (!postProcessingVolume.profile.TryGet(out vignette))
         {
             Debug.LogError("PlayerVignetteController: Vignette component not found on the assigned Volume's Profile!", this);
@@ -40,7 +49,6 @@ public class PlayerVignetteController : MonoBehaviour
             return;
         }
 
-        // Ensure the vignette is off by default
         vignette.intensity.value = 0f;
         vignette.active = false;
     }
@@ -50,7 +58,8 @@ public class PlayerVignetteController : MonoBehaviour
         // Subscribe to events
         HemannekenEventBus.OnHemannekenAttached += StartChokeVignette;
         HemannekenEventBus.OnHemannekenDetached += StopChokeVignette;
-        PlayerHealth.OnPlayerTookDamage += FlashDamageVignette;
+        // MODIFIED: Changed event subscription to get wound level data
+        PlayerHealth.OnWoundLevelChanged += UpdateWoundVignette;
     }
 
     private void OnDisable()
@@ -58,9 +67,9 @@ public class PlayerVignetteController : MonoBehaviour
         // Unsubscribe to prevent memory leaks
         HemannekenEventBus.OnHemannekenAttached -= StartChokeVignette;
         HemannekenEventBus.OnHemannekenDetached -= StopChokeVignette;
-        PlayerHealth.OnPlayerTookDamage -= FlashDamageVignette;
+        // MODIFIED: Unsubscribe from the new event
+        PlayerHealth.OnWoundLevelChanged -= UpdateWoundVignette;
 
-        // Clean up the vignette state when the player is disabled
         if (vignette != null)
         {
             vignette.intensity.value = 0f;
@@ -70,17 +79,19 @@ public class PlayerVignetteController : MonoBehaviour
 
     private void Update()
     {
-        // Countdown the damage flash timer
-        if (damageFlashTimer > 0)
-        {
-            damageFlashTimer -= Time.deltaTime;
-        }
+        // REMOVED: Damage flash timer countdown
+        // if (damageFlashTimer > 0)
+        // {
+        //     damageFlashTimer -= Time.deltaTime;
+        // }
 
-        // Determine the target state based on priority (Damage > Choke)
-        if (damageFlashTimer > 0)
+        // MODIFIED: Determine target state based on wound level, then choke status.
+        if (currentWoundLevel > 0)
         {
             targetColor = damageColor;
-            targetIntensity = maxIntensity;
+            // Calculate intensity based on how wounded the player is
+            float woundRatio = (float)currentWoundLevel / maxWoundLevel;
+            targetIntensity = Mathf.Clamp(woundRatio * maxIntensity, 0f, maxIntensity);
         }
         else if (isChokeActive)
         {
@@ -97,8 +108,6 @@ public class PlayerVignetteController : MonoBehaviour
         vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, targetIntensity, Time.deltaTime * fadeSpeed);
         vignette.color.value = Color.Lerp(vignette.color.value, targetColor, Time.deltaTime * fadeSpeed);
 
-        // Activate or deactivate the effect to save performance.
-        // The small threshold prevents it from flickering on/off when intensity is near zero.
         vignette.active = vignette.intensity.value > 0.01f;
     }
 
@@ -112,9 +121,11 @@ public class PlayerVignetteController : MonoBehaviour
         isChokeActive = false;
     }
 
-    private void FlashDamageVignette()
+    // RENAMED & MODIFIED: This is now the handler for wound level changes
+    private void UpdateWoundVignette(int currentWounds, int maxWounds)
     {
-        // Simply reset the timer. The Update loop will handle the rest.
-        damageFlashTimer = damageFlashDuration;
+        currentWoundLevel = currentWounds;
+        // Update max wounds in case it can change, and prevent division by zero
+        maxWoundLevel = maxWounds > 0 ? maxWounds : 1;
     }
 }
