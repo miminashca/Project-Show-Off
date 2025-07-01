@@ -88,6 +88,7 @@ Material:
     - _MaterialID: 1
     - _MaterialTypeMask: 2
     - _Metallic: 0
+    - _NoiseSpotScale: 10
     - _NormalScale: 1.47
     - _NormalSwitch: 0
     - _OpaqueCullMode: 2
@@ -104,6 +105,7 @@ Material:
     - _ScaleTurbulence3: 15.3
     - _Size_Voronoi: 2.33
     - _Smoothness: 0.9
+    - _SpotDarkness: 0.8
     - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 16
@@ -133,14 +135,17 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _Amplitude: {r: 0, g: 0, b: 0, a: 0}
-    - _DeepColor: {r: 0.036931295, g: 0.047477838, b: 0.21509439, a: 0.69803923}
+    - _DeepColor: {r: 0.90188676, g: 0.16471057, b: 0.12762536, a: 0.69803923}
     - _Direction: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _NoiseSpotScaleUV: {r: 10, g: 10, b: 0, a: 0}
     - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
-    - _ShallowColor: {r: 0.12113204, g: 0.4037736, b: 0.2996425, a: 0}
+    - _ShallowColor: {r: 0, g: 1, b: 0.54352236, a: 0}
     - _Speed: {r: 0, g: 0, b: 0, a: 0}
     - _TineColor: {r: 0.73333335, g: 0, b: 0, a: 1}
+    - _TineColorA: {r: 0.056781713, g: 0.5471698, b: 0.18902525, a: 1}
+    - _TineColorB: {r: 0.02432893, g: 0.060308255, b: 0.19245276, a: 1}
     - _WaveParamA: {r: 0.1, g: 0.05, b: 1, a: 0.5}
     - _WaveParamB: {r: 1, g: 1, b: 1, a: 1}
     - _WaveParamC: {r: 1, g: 1, b: 0, a: 0}
