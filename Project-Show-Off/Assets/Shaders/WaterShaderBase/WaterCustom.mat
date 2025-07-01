@@ -71,6 +71,7 @@ Material:
     - _Blablabla: 4.71
     - _BlendMode: 0
     - _ColorSmoothing: 0.5
+    - _ColorSwitch: 0.0001
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 2
     - _CullModeForward: 2
@@ -100,10 +101,12 @@ Material:
     - _RenderQueueType: 4
     - _RequireSplitLighting: 0
     - _RippleStrength: 1
-    - _ScaleTurbulence1: 100
-    - _ScaleTurbulence2: 84.85
+    - _ScaleTurbulence1: 300
+    - _ScaleTurbulence2: 200
     - _ScaleTurbulence3: 15.3
     - _Size_Voronoi: 2.33
+    - _SmoothGradientA: -0.3
+    - _SmoothGradientB: 3
     - _Smoothness: 0.9
     - _SpotDarkness: 0.8
     - _SrcBlend: 1
@@ -139,13 +142,16 @@ Material:
     - _Direction: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FlowSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _GradientEnd: {r: 0.6, g: 1, b: 0, a: 0}
+    - _GradientStart: {r: 1.08, g: 0.32, b: 0, a: 0}
     - _NoiseSpotScaleUV: {r: 10, g: 10, b: 0, a: 0}
     - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _ShallowColor: {r: 0, g: 1, b: 0.54352236, a: 0}
     - _Speed: {r: 0, g: 0, b: 0, a: 0}
     - _TineColor: {r: 0.73333335, g: 0, b: 0, a: 1}
-    - _TineColorA: {r: 0.056781713, g: 0.5471698, b: 0.18902525, a: 1}
-    - _TineColorB: {r: 0.02432893, g: 0.060308255, b: 0.19245276, a: 1}
+    - _TineColorA: {r: 0.1056247, g: 0.4867924, b: 0.2620019, a: 1}
+    - _TineColorB: {r: 0.24886437, g: 0.690566, b: 0.43759105, a: 1}
     - _WaveParamA: {r: 0.1, g: 0.05, b: 1, a: 0.5}
     - _WaveParamB: {r: 1, g: 1, b: 1, a: 1}
     - _WaveParamC: {r: 1, g: 1, b: 0, a: 0}
