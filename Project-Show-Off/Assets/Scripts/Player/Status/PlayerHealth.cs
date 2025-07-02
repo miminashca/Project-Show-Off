@@ -56,6 +56,9 @@ public class PlayerHealth : MonoBehaviour
     public static event Action OnPlayerDied;
     public static event Action OnPlayerTookDamage;
 
+    // NEW FMOD CHANGE
+    public AmbientMusicTensionController musicTensionController;
+    // END FMOD CHANGE
 
     public int CurrentWoundLevel => currentWoundLevel;
     public int MaxWoundLevel => maxWoundLevel;
@@ -66,7 +69,11 @@ public class PlayerHealth : MonoBehaviour
         playerStateController = GetComponent<PlayerStateController>();
         controls = new PlayerInput();
         deathScreenPanel.SetActive(false);
-        
+
+        if (musicTensionController == null)
+        {
+            musicTensionController = FindAnyObjectByType<AmbientMusicTensionController>();
+        }
 
         if (playerMovement == null || playerStateController == null)
         {
@@ -136,6 +143,12 @@ public class PlayerHealth : MonoBehaviour
         {
             RuntimeManager.PlayOneShotAttached(playerHurtArghSound, gameObject);
         }
+
+        if (musicTensionController != null)
+        {
+            musicTensionController.TriggerShotTension();
+        }
+
         // UpdateInjuredBreathingState is called in Update, so it will handle the change.
         // END FMOD CHANGE
 
