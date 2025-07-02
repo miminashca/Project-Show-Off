@@ -21,7 +21,7 @@ public class LadySpawner : MonoBehaviour
     private LadyStateMachine currentLady;
     private bool canBeSpawned = true;
 
-    private void Awake()
+    private void Start()
     {
         GameManager.Instance.OnGameLoaded += Init;
     }
