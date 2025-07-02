@@ -45,6 +45,15 @@ AnimationClip:
         weightedMode: 0
         inWeight: {x: 0.79923606, y: 0.91627127, z: 1}
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
+      - serializedVersion: 3
+        time: 16.616667
+        value: {x: -1.05, y: 0.06, z: -2.69}
+        inSlope: {x: 0.04153119, y: -0.016354874, z: 0.014162511}
+        outSlope: {x: 0.04153119, y: -0.016354874, z: 0.014162511}
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: {x: 0.79923606, y: 0.91627127, z: 1}
+        outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -74,7 +83,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 10.766666
+    m_StopTime: 16.616667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -121,6 +130,15 @@ AnimationClip:
         weightedMode: 0
         inWeight: 0.79923606
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 16.616667
+        value: -1.05
+        inSlope: 0.04153119
+        outSlope: 0.04153119
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.79923606
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -160,6 +178,15 @@ AnimationClip:
         weightedMode: 0
         inWeight: 0.91627127
         outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 16.616667
+        value: 0.06
+        inSlope: -0.016354874
+        outSlope: -0.016354874
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.91627127
+        outWeight: 0.33333334
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -192,6 +219,15 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 10.766666
+        value: -2.69
+        inSlope: 0.014162511
+        outSlope: 0.014162511
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 1
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 16.616667
         value: -2.69
         inSlope: 0.014162511
         outSlope: 0.014162511
@@ -484,7 +520,7 @@ MonoBehaviour:
     m_DisplayName: Active
   m_Markers:
     m_Objects: []
-  m_PostPlaybackState: 3
+  m_PostPlaybackState: 1
 --- !u!114 &-1121889687376200334
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1151,13 +1187,13 @@ MonoBehaviour:
   m_InfiniteClipOffsetEulerAngles: {x: 0, y: 0, z: 0}
   m_InfiniteClipTimeOffset: 0
   m_InfiniteClipRemoveOffset: 0
-  m_InfiniteClipApplyFootIK: 1
+  m_InfiniteClipApplyFootIK: 0
   mInfiniteClipLoop: 0
   m_MatchTargetFields: 63
   m_Position: {x: 0, y: 0, z: 0}
   m_EulerAngles: {x: 0, y: 0, z: 0}
   m_AvatarMask: {fileID: 0}
-  m_ApplyAvatarMask: 1
+  m_ApplyAvatarMask: 0
   m_TrackOffset: 0
   m_InfiniteClip: {fileID: 8618754327783880285}
   m_OpenClipOffsetRotation: {x: 0, y: 0, z: 0, w: 1}
