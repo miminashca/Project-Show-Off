@@ -364,8 +364,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteLadyPrefab: {fileID: 516915659096450392, guid: 27a8d4399028c42d3bac0c40144c1fa9, type: 3}
   config: {fileID: 11400000, guid: 8971a673f8b584ab4832ae382271c9ec, type: 2}
-  proximityCheckInterval: 2
+  proximityCheckInterval: 1
   dieToSpawnInterval: 10
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 4194304
 --- !u!4 &1277341508
 Transform:
   m_ObjectHideFlags: 0
