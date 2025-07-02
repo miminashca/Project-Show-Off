@@ -21,7 +21,7 @@ public class LadySpawner : MonoBehaviour
     private LadyStateMachine currentLady;
     private bool canBeSpawned = true;
 
-    private void Awake()
+    private void Start()
     {
         GameManager.Instance.OnGameLoaded += Init;
     }
@@ -76,15 +76,18 @@ public class LadySpawner : MonoBehaviour
 
     private void TrySpawn()
     {
-        if (!isActivated || GameManager.Instance.isWhiteLadyActive) return;
+        if (!isActivated || GameManager.Instance.isWhiteLadyActive || !canBeSpawned) return;
 
         if (IsPlayerLookingAtSpawnPoint())
         {
             return;
         }
         
-        // ... (the rest of the spawn logic is correct and does not need to change) ...
-        Debug.Log($"Spawning White Lady at {transform.position}");
+        SpawnLady();
+    }
+
+    private void SpawnLady()
+    {
         GameObject ladyInstance = Instantiate(whiteLadyPrefab, transform.position, transform.rotation);
         GameManager.Instance.isWhiteLadyActive = true;
         canBeSpawned = false;
@@ -104,7 +107,6 @@ public class LadySpawner : MonoBehaviour
     }
     
     /// <summary>
-    /// --- NEW AND IMPROVED VERSION ---
     /// Checks if the spawn point is within the player's camera view and not blocked by geometry.
     /// This version is robust and works correctly for a single point (empty Transform).
     /// </summary>
@@ -147,8 +149,8 @@ public class LadySpawner : MonoBehaviour
     private void StartSpawnWaitTimer()
     {
         currentLady.OnLadyDie -= StartSpawnWaitTimer;
-        // The canBeSpawned flag is already false. The timer is already reset in TrySpawn.
-        // We just need to null out the reference.
+        canBeSpawned = false;
+        timer = 0f;
         currentLady = null;
     }
 }
