@@ -8,6 +8,10 @@ public class HunterNavigation : MonoBehaviour
     private HunterAI _hunterAI;
     private Camera _playerCamera;
 
+    [Header("Node Population")]
+    [Tooltip("Optional: Assign a parent object here. Clicking the button below will populate RoamingNodes with all of its children.")]
+    public Transform NodeParentHolder;
+
     [Header("Roaming Node Graph")]
     public List<Transform> RoamingNodes = new List<Transform>();
     public enum NodeSelectionMode
@@ -127,17 +131,18 @@ public class HunterNavigation : MonoBehaviour
             }
         }
 
+        // --- REFINED SELECTION LOGIC ---
         if (candidateNodes.Count > 0)
         {
-            Debug.Log($"Found {candidateNodes.Count} ideal (hidden) superposition nodes. Picking one.");
-            // Optional: Add further scoring (e.g., nodes in player's general direction of movement)
-            return candidateNodes[Random.Range(0, candidateNodes.Count)];
+            Debug.Log($"Found {candidateNodes.Count} ideal (hidden) superposition nodes. Picking the one nearest to the player.");
+
+            // Instead of picking randomly, order the candidates by their distance to the player and pick the first one.
+            Transform bestNode = candidateNodes.OrderBy(node => Vector3.Distance(node.position, playerPos)).FirstOrDefault();
+            return bestNode;
         }
         else
         {
-            // Fallback: No ideal node found, maybe pick a random one outside immediate player vicinity
-            // Or a node far from the hunter but within a broader range of the player.
-            // For now, return null or a less optimal random node.
+            // Fallback logic remains the same
             Debug.LogWarning("HunterNavigation: Could not find an ideal superposition node. Falling back to any valid node.");
             List<Transform> fallbackNodes = RoamingNodes.Where(n =>
                 n != null &&
@@ -145,7 +150,13 @@ public class HunterNavigation : MonoBehaviour
                 Vector3.Distance(n.position, hunterPos) > MinDistFromHunterForSuperposition
             ).ToList();
 
-            return fallbackNodes.Count > 0 ? fallbackNodes[Random.Range(0, fallbackNodes.Count)] : GetRandomRoamNode();
+            // Optional: Also pick the nearest from the fallback list
+            if (fallbackNodes.Count > 0)
+            {
+                return fallbackNodes.OrderBy(node => Vector3.Distance(node.position, playerPos)).FirstOrDefault();
+            }
+
+            return GetRandomRoamNode();
         }
     }
 
@@ -171,6 +182,32 @@ public class HunterNavigation : MonoBehaviour
             }
         }
         return nearestNode;
+    }
+
+    // This attribute adds a button to the script's context menu (the three dots in the Inspector)
+    [ContextMenu("Populate Nodes From Parent Holder")]
+    private void PopulateNodesFromParent()
+    {
+        if (NodeParentHolder == null)
+        {
+            Debug.LogWarning("Node Parent Holder is not assigned. Cannot populate nodes.", this);
+            return;
+        }
+
+        // This ensures we don't add duplicates if run multiple times
+        RoamingNodes.Clear();
+
+        // GetComponentsInChildren<Transform> includes the parent itself, so we skip it.
+        foreach (Transform child in NodeParentHolder)
+        {
+            // A check to ensure we only add direct children, not the parent itself.
+            if (child != NodeParentHolder)
+            {
+                RoamingNodes.Add(child);
+            }
+        }
+
+        Debug.Log($"Successfully populated {RoamingNodes.Count} nodes from {NodeParentHolder.name}.", this);
     }
 
     void OnDrawGizmosSelected()
