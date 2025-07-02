@@ -42,7 +42,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Death Screen")]
     [Tooltip("The UI panel that shows when the player dies.")]
     [SerializeField] private GameObject deathScreenPanel;
-    
+    [SerializeField] private CameraMovement cameraMovement;
+
     //end death screen implementation
 
     // --- Component References ---
@@ -68,7 +69,7 @@ public class PlayerHealth : MonoBehaviour
         deathScreenPanel.SetActive(false);
         
 
-        if (playerMovement == null || playerStateController == null)
+        if (playerMovement == null || playerStateController == null || cameraMovement == null)
         {
             Debug.LogError("PlayerHealth requires PlayerMovement and PlayerStateController on the same GameObject!", this);
             enabled = false;
@@ -176,15 +177,24 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player has died! Wound level reached maximum.");
         OnPlayerDied?.Invoke();
 
+        
+        Time.timeScale = 0f; // Pause the game
+        Cursor.lockState = CursorLockMode.None; // Unlock the cursor
+        Cursor.visible = true; // Make the cursor visible
+
         // This call will correctly stop the sound as the component is about to be disabled.
         UpdateInjuredBreathingState();
 
         if (playerMovement) playerMovement.enabled = false;
+        if (cameraMovement) cameraMovement.enabled = false;
         if (playerStateController) playerStateController.enabled = false;
         if (controls != null) controls.Disable();
         this.enabled = false;
-        
-        deathScreenPanel.SetActive(true);
+
+        if (deathScreenPanel) deathScreenPanel.SetActive(true);
+
+        // Finally, disable this script.
+        this.enabled = false;
     }
 
     public void SetWoundLevel(int level)
