@@ -61,7 +61,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
-    - _Alpha: 0.84
+    - _Alpha: 0.1
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSoftEnd: 2.76
@@ -95,11 +95,13 @@ Material:
     - _ExcludeFromTUAndAA: 0
     - _Float: 1.75
     - _IndexOfRefraction: 2.04
+    - _MaskSoftEnd: 0.9
+    - _MaskSoftStart: 0.09
     - _MaterialID: 1
     - _MaterialTypeMask: 2
-    - _Metallic: 1
+    - _Metallic: 0
     - _NoiseSpotScale: 9.99
-    - _NormalScale: 1
+    - _NormalScale: 0.5
     - _NormalSwitch: 0
     - _OpaqueCullMode: 2
     - _PerPixelSorting: 0
@@ -117,10 +119,10 @@ Material:
     - _ScaleTurbulence1: 567.82
     - _ScaleTurbulence2: 300
     - _ScaleTurbulence3: 10
-    - _Size_Voronoi: 1.07
+    - _Size_Voronoi: 5.57
     - _SmoothGradientA: -0.73
     - _SmoothGradientB: 3
-    - _Smoothness: 0.28
+    - _Smoothness: 0
     - _SpotDarkness: 0.73
     - _SrcBlend: 1
     - _StencilRef: 0
