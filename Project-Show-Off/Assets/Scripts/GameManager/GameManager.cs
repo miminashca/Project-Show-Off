@@ -28,7 +28,20 @@ public class GameManager : MonoBehaviour
     private LanternController lanternController;
     [NonSerialized] public Transform PlayerTransform;
     private ClueEventManager clueManager;
-    
+
+    // <<< NEW: References for UI screens and new components >>>
+    // <<< CHANGED: We no longer use [SerializeField] for scene-specific objects. >>>
+    // We will find these at runtime instead.
+    private GameObject pauseScreenUI;
+    private GameObject deathScreenUI;
+    // <<< NEW: Component references needed for pausing >>>
+    private CameraMovement cameraMovement;
+    //private HeadbobController headbobController; // Uncomment if you have this script
+
+    // <<< NEW: Public state to let other scripts know if the game is paused >>>
+    public static bool IsGamePaused { get; private set; }
+    //----END NEW----   
+
     //probably have to move to game state manager in future...
     public bool isWhiteLadyActive = false;
 
@@ -44,9 +57,27 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return; // Exit if another instance already exists
         }
+        // <<< NEW: Ensure UI is disabled when the game manager is first created >>>
+        if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
+        if (deathScreenUI != null) deathScreenUI.SetActive(false);
     }
 
+    // <<< NEW: Add an Update loop to listen for the pause key >>>
+    private void Update()
+    {
+        // Don't allow pausing if the death screen is active or if we are in the main menu
+        if (deathScreenUI != null && deathScreenUI.activeSelf || SceneManager.GetActiveScene().name == "StarScene")
+        {
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            TogglePause();
+        }
+    }
     private void OnEnable()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -69,8 +100,14 @@ public class GameManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "LanaStartScene")
+        IsGamePaused = false; // reset pause state when a new scene is loaded
+
+        if (scene.name == "LanaStartScene" || scene.name == "StartScene")
         {
+            // <<< NEW: Ensure cursor is visible and time is running in menu scenes >>>
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             return;
         }
 
@@ -83,14 +120,25 @@ public class GameManager : MonoBehaviour
         // Wait for one frame to allow all other objects to initialize.
         yield return null;
 
+
         Debug.Log($"Executing start choice: {startState}");
 
-        if (!FindPlayerComponents())
+        if (!FindSceneReferences())
         {
             Debug.LogError("Could not find player components on scene load. Aborting start logic.");
             yield break; // Stop the coroutine
         }
-        
+
+        // <<< NEW: disable ui screens on start >>>
+        if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
+        if (deathScreenUI != null) deathScreenUI.SetActive(false);
+
+        if (playerHealth == null) // A simple check to see if references were found
+        {
+            Debug.LogError("Could not find player components on scene load. Aborting start logic.");
+            yield break;
+        }
+
         OnGameLoaded?.Invoke();
         
         // Unsubscribe first to prevent double-subscription if the scene is ever reloaded
@@ -114,12 +162,14 @@ public class GameManager : MonoBehaviour
                     Debug.Log("Starting new game. Old save data cleared.");
                 }
                 clueManager.LoadClues(null, null);
-                SetPlayerControl(true);
+                //SetPlayerControl(true);
+                SetPlayerInputActive(true);
                 break;
 
             case GameStartState.Continue:
                 LoadGame();
-                SetPlayerControl(true);
+                //SetPlayerControl(true);
+                SetPlayerInputActive(true);
                 break;
 
             case GameStartState.Undecided:
@@ -127,12 +177,99 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("Game scene loaded directly. Defaulting to a New Game state.");
                 if (PlayerPrefs.HasKey(SaveKey)) PlayerPrefs.DeleteKey(SaveKey);
                 clueManager.LoadClues(null, null);
-                SetPlayerControl(true);
+                //SetPlayerControl(true);
+                SetPlayerInputActive(true);
                 break;
         }
         
         startState = GameStartState.Undecided;
     }
+
+    // <<< NEW: Renamed and expanded from SetPlayerControl to handle all components for pausing >>>
+    private void SetPlayerInputActive(bool isActive)
+    {
+        if (playerMovement != null) playerMovement.enabled = isActive;
+        if (lanternController != null) lanternController.enabled = isActive;
+        if (cameraMovement != null) cameraMovement.enabled = isActive;
+        // if (headbobController != null) headbobController.enabled = isActive; // Uncomment if you have this
+
+        Debug.Log($"Player controls set to: {isActive}");
+
+        // Also manage cursor state here
+        if (isActive)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
+    }
+
+    // <<< NEW: Pause and Resume Logic >>>
+    public void TogglePause()
+    {
+        IsGamePaused = !IsGamePaused;
+        if (IsGamePaused)
+        {
+            PauseGame();
+        }
+        else
+        {
+            ResumeGame();
+        }
+    }
+
+    public void PauseGame()
+    {
+        IsGamePaused = true;
+        Time.timeScale = 0f;
+        SetPlayerInputActive(false);
+        if (pauseScreenUI != null) pauseScreenUI.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        IsGamePaused = false;
+        Time.timeScale = 1f;
+        SetPlayerInputActive(true);
+        if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
+    }
+
+    // <<< NEW: Method to be called from PlayerHealth when the player dies >>>
+    public void PlayerDied()
+    {
+        IsGamePaused = true; // The game is effectively paused on death
+        Time.timeScale = 0f; // Freeze game
+        SetPlayerInputActive(false); // Disable controls and show cursor
+        if (deathScreenUI != null) deathScreenUI.SetActive(true);
+    }
+
+    // <<< NEW: Scene management methods for UI buttons >>>
+    public void Retry()
+    {
+        // This is the crucial fix for the restart issue.
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void GoToMainMenu()
+    {
+        // Always reset time scale before leaving a scene.
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // Make sure you have this scene in your build settings
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
+
     private void SetPlayerControl(bool isEnabled)
     {
         // The player components themselves manage their own input instances.
@@ -154,7 +291,7 @@ public class GameManager : MonoBehaviour
 
     public void SaveGame()
     {
-        if (!FindPlayerComponents()) return;
+        if (!FindSceneReferences()) return;
         
         PlayerData data = new PlayerData();
         data.woundLevel = playerHealth.CurrentWoundLevel;
@@ -178,7 +315,7 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("Load Failed: No save data found.");
             return;
         }
-        if (!FindPlayerComponents()) return;
+        if (!FindSceneReferences()) return;
 
         string json = PlayerPrefs.GetString(SaveKey);
         PlayerData data = JsonUtility.FromJson<PlayerData>(json);
@@ -204,11 +341,37 @@ public class GameManager : MonoBehaviour
         Debug.Log("<color=lime>Game Loaded Successfully!</color>");
     }
 
-    private bool FindPlayerComponents()
+    //old
+    //private bool FindPlayerComponents()
+    //{
+    //    playerHealth = FindFirstObjectByType<PlayerHealth>();
+    //    playerMovement = FindFirstObjectByType<PlayerMovement>();
+    //    lanternController = FindFirstObjectByType<LanternController>();
+    //    clueManager = ClueEventManager.Instance; // Singleton is reliable
+
+    //    // <<< NEW: Find extra components here >>>
+    //    cameraMovement = FindFirstObjectByType<CameraMovement>();
+    //    // headbobController = FindFirstObjectByType<HeadbobController>(); // Uncomment if you have this
+
+    //    if (playerHealth != null)
+    //    {
+    //        PlayerTransform = playerHealth.transform;
+    //    }
+
+    //    // Only the core components are essential for the game to run.
+    //    // UI-related components can be null-checked later.
+    //    return playerHealth != null && playerMovement != null && lanternController != null && PlayerTransform != null && clueManager != null;
+    //}
+
+    private bool FindSceneReferences()
     {
+        Debug.Log("GameManager finding scene references...");
+
+        // Find Player Components
         playerHealth = FindFirstObjectByType<PlayerHealth>();
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         lanternController = FindFirstObjectByType<LanternController>();
+        cameraMovement = FindFirstObjectByType<CameraMovement>();
         clueManager = ClueEventManager.Instance; // Singleton is reliable
 
         if (playerHealth != null)
@@ -216,6 +379,34 @@ public class GameManager : MonoBehaviour
             PlayerTransform = playerHealth.transform;
         }
 
+        // Find UI Components using our markers
+        // Note: I'm using the names from your script now, e.g., UIpauseMarker
+        UIpauseMarker pauseMarker = FindFirstObjectByType<UIpauseMarker>();
+        if (pauseMarker != null)
+        {
+            pauseScreenUI = pauseMarker.gameObject;
+            Debug.Log("Found Pause Screen UI.");
+        }
+        else
+        {
+            // This is not a critical error, the game can run without a pause screen
+            Debug.LogWarning("Could not find object with UIpauseMarker component in the scene.");
+        }
+
+        UIdeathMarker deathMarker = FindFirstObjectByType<UIdeathMarker>();
+        if (deathMarker != null)
+        {
+            deathScreenUI = deathMarker.gameObject;
+            Debug.Log("Found Death Screen UI.");
+        }
+        else
+        {
+            Debug.LogWarning("Could not find object with UIdeathMarker component in the scene.");
+        }
+
+        // This is the important part. We return true only if the CORE components are found.
+        // The game cannot run without these. UI is optional.
         return playerHealth != null && playerMovement != null && lanternController != null && PlayerTransform != null && clueManager != null;
     }
+
 }

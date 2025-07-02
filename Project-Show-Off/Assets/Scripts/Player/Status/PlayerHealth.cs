@@ -39,17 +39,17 @@ public class PlayerHealth : MonoBehaviour
     // END FMOD CHANGE
 
     //death screen implementation
-    [Header("Death Screen")]
-    [Tooltip("The UI panel that shows when the player dies.")]
-    [SerializeField] private GameObject deathScreenPanel;
-    [SerializeField] private CameraMovement cameraMovement;
+    //[Header("Death Screen")]
+    //[Tooltip("The UI panel that shows when the player dies.")]
+    //[SerializeField] private GameObject deathScreenPanel;
+    //[SerializeField] private CameraMovement cameraMovement;
 
     //end death screen implementation
 
     // --- Component References ---
     private PlayerMovement playerMovement;
     private PlayerStateController playerStateController;
-    private PlayerInput controls;
+    //private PlayerInput controls;
 
     // --- Events for UI/GameManager ---
     public static event Action<int, int> OnWoundLevelChanged; // Sends Current, Max
@@ -63,20 +63,21 @@ public class PlayerHealth : MonoBehaviour
 
     public int CurrentWoundLevel => currentWoundLevel;
     public int MaxWoundLevel => maxWoundLevel;
-
+    // <<< CHANGED: Added a flag to prevent Die() from being called multiple times. >>>
+    private bool isDead = false;
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
         playerStateController = GetComponent<PlayerStateController>();
-        controls = new PlayerInput();
-        deathScreenPanel.SetActive(false);
+        //controls = new PlayerInput();
+        //deathScreenPanel.SetActive(false);
 
         if (musicTensionController == null)
         {
             musicTensionController = FindAnyObjectByType<AmbientMusicTensionController>();
         }
 
-        if (playerMovement == null || playerStateController == null || cameraMovement == null)
+        if (playerMovement == null || playerStateController == null)
         {
             Debug.LogError("PlayerHealth requires PlayerMovement and PlayerStateController on the same GameObject!", this);
             enabled = false;
@@ -91,8 +92,8 @@ public class PlayerHealth : MonoBehaviour
         // END FMOD CHANGE
     }
 
-    private void OnEnable() => controls.Enable();
-    private void OnDisable() => controls.Disable();
+    //private void OnEnable() => controls.Enable();
+    //private void OnDisable() => controls.Disable();
 
     private void Start()
     {
@@ -125,6 +126,9 @@ public class PlayerHealth : MonoBehaviour
         UpdateInjuredBreathingState();
         // END FMOD CHANGE
 
+        //coment this if you wanna revert to the old death screen implementation
+        if (isDead) return;
+
         HandleRegeneration();
         HandleAdrenalineRush();
         HandleChoking();
@@ -132,7 +136,9 @@ public class PlayerHealth : MonoBehaviour
 
     public void RegisterShot()
     {
-        if (currentWoundLevel >= maxWoundLevel) return;
+        //if (currentWoundLevel >= maxWoundLevel) return;
+        // <<< CHANGED: Check the isDead flag >>>
+        if (currentWoundLevel >= maxWoundLevel || isDead) return;
 
         currentWoundLevel++;
         OnWoundLevelChanged?.Invoke(currentWoundLevel, maxWoundLevel);
@@ -184,32 +190,49 @@ public class PlayerHealth : MonoBehaviour
             }
         }
     }
+    //method 1 (Old)
+    //public void Die()
+    //{
+    //    Debug.Log("Player has died! Wound level reached maximum.");
+    //    OnPlayerDied?.Invoke();
 
+
+    //    Time.timeScale = 0f; // Pause the game
+    //    Cursor.lockState = CursorLockMode.None; // Unlock the cursor
+    //    Cursor.visible = true; // Make the cursor visible
+
+    //    // This call will correctly stop the sound as the component is about to be disabled.
+    //    UpdateInjuredBreathingState();
+
+    //    if (playerMovement) playerMovement.enabled = false;
+    //    if (cameraMovement) cameraMovement.enabled = false;
+    //    if (playerStateController) playerStateController.enabled = false;
+    //    if (controls != null) controls.Disable();
+    //    this.enabled = false;
+
+    //    if (deathScreenPanel) deathScreenPanel.SetActive(true);
+
+    //    // Finally, disable this script.
+    //    this.enabled = false;
+    //}
+
+    //method 2 (New)
+    // <<< CHANGED: This is the most important change. The Die() method is now extremely simple. >>>
     public void Die()
     {
-        Debug.Log("Player has died! Wound level reached maximum.");
+        // Prevent this method from running more than once
+        if (isDead) return;
+        isDead = true;
+
+        Debug.Log("Player has died! Notifying GameManager.");
         OnPlayerDied?.Invoke();
 
-        
-        Time.timeScale = 0f; // Pause the game
-        Cursor.lockState = CursorLockMode.None; // Unlock the cursor
-        Cursor.visible = true; // Make the cursor visible
-
-        // This call will correctly stop the sound as the component is about to be disabled.
+        // This call will correctly stop the sound as the component is about to be disabled by the GameManager.
         UpdateInjuredBreathingState();
 
-        if (playerMovement) playerMovement.enabled = false;
-        if (cameraMovement) cameraMovement.enabled = false;
-        if (playerStateController) playerStateController.enabled = false;
-        if (controls != null) controls.Disable();
-        this.enabled = false;
-
-        if (deathScreenPanel) deathScreenPanel.SetActive(true);
-
-        // Finally, disable this script.
-        this.enabled = false;
+        // Tell the GameManager to handle everything else (pausing time, showing UI, disabling controls).
+        GameManager.Instance.PlayerDied();
     }
-
     public void SetWoundLevel(int level)
     {
         currentWoundLevel = Mathf.Clamp(level, 0, maxWoundLevel);
@@ -260,6 +283,9 @@ public class PlayerHealth : MonoBehaviour
 
     private void HandleChoking()
     {
+        // <<< CHANGED: Check the isDead flag >>>
+        if (isDead) return;
+
         if (numberOfHemannekensAttached > 0)
         {
             chokeTimer -= Time.deltaTime * numberOfHemannekensAttached;

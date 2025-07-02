@@ -1,72 +1,34 @@
 using UnityEngine;
 
+// This script's only job is to respond to UI button clicks on the Pause Screen.
+// It calls the appropriate methods in the central GameManager.
 public class PauseScreen : MonoBehaviour
 {
-
-    [SerializeField] private GameObject pauseScreen;
-
-    CharacterController playerMovment;
-    CameraMovement cameraMovment;
-    PlayerInput input;
-    HeadbobController bob;
-
-    private void Start()
+    // This method should be linked to the "Resume" button's OnClick() event in the Inspector.
+    public void OnResumeClicked()
     {
-       playerMovment = FindFirstObjectByType<CharacterController>();
-       input = new PlayerInput();
-       cameraMovment = FindFirstObjectByType<CameraMovement>();
-        bob = FindFirstObjectByType<HeadbobController>();
-    }
-    void Awake()
-    {
-        pauseScreen.SetActive(false); // keep the pause screen disabled by default
-    }
-    private void TogglePause()
-    {
-        
-
-        bool isPaused = !pauseScreen.activeSelf;
-        pauseScreen.SetActive(isPaused);
-
-        if (isPaused)
+        // Tell the GameManager to resume the game.
+        if (GameManager.Instance != null)
         {
-            bob.enabled = false; // Disable headbob when paused
-            cameraMovment.enabled = false;
-            playerMovment.enabled = false;
-            input.Disable();
-            
-
-            // Show and unlock the cursor
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-
-            // Optional: Pause time
-            Time.timeScale = 0f;
-        }
-        else
-        {
-            // Hide and lock the cursor
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-
-            
-            playerMovment.enabled = true;
-            input.Enable();
-            cameraMovment.enabled = true;
-            bob.enabled = true; // Re-enable headbob when unpaused
-
-            // Optional: Resume time
-            Time.timeScale = 1f;
-
+            GameManager.Instance.ResumeGame();
         }
     }
 
-    void Update()
+    // This method should be linked to the "Main Menu" button's OnClick() event.
+    public void OnMainMenuClicked()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (GameManager.Instance != null)
         {
-            Debug.Log("Paused");
-            TogglePause();
+            GameManager.Instance.GoToMainMenu();
+        }
+    }
+
+    // This method should be linked to the "Quit" button's OnClick() event.
+    public void OnQuitClicked()
+    {
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.QuitGame();
         }
     }
 }
