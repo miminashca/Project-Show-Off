@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
 
-public class Markisawesome : MonoBehaviour
+public class CutsceneActivatorTrigger : MonoBehaviour
 {
     public Transform parentObject;
 
