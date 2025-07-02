@@ -1840,17 +1840,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MaxSuperpositionDistance: 120
-  VisionConeAngle: 160
-  VisionConeRange: 40
-  AuditoryDetectionRange: 80
-  ShootingRange: 25
+  VisionConeAngle: 140
+  VisionConeRange: 30
+  AuditoryDetectionRange: 60
+  ShootingRange: 20
   GunDamage: 50
   MovementSpeedRoaming: 4
   MovementSpeedInvestigating: 4.5
   MovementSpeedChasing: 5
   BaseDetectionRate: 0.5
   DetectionDecayRate: 0.1
-  FullySpottedLossThreshold: 0.5
+  FullySpottedLossThreshold: 0.6
   CrouchVisibilityMultiplier: 0.4
   MovementVisibilityMultiplier: 2
   StationaryVisibilityMultiplier: 1
@@ -1873,10 +1873,10 @@ MonoBehaviour:
   ShotConfidenceThreshold: 0.75
   MinAngleForShotConfidence: 5
   BodyTurnSpeedInAim: 30
-  AimTime: 2
+  AimTime: 3
   ReloadTime: 3
   InvestigationDuration: 8
-  SuperpositionAttemptCooldown: 10
+  SuperpositionAttemptCooldown: 5
   WaterSurfaceYLevel: 0.5
   PlayerTransform: {fileID: 0}
   GunMuzzleTransform: {fileID: 3629350509237484314}
@@ -1907,6 +1907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ceb8016928d3fb458a06e4b45310a7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  NodeParentHolder: {fileID: 0}
   RoamingNodes:
   - {fileID: 0}
   - {fileID: 0}
@@ -1939,7 +1940,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  RoamingNodeSelection: 0
+  RoamingNodeSelection: 2
   MinSuperpositionDistFromPlayer: 15
   MaxSuperpositionDistFromPlayer: 45
   MinDistFromHunterForSuperposition: 35
