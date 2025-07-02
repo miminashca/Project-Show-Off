@@ -33,6 +33,8 @@ public class LadyAIConfig : ScriptableObject
     [Range(0.0f, 1.0f)]
     public float maxCameraPullLerp = 0.05f; // End with a 5% pull per frame.
     public int gazeDamageAmount = 1;
+    [Tooltip("How quickly the White Lady turns to face the player when seen. Higher is faster.")]
+    public float turnSpeed = 5.0f;
 
     [Header("Audio (FMOD Event Paths)")]
     public string creepingAudioEvent = "event:/SFX/WhiteLady/Creeping";

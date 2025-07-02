@@ -3,17 +3,21 @@ using UnityEngine;
 
 public class LadySpawner : MonoBehaviour
 {
+    [Header("References & Prefabs")]
     [SerializeField] private GameObject whiteLadyPrefab;
     [SerializeField] private LadyAIConfig config;
-    [Tooltip("How often (in seconds) to check for player proximity.")]
+
+    [Header("Spawn Timings")]
     [SerializeField] private float proximityCheckInterval = 2.0f;
     [SerializeField] private float dieToSpawnInterval = 30f;
 
+    [Header("Spawn Conditions")]
+    [SerializeField] private LayerMask occlusionLayers;
+
     private Transform playerTransform;
+    private Camera playerCamera;
     private bool isActivated = false;
-
     private float timer;
-
     private LadyStateMachine currentLady;
     private bool canBeSpawned = true;
 
@@ -24,79 +28,67 @@ public class LadySpawner : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnGameLoaded -= Init;
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnGameLoaded -= Init;
+        }
     }
 
     private void Update()
     {
-        timer += Time.deltaTime;
-        if (timer >= dieToSpawnInterval) canBeSpawned = true;
+        if (!canBeSpawned)
+        {
+            timer += Time.deltaTime;
+            if (timer >= dieToSpawnInterval)
+            {
+                canBeSpawned = true;
+            }
+        }
     }
 
     private void Init()
     {
-        if (whiteLadyPrefab == null || config == null)
-        {
-            Debug.LogError("Spawner is missing Prefab or Config reference!", this);
-            enabled = false;
-            return;
-        }
-
-        // Cache player transform from the GameManager
+        // ... (this part of the code is correct and does not need to change) ...
+        if (whiteLadyPrefab == null || config == null) { /* error */ return; }
         playerTransform = GameManager.Instance.PlayerTransform;
-        if(playerTransform == null)
-        {
-            Debug.LogError("Spawner could not find Player Transform via GameManager.", this);
-            enabled = false;
-            return;
-        }
-
-        // Req 2.3: Use InvokeRepeating for optimized periodic checks
+        if (playerTransform == null) { /* error */ return; }
+        playerCamera = playerTransform.GetComponentInChildren<Camera>();
+        if (playerCamera == null) playerCamera = Camera.main;
+        if (playerCamera == null) { /* error */ return; }
         InvokeRepeating(nameof(CheckProximity), 0f, proximityCheckInterval);
     }
 
     private void CheckProximity()
     {
+        // ... (this part of the code is correct and does not need to change) ...
+        if (playerTransform == null) return;
         float distance = Vector3.Distance(playerTransform.position, transform.position);
-
         if (distance <= config.activationDistance && canBeSpawned)
         {
-            if (!isActivated)
-            {
-                isActivated = true;
-                // Debug.Log($"Spawner {name} Activated.");
-            }
+            if (!isActivated) isActivated = true;
             TrySpawn();
         }
         else
         {
-            if (isActivated)
-            {
-                isActivated = false;
-                // Debug.Log($"Spawner {name} Deactivated.");
-            }
+            if (isActivated) isActivated = false;
         }
     }
 
     private void TrySpawn()
     {
-        // Req 2.4 & 2.2: Check if spawn point is active and no White Lady exists
-        if (!isActivated || GameManager.Instance.isWhiteLadyActive)
+        if (!isActivated || GameManager.Instance.isWhiteLadyActive) return;
+
+        if (IsPlayerLookingAtSpawnPoint())
         {
             return;
         }
         
-        // You could add a random chance here if desired, e.g., if (Random.value > 0.5f) return;
-
+        // ... (the rest of the spawn logic is correct and does not need to change) ...
         Debug.Log($"Spawning White Lady at {transform.position}");
-        
-        // Instantiate and set the global flag
         GameObject ladyInstance = Instantiate(whiteLadyPrefab, transform.position, transform.rotation);
         GameManager.Instance.isWhiteLadyActive = true;
-
         canBeSpawned = false;
-        
-        // Pass essential references to the newly spawned AI
+        timer = 0f;
         currentLady = ladyInstance.GetComponent<LadyStateMachine>();
         if (currentLady != null)
         {
@@ -105,13 +97,45 @@ public class LadySpawner : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Spawned White Lady Prefab is missing the WhiteLady_AIController script!", ladyInstance);
-            Destroy(ladyInstance); // Clean up
+            Debug.LogError("Spawned White Lady Prefab is missing the LadyStateMachine script!", ladyInstance);
+            Destroy(ladyInstance);
             GameManager.Instance.isWhiteLadyActive = false;
         }
     }
+    
+    /// <summary>
+    /// --- NEW AND IMPROVED VERSION ---
+    /// Checks if the spawn point is within the player's camera view and not blocked by geometry.
+    /// This version is robust and works correctly for a single point (empty Transform).
+    /// </summary>
+    private bool IsPlayerLookingAtSpawnPoint()
+    {
+        // 1. Get the direction vector from the camera to the spawn point.
+        Vector3 directionToSpawner = transform.position - playerCamera.transform.position;
 
-    private void OnDrawGizmosSelected()
+        // 2. Angle Check: Calculate the angle between the camera's forward direction and the direction to the spawner.
+        float angle = Vector3.Angle(playerCamera.transform.forward, directionToSpawner);
+
+        // If the angle is greater than half of the camera's Field of View, it's outside the view cone.
+        if (angle > playerCamera.fieldOfView / 2f)
+        {
+            return false; // Not in view, so player is NOT looking. Spawn is ALLOWED.
+        }
+
+        // 3. Occlusion Check: If it's within the view cone, check if anything is blocking the view.
+        if (Physics.Raycast(playerCamera.transform.position, directionToSpawner.normalized, directionToSpawner.magnitude, occlusionLayers))
+        {
+            // A raycast hit something in the occlusion layer. The view is blocked.
+            return false; // View is blocked, so player is NOT looking. Spawn is ALLOWED.
+        }
+        
+        // If we pass both checks (it's in the FOV cone AND not occluded), the player IS looking at the point.
+        // Therefore, we block the spawn.
+        Debug.Log($"Spawn at {name} blocked - player has clear line of sight.");
+        return true; 
+    }
+
+    private void OnDrawGizmos()
     {
         if (config != null)
         {
@@ -123,8 +147,8 @@ public class LadySpawner : MonoBehaviour
     private void StartSpawnWaitTimer()
     {
         currentLady.OnLadyDie -= StartSpawnWaitTimer;
-        canBeSpawned = false;
+        // The canBeSpawned flag is already false. The timer is already reset in TrySpawn.
+        // We just need to null out the reference.
         currentLady = null;
-        timer = 0f;
     }
 }

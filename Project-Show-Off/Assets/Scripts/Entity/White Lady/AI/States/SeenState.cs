@@ -51,6 +51,7 @@ public class SeenState : State
             // The gaze timer is paused when not in this state because we increment it here.
             SM.ContinuousGazeTimer += Time.deltaTime;
             
+            RotateTowardsPlayer();
             // Update camera pull every frame
             //SM.FeedbackController.UpdateSeenEffects(SM.transform);
 
@@ -68,6 +69,36 @@ public class SeenState : State
             }
         }
     }
+    
+    /// <summary>
+    /// Smoothly rotates the White Lady to face the player's camera.
+    /// </summary>
+    private void RotateTowardsPlayer()
+    {
+        if (SM.PlayerTransform == null) return;
+
+        // 1. Get the direction from the lady to the player.
+        Vector3 directionToPlayer = SM.PlayerTransform.position - SM.transform.position;
+        
+        // 2. We only want to rotate on the Y-axis so she doesn't tilt up or down.
+        // We do this by zeroing out the Y component of the direction vector.
+        directionToPlayer.y = 0;
+
+        // 3. If the direction is not zero (to avoid errors when player is directly above/below),
+        // calculate the target rotation.
+        if (directionToPlayer.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+
+            // 4. Smoothly interpolate from the current rotation to the target rotation.
+            SM.transform.rotation = Quaternion.Slerp(
+                SM.transform.rotation, 
+                targetRotation, 
+                Time.deltaTime * SM.Config.turnSpeed
+            );
+        }
+    }
+
 
     public override void OnExitState()
     {
