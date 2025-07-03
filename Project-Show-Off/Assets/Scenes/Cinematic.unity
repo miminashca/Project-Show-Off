@@ -6445,7 +6445,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17040,11 +17040,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 9165547659017678077, guid: d0732ca653df4bb4dae933f3ac4c75b7, type: 3}
   m_PrefabInstance: {fileID: 623038923}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &623851068 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4093940918120583003, guid: e963bd605ed5c1d478761e48cbd5c7d8, type: 3}
-  m_PrefabInstance: {fileID: 872000296}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &629052703
 PrefabInstance:
@@ -45955,7 +45950,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 620a423da181cb24d9d20ae03e3d8b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pauseScreen: {fileID: 623851068}
 --- !u!1001 &1709460983
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54205,8 +54199,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c7a37a83a3b2e34b8a5cf1c574b740b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parentObject: {fileID: 0}
   cutsceneDirector: {fileID: 85254426}
+  cinemachineBrain: {fileID: 0}
+  requiredClueCount: 5
+  hintMessageUI: {fileID: 0}
+  hintDisplayTime: 4
 --- !u!4 &2029168644 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8855130853119445136, guid: 23c7eff737aa7e9468f01961f9b3ad3e, type: 3}

@@ -95,6 +95,13 @@ public class ClueEventManager : MonoBehaviour
         return submittedClueIDs.Contains(clueID);
     }
 
+    //Stefani CutScnene trigger logic
+    public int GetSubmittedClueCount()
+    {
+        return submittedClueIDs.Count;
+    }
+    //--------------------------------
+
     public int GetCollectedClueCount()
     {
         return collectedClueIDs.Count;
