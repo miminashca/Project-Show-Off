@@ -8,8 +8,8 @@ OcclusionCullingSettings:
     smallestOccluder: 5
     smallestHole: 0.25
     backfaceThreshold: 100
-  m_SceneGUID: 00000000000000000000000000000000
-  m_OcclusionCullingData: {fileID: 0}
+  m_SceneGUID: 2dfd816c83ae4f34f97a4b78a435cdf7
+  m_OcclusionCullingData: {fileID: 36300000, guid: 23486bdae296349429a0a0e67f499fbb, type: 2}
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
@@ -51101,6 +51101,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4653076614145958645, guid: 32da33d4293c7634dad4f6819b6c09b2, type: 3}
   m_PrefabInstance: {fileID: 1154073424}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1154313866 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1753480504701816024, guid: b51290e862645f4439656db19e0bbf37, type: 3}
+  m_PrefabInstance: {fileID: 1625814764}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1154633266
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64460,7 +64465,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1487973822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78600,6 +78605,94 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Range
+      value: 8.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Intensity
+      value: 11.617239
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_SpotAngle
+      value: 60.00979
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_AreaSize.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_AreaSize.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_ShadowRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_UseBoundingSphereOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_UseCullingMatrixOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e00
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e11
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e22
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e23
+      value: -0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e32
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e33
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508709375727747559, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_ShapeRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508709375727747559, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_InnerSpotPercent
+      value: 1.666395
+      objectReference: {fileID: 0}
     - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: positionSmoothTime
       value: 0.05
@@ -78607,6 +78700,26 @@ PrefabInstance:
     - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: rotationSmoothTime
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.72681683
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000008231806
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.6868314
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000002304906
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -86.76
       objectReference: {fileID: 0}
     - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: baseFootstepInterval
@@ -78631,6 +78744,10 @@ PrefabInstance:
     - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: injuredSprintingBreathEventPath.Guid.Data4
       value: 1502675341
+      objectReference: {fileID: 0}
+    - target: {fileID: 4988268301215314928, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6334661837088429990, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_Enabled
@@ -78686,11 +78803,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6996782995239445616, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: far clip plane
-      value: 5000
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6996782995239445616, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: orthographic size
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6996782995239445616, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_OcclusionCulling
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7376972576627392363, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
@@ -87725,7 +87850,7 @@ MonoBehaviour:
   cutsceneDirector: {fileID: 1392238265}
   cinemachineBrain: {fileID: 1101196821}
   requiredClueCount: 5
-  hintMessageUI: {fileID: 0}
+  hintMessageUI: {fileID: 1154313866}
   hintDisplayTime: 4
 --- !u!114 &2097678046
 MonoBehaviour:

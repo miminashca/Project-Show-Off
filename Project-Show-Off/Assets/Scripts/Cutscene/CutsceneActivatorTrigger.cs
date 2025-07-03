@@ -55,8 +55,8 @@ public class CutsceneActivatorTrigger : MonoBehaviour
         // Only proceed if the object that entered is the player
         if (other.CompareTag("Player"))
         {
-            cinemachineBrain.GetComponent<Camera>().enabled = true;
-            StartCoroutine(WaitForTimeline());
+     
+           
             // First, check if the ClueEventManager exists
             if (ClueEventManager.Instance == null)
             {
@@ -69,14 +69,14 @@ public class CutsceneActivatorTrigger : MonoBehaviour
             {
                 // --- SUCCESS: Player has all clues ---
                 Debug.Log("All clues submitted! Starting final cutscene.");
-
+                StartCoroutine(WaitForTimeline());
                 // Hide the hint message just in case it was somehow active
                 if (hintMessageUI != null) hintMessageUI.SetActive(false);
 
                 //New
                 if (cinemachineBrain != null)
                 {
-                    //cinemachineBrain.enabled = true;
+                    cinemachineBrain.enabled = true;
                    
                     Debug.Log("CinemachineBrain enabled for cutscene.");
                 }
@@ -118,6 +118,7 @@ public class CutsceneActivatorTrigger : MonoBehaviour
     IEnumerator WaitForTimeline()
     {
         yield return new WaitForSeconds(1f);
+        cinemachineBrain.GetComponent<Camera>().enabled = true;
         cutsceneDirector.Play();
     }
 }
