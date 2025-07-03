@@ -257,7 +257,7 @@ public class GameManager : MonoBehaviour
     {
         // Always reset time scale before leaving a scene.
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu"); // Make sure you have this scene in your build settings
+        SceneManager.LoadScene("StartScreen"); // Make sure you have this scene in your build settings
     }
 
     public void QuitGame()
