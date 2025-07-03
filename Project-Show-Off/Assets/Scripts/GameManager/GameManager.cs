@@ -1,5 +1,3 @@
-// GameManager.cs
-
 using System;
 using UnityEngine;
 using System.IO;
@@ -29,21 +27,17 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public Transform PlayerTransform;
     private ClueEventManager clueManager;
 
-    // <<< NEW: References for UI screens and new components >>>
-    // <<< CHANGED: We no longer use [SerializeField] for scene-specific objects. >>>
-    // We will find these at runtime instead.
     private GameObject pauseScreenUI;
     private GameObject deathScreenUI;
-    // <<< NEW: Component references needed for pausing >>>
+    
     private CameraMovement cameraMovement;
-    //private HeadbobController headbobController; // Uncomment if you have this script
-
-    // <<< NEW: Public state to let other scripts know if the game is paused >>>
+    //private HeadbobController headbobController;
+    
     public static bool IsGamePaused { get; private set; }
-    //----END NEW----   
+     
 
     //probably have to move to game state manager in future...
-    public bool isWhiteLadyActive = false;
+    [NonSerialized] public bool isWhiteLadyActive = false;
 
     public event Action OnGameLoaded;
 
@@ -66,7 +60,6 @@ public class GameManager : MonoBehaviour
         //if (deathScreenUI != null) deathScreenUI.SetActive(false);
     }
 
-    // <<< NEW: Add an Update loop to listen for the pause key >>>
     private void Update()
     {
         // Don't allow pausing if the death screen is active or if we are in the main menu
@@ -93,8 +86,6 @@ public class GameManager : MonoBehaviour
         ClueEventManager.Instance.OnClueSubmitted -= SaveGame;
     }
     
-
-    // <<< NEW: This is the method that sets our state from the start menu >>>
     public void SetStartState(GameStartState state)
     {
         this.startState = state;
@@ -106,7 +97,6 @@ public class GameManager : MonoBehaviour
 
         if (scene.name == "LanaStartScene" || scene.name == "StartScene")
         {
-            // <<< NEW: Ensure cursor is visible and time is running in menu scenes >>>
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
@@ -131,7 +121,6 @@ public class GameManager : MonoBehaviour
             yield break; // Stop the coroutine
         }
 
-        // <<< NEW: disable ui screens on start >>>
         if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
         if (deathScreenUI != null) deathScreenUI.SetActive(false);
 
@@ -210,7 +199,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // <<< NEW: Pause and Resume Logic >>>
     public void TogglePause()
     {
         IsGamePaused = !IsGamePaused;
@@ -240,7 +228,6 @@ public class GameManager : MonoBehaviour
         if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
     }
 
-    // <<< NEW: Method to be called from PlayerHealth when the player dies >>>
     public void PlayerDied()
     {
         SetPlayerInputActive(false); // 1. Disable controls and show cursor.
@@ -257,8 +244,7 @@ public class GameManager : MonoBehaviour
         IsGamePaused = true;         // 3. Set the state flag.
         Time.timeScale = 0f;         // 4. Freeze time.
     }
-
-    // <<< NEW: Scene management methods for UI buttons >>>
+    
     public void Retry()
     {
         // This is the crucial fix for the restart issue.

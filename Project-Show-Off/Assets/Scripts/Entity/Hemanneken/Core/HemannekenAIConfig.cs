@@ -25,6 +25,7 @@ public class HemannekenAIConfig : ScriptableObject
     
 
     [Header("Custom Roaming Movement")]
+    public float pauseAtWaypointDuration = 2.0f;
     public float defaultSpeed = 3.5f;
     public float rotationSpeed = 720f; // Degrees per second
     public float stoppingDistance = 0.2f; // Increased slightly for smoother stops

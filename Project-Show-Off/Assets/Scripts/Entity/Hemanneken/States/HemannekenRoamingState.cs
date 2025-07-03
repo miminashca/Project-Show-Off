@@ -1,4 +1,4 @@
-// File: HemannekenRoamingState.cs
+using System.Collections;
 using UnityEngine;
 
 public class HemannekenRoamingState : State
@@ -18,8 +18,11 @@ public class HemannekenRoamingState : State
             //HSM.SoundController.StartIdleSound();
             HSM.SoundController.StartPeriodicHeyLoop();
         }
-        // -------------------
 
+        // Subscribe to events that can trigger a state change.
+        HSM.Sensor.OnPlayerDetected += HandlePlayerDirectlyDetected;
+        PlayerActionEventBus.OnPlayerShouted += HandleHeyTriggered;
+        
         if (HSM.Visuals.IsTrueForm)
         {
             HSM.Movement.RoamWaypoints(MovementStyle.SplineWave, false, false);
@@ -28,10 +31,6 @@ public class HemannekenRoamingState : State
         {
             HSM.Movement.RoamWaypoints(MovementStyle.Hop, true, true);
         }
-
-        // Subscribe to events that can trigger a state change.
-        HSM.Sensor.OnPlayerDetected += HandlePlayerDirectlyDetected;
-        PlayerActionEventBus.OnPlayerShouted += HandleHeyTriggered;
     }
 
     public override void Handle()
