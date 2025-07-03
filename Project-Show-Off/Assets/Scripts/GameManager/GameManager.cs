@@ -59,9 +59,11 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return; // Exit if another instance already exists
         }
-        // <<< NEW: Ensure UI is disabled when the game manager is first created >>>
-        if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
-        if (deathScreenUI != null) deathScreenUI.SetActive(false);
+        //// <<< NEW: Ensure UI is disabled when the game manager is first created >>>
+        //pauseScreenUI = GetComponent<UIpauseMarker>()?.gameObject;
+        //deathScreenUI = GetComponent<UIdeathMarker>()?.gameObject;  
+        //if (pauseScreenUI != null) pauseScreenUI.SetActive(false);
+        //if (deathScreenUI != null) deathScreenUI.SetActive(false);
     }
 
     // <<< NEW: Add an Update loop to listen for the pause key >>>
@@ -241,10 +243,19 @@ public class GameManager : MonoBehaviour
     // <<< NEW: Method to be called from PlayerHealth when the player dies >>>
     public void PlayerDied()
     {
-        IsGamePaused = true; // The game is effectively paused on death
-        Time.timeScale = 0f; // Freeze game
-        SetPlayerInputActive(false); // Disable controls and show cursor
-        if (deathScreenUI != null) deathScreenUI.SetActive(true);
+        SetPlayerInputActive(false); // 1. Disable controls and show cursor.
+        if (deathScreenUI != null)   // 2. Activate the death screen.
+        {
+            deathScreenUI.SetActive(true);
+        }
+        else
+        {
+            Debug.LogError("PlayerDied was called, but deathScreenUI is null! Make sure the DeathPanel is active in the scene and has the UIdeathMarker component.");
+        }
+
+        // These two lines manage the game state.
+        IsGamePaused = true;         // 3. Set the state flag.
+        Time.timeScale = 0f;         // 4. Freeze time.
     }
 
     // <<< NEW: Scene management methods for UI buttons >>>
