@@ -10,21 +10,19 @@ Material:
   m_Name: Body
   m_Shader: {fileID: 4800000, guid: 6e4ae4064600d784cac1e41a9e6f2e59, type: 3}
   m_Parent: {fileID: 2100000, guid: a6695c00f1da1554eb3fe8e55e2d790f, type: 2}
-  m_ModifiedSerializedProperties: 8
+  m_ModifiedSerializedProperties: 24
   m_ValidKeywords:
   - _DISABLE_SSR_TRANSPARENT
-  - _ENABLE_FOG_ON_TRANSPARENT
+  - _EMISSIVE_COLOR_MAP
   - _MASKMAP
   - _NORMALMAP
   - _NORMALMAP_TANGENT_SPACE
-  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Transparent
+  m_CustomRenderQueue: 2225
+  stringTagMap: {}
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -37,6 +35,10 @@ Material:
     m_TexEnvs:
     - _BaseColorMap:
         m_Texture: {fileID: 2800000, guid: 3b321905f022b584185b448e558f2d1b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissiveColorMap:
+        m_Texture: {fileID: 2800000, guid: 520c0aeb48597cb428c7ba4922635ffd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
@@ -53,10 +55,24 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AORemapMin: 1
+    - _AlphaDstBlend: 0
     - _CullMode: 2
     - _CullModeForward: 2
     - _DoubleSidedEnable: 0
-    m_Colors: []
+    - _DstBlend: 0
+    - _DstBlend2: 0
+    - _EmissiveIntensity: 1
+    - _StencilRefDepth: 8
+    - _StencilRefGBuffer: 10
+    - _StencilRefMV: 40
+    - _SurfaceType: 0
+    - _UseEmissiveIntensity: 0
+    - _ZTestDepthEqualForOpaque: 3
+    - _ZWrite: 1
+    m_Colors:
+    - _EmissiveColor: {r: 0.5698112, g: 0.5698112, b: 0.5698112, a: 1}
+    - _EmissiveColorLDR: {r: 0.88031507, g: 0.88031507, b: 0.88031507, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &2432241338435466376
