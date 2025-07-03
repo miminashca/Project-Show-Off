@@ -11,11 +11,13 @@ public class StartMenuManager : MonoBehaviour
     [Header("UI Elements")]
     [SerializeField] private Button continueButton;
 
+    private AsyncLoader loader;
+
     private void Start()
     {
         // Check if a save file exists. The GameManager holds the key.
         bool saveExists = PlayerPrefs.HasKey("gameSaveData");
-        
+
         if (continueButton != null)
         {
             // The "Continue" button should only be clickable if there is a save file.
@@ -25,15 +27,19 @@ public class StartMenuManager : MonoBehaviour
         {
             Debug.LogError("Continue Button is not assigned in the StartMenuManager inspector!");
         }
+
+        loader = FindAnyObjectByType<AsyncLoader>();
+        if (!loader) Debug.Log("Havent found loader!!!");
     }
 
     public void OnClickNewGame()
     {
         // Tell the persistent GameManager our choice
         GameManager.Instance.SetStartState(GameStartState.NewGame);
-        
+
         // Load the main game scene
-        SceneManager.LoadScene(gameSceneName);
+        //SceneManager.LoadScene(gameSceneName);
+        loader.LoadSceneButton(gameSceneName);
     }
 
     public void OnClickContinue()
@@ -42,7 +48,8 @@ public class StartMenuManager : MonoBehaviour
         GameManager.Instance.SetStartState(GameStartState.Continue);
 
         // Load the main game scene
-        SceneManager.LoadScene(gameSceneName);
+        //SceneManager.LoadScene(gameSceneName);
+        loader.LoadSceneButton(gameSceneName);
     }
 
     public void OnClickQuit()
