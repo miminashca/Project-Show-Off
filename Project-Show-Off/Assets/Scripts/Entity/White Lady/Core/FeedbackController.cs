@@ -10,7 +10,7 @@ public class FeedbackController : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [Tooltip("Reference to the player's CameraMovement script.")]
     [SerializeField] private CameraMovement cameraMovement;
-    // [SerializeField] private PlayerHealth playerHealth; // Assign your player health script
+    [SerializeField] private PlayerHealth playerHealth; // Assign your player health script
     // [SerializeField] private LanternController lanternController; // Assign your lantern script
     [SerializeField] private GameObject breathVFXPrefab;
 
@@ -124,7 +124,7 @@ public class FeedbackController : MonoBehaviour
     public void KillPlayer()
     {
         Debug.Log("Feedback: Player has been killed by the gaze.");
-        // playerHealth?.Die();
+        playerHealth?.Die();
         // You would trigger your game over sequence here.
     }
     

@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private LanternController lanternController;
+    private HeadbobController headBob; // Assuming you have a HeadbobController script
     [NonSerialized] public Transform PlayerTransform;
     private ClueEventManager clueManager;
 
@@ -182,7 +183,7 @@ public class GameManager : MonoBehaviour
         if (playerMovement != null) playerMovement.enabled = isActive;
         if (lanternController != null) lanternController.enabled = isActive;
         if (cameraMovement != null) cameraMovement.enabled = isActive;
-        // if (headbobController != null) headbobController.enabled = isActive; // Uncomment if you have this
+        if (headBob != null) headBob.enabled = isActive; 
 
         Debug.Log($"Player controls set to: {isActive}");
 
@@ -369,6 +370,8 @@ public class GameManager : MonoBehaviour
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         lanternController = FindFirstObjectByType<LanternController>();
         cameraMovement = FindFirstObjectByType<CameraMovement>();
+        headBob = FindFirstObjectByType<HeadbobController>(); // Assuming you have a Camera component on the player 
+        
         clueManager = ClueEventManager.Instance; // Singleton is reliable
 
         if (playerHealth != null)
