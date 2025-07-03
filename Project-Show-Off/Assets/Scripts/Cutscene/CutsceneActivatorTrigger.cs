@@ -44,6 +44,10 @@ public class CutsceneActivatorTrigger : MonoBehaviour
         {
             Debug.LogWarning("The Cinemachine Brain has not been assigned in the inspector!", this);
         }
+        else
+        {
+            cinemachineBrain.GetComponent<Camera>().enabled = false;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -51,6 +55,8 @@ public class CutsceneActivatorTrigger : MonoBehaviour
         // Only proceed if the object that entered is the player
         if (other.CompareTag("Player"))
         {
+     
+           
             // First, check if the ClueEventManager exists
             if (ClueEventManager.Instance == null)
             {
@@ -63,7 +69,7 @@ public class CutsceneActivatorTrigger : MonoBehaviour
             {
                 // --- SUCCESS: Player has all clues ---
                 Debug.Log("All clues submitted! Starting final cutscene.");
-
+                StartCoroutine(WaitForTimeline());
                 // Hide the hint message just in case it was somehow active
                 if (hintMessageUI != null) hintMessageUI.SetActive(false);
 
@@ -71,11 +77,12 @@ public class CutsceneActivatorTrigger : MonoBehaviour
                 if (cinemachineBrain != null)
                 {
                     cinemachineBrain.enabled = true;
+                   
                     Debug.Log("CinemachineBrain enabled for cutscene.");
                 }
                 //
 
-                cutsceneDirector.Play();
+                
 
                 // Disable the trigger collider so this can't be activated again accidentally
                 if (triggerCollider != null)
@@ -106,5 +113,12 @@ public class CutsceneActivatorTrigger : MonoBehaviour
         hintMessageUI.SetActive(true);
         yield return new WaitForSeconds(hintDisplayTime);
         hintMessageUI.SetActive(false);
+    }
+
+    IEnumerator WaitForTimeline()
+    {
+        yield return new WaitForSeconds(1f);
+        cinemachineBrain.GetComponent<Camera>().enabled = true;
+        cutsceneDirector.Play();
     }
 }
