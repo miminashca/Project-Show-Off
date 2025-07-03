@@ -108,6 +108,14 @@ public class HunterSoundController : MonoBehaviour
         }
     }
 
+    public void PlayFocusGrunt()
+    {
+        if (!focusGruntSound.IsNull)
+        {
+            RuntimeManager.PlayOneShotAttached(focusGruntSound, gameObject);
+        }
+    }
+
     public void StartIdleGrunts()
     {
         if (_isIdleGrunting) return; // Already grunting
@@ -191,13 +199,6 @@ public class HunterSoundController : MonoBehaviour
 
     #region Combat Sounds
 
-    public void PlayFocusGrunt()
-    {
-        if (!focusGruntSound.IsNull)
-        {
-            RuntimeManager.PlayOneShotAttached(focusGruntSound, gameObject);
-        }
-    }
 
     public void PlayGunCockSound()
     {
