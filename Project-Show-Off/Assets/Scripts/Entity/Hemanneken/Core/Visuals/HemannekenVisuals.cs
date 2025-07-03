@@ -58,9 +58,7 @@ public class HemannekenVisuals : MonoBehaviour
     private AgentMovement agentMovement;
     public void Initialize()
     {
-        
-
-           _playerSensor = GetComponent<HemannekenPlayerSensor>();
+        _playerSensor = GetComponent<HemannekenPlayerSensor>();
         if (_playerSensor == null)
         {
             Debug.LogWarning("HemannekenVisuals: PlayerSensor component not found. Some behaviors might not work as expected.", this);

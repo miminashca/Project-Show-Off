@@ -34,9 +34,8 @@ public class AgentMovement : MonoBehaviour
     private int _currentPatrolIndex = -1;
     private bool _needsNewRoamTarget = true;
     private float _waypointPauseTimer = 0f;
-    private const float WAYPOINT_PAUSE_DURATION = 2.0f;
     
-    private bool _pauseOnArrival = true;
+    private bool _pauseOnArrival = false;
     
     public bool IsGroundRestricted => _isGroundRestricted;
 
@@ -98,7 +97,7 @@ public class AgentMovement : MonoBehaviour
 
     void Update()
     {
-        if (_waypointPauseTimer > 0)
+        if (_waypointPauseTimer > 0f)
         {
             _waypointPauseTimer -= Time.deltaTime;
             return;
@@ -230,7 +229,7 @@ public class AgentMovement : MonoBehaviour
 
         Vector3 nextDestination = FindNextPatrolPoint();
 
-        SetDestination(nextDestination, _currentMovementStyle);
+        SetDestination(nextDestination, _currentMovementStyle, groundRestricted: _isGroundRestricted, pauseOnArrival: _pauseOnArrival);
     }
     
     private Vector3 FindNextPatrolPoint()
@@ -274,7 +273,7 @@ public class AgentMovement : MonoBehaviour
 
         if (_pauseOnArrival)
         {
-            _waypointPauseTimer = WAYPOINT_PAUSE_DURATION;
+            _waypointPauseTimer = aiConfig.pauseAtWaypointDuration;
         }
         
         _needsNewRoamTarget = true;
