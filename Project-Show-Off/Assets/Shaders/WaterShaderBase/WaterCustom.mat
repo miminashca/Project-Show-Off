@@ -51,7 +51,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SmoothnessTexture:
-        m_Texture: {fileID: 2800000, guid: f50a59702c610d54b8ef534005dce5a3, type: 3}
+        m_Texture: {fileID: 2800000, guid: 55c974713d9decb4fb189d9e78cc4ae5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -69,13 +69,13 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
-    - _Alpha: 0.82
+    - _Alpha: 0.71
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSoftEnd: 2.76
     - _AlphaSoftStart: 0.05
     - _AlphaSrcBlend: 1
-    - _AlphaSwitch: 0.33
+    - _AlphaSwitch: 1.36
     - _AngleOfShape: 6.75
     - _Blablabla: 4.71
     - _BlendMode: 0
@@ -109,7 +109,7 @@ Material:
     - _MaterialTypeMask: 2
     - _Metallic: 0
     - _NoiseSpotScale: 9.99
-    - _NormalScale: 0
+    - _NormalScale: -0.12
     - _NormalSmoothnessWaterScale: 13.29
     - _NormalSwitch: 0.25
     - _OpaqueCullMode: 2
@@ -132,8 +132,10 @@ Material:
     - _SmoothGradientA: -0.73
     - _SmoothGradientB: 3
     - _Smoothness: 0
+    - _SmoothnessContrast: 2.58
+    - _SmoothnessMapScale: 530.34
     - _SmoothnessSwitch: 0.06
-    - _SmoothnessWater: 2
+    - _SmoothnessWater: 0.09
     - _SpotDarkness: 0.73
     - _SrcBlend: 1
     - _StencilRef: 0
@@ -160,6 +162,8 @@ Material:
     - _TransparentWritingMotionVec: 1
     - _TransparentZWrite: 1
     - _UseShadowThreshold: 0
+    - _WaterSmooth_Max: 1.23
+    - _WaterSmooth_Min: 0.24
     - _ZTestDepthEqualForOpaque: 4
     - _ZTestGBuffer: 4
     - _ZTestTransparent: 4
@@ -182,6 +186,8 @@ Material:
     - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
     - _ScrollSpeed_little: {r: 15678, g: 45, b: 0, a: 0}
     - _ShallowColor: {r: 0.23300096, g: 0.37691793, b: 0.44905645, a: 0.42745098}
+    - _SmoothnessMapOffset: {r: 5, g: 0, b: 0, a: 0}
+    - _SmoothnessMapTiling: {r: 5, g: 5, b: 0, a: 0}
     - _Speed: {r: 0, g: 0, b: 0, a: 0}
     - _TineColor: {r: 0.73333335, g: 0, b: 0, a: 1}
     - _TineColorA: {r: 0.22054109, g: 0.3962264, b: 0.29298866, a: 1}
