@@ -415,17 +415,30 @@ public class HunterAI : MonoBehaviour
             SoundController.PlayGunFireSound();
         }
 
-        // 2. Spawn Muzzle Flash VFX
+        // --- VFX and Light Logic (REVISED) ---
         if (GunMuzzleTransform != null)
         {
             // 1. Instantiate Muzzle Flash Prefab
             if (MuzzleFlashPrefab != null)
             {
-                // Instantiate the prefab at the muzzle's position and rotation, parented to the muzzle
-                Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform);
+                // Instantiate the prefab, but keep a reference to it
+                GameObject muzzleFlashInstance = Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform);
+
+                // Get the VisualEffect component from the new instance
+                UnityEngine.VFX.VisualEffect vfx = muzzleFlashInstance.GetComponentInChildren<UnityEngine.VFX.VisualEffect>();
+
+                // If the component exists, tell it to play!
+                if (vfx != null)
+                {
+                    vfx.Play();
+                }
+
+                // CRITICAL: VFX Graphs don't destroy themselves. We must do it.
+                // Destroy the instance after a short duration (e.g., 2 seconds) to clean up.
+                Destroy(muzzleFlashInstance, 2f);
             }
 
-            // 2. Start the Light Flash Coroutine
+            // 2. Start the Light Flash Coroutine (This part is still correct)
             StartCoroutine(MuzzleFlashLightRoutine());
         }
 
@@ -516,11 +529,15 @@ public class HunterAI : MonoBehaviour
         Light lightComp = lightGO.AddComponent<Light>();
 
         // Configure the light to be a bright, short-range flash
-        lightComp.color = Color.yellow;
+        // Set the color using RGB values (example: orange flash)
+        lightComp.color = new Color(1.0f, 0.7f, 0.2f); // Change these values as needed (R,G,B, 0-1)
         lightComp.intensity = 8f;   // Very bright
         lightComp.range = 25f;      // Affects a good area
-        lightComp.shadows = LightShadows.None; // Performance: no shadows needed for a quick flash
-        lightComp.bounceIntensity = 0;
+        lightComp.shadows = LightShadows.None; // No shadows for performance and instant effect
+        lightComp.bounceIntensity = 10;
+
+        // Make sure the light updates the environment in real time
+        lightComp.renderMode = LightRenderMode.ForcePixel; // Ensures real-time lighting
 
         // Wait for a fraction of a second
         yield return new WaitForSeconds(0.06f);

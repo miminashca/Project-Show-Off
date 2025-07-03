@@ -59,9 +59,9 @@ Transform:
   m_GameObject: {fileID: 5706990576915893892}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.221, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 6882066276201811933}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -97,6 +97,9 @@ VisualEffect:
       - m_Value: {x: 0.21, y: 0.1}
         m_Name: SmokeLifetime
         m_Overridden: 0
+      - m_Value: {x: 20, y: 40}
+        m_Name: Size
+        m_Overridden: 1
     m_Vector3f:
       m_Array:
       - m_Value: {x: 3.5, y: 2, z: 5}
@@ -132,7 +135,10 @@ VisualEffect:
     m_NamedObject:
       m_Array: []
     m_Bool:
-      m_Array: []
+      m_Array:
+      - m_Value: 1
+        m_Name: IsWorking
+        m_Overridden: 1
 --- !u!73398921 &4020761221920595245
 VFXRenderer:
   serializedVersion: 1
