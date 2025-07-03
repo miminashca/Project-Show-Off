@@ -41,7 +41,12 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public bool isWhiteLadyActive = false;
 
     public event Action OnGameLoaded;
+    private StartMenuManager StartMenuManager;
 
+    private void Start()
+    {
+        StartMenuManager = GetComponentInChildren<StartMenuManager>();  
+    }
     void Awake()
     {
         if (Instance == null)
@@ -250,7 +255,8 @@ public class GameManager : MonoBehaviour
     {
         // This is the crucial fix for the restart issue.
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        StartMenuManager.OnClickContinue(); // This will reset the start state to Continue
     }
 
     public void GoToMainMenu()
