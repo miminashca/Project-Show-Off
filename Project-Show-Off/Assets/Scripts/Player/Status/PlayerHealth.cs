@@ -232,6 +232,7 @@ public class PlayerHealth : MonoBehaviour
 
         // Tell the GameManager to handle everything else (pausing time, showing UI, disabling controls).
         GameManager.Instance.PlayerDied();
+        
     }
     public void SetWoundLevel(int level)
     {
