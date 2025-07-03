@@ -4,6 +4,7 @@ public class HunterShootingState : State
 {
     private HunterAI _hunterAI;
     private HunterStateMachine _hunterSM;
+    private float _timeInState;
 
     private float _currentReloadTime;
     private bool _isReloading;
@@ -17,60 +18,35 @@ public class HunterShootingState : State
     public override void OnEnterState()
     {
         if (_hunterAI == null) return;
-
-        Debug.Log($"{_hunterAI.gameObject.name} entering SHOOTING state.");
-
-        _hunterAI.NavAgent.isStopped = true;
-        _hunterAI.NavAgent.velocity = Vector3.zero;
-
-        _hunterAI.HunterAnimator.SetFloat("MovementSpeed", 0f);
-
-        _isReloading = false;
-
-        // Fire the gun immediately using the confirmed aim target
-        _hunterAI.FireGun();
-
-        if (_hunterAI.SoundController != null)
-        {
-            _hunterAI.SoundController.PlayGunFireSound();
-        }
-
-        _isReloading = true;
-        _currentReloadTime = _hunterAI.ReloadTime;
-        _hunterAI.CurrentReloadTimer = _currentReloadTime;
-        _hunterAI.HunterAnimator.SetTrigger("Reload");
-        if (_hunterAI.SoundController != null)
-        {
-            //_hunterAI.SoundController.PlayReloadSound();
-        }
+        Debug.Log($"{_hunterAI.gameObject.name} in SHOOTING state, waiting for animation to finish.");
     }
 
     public override void Handle()
     {
         if (_hunterAI == null) return;
 
-        if (_isReloading)
-        {
-            _currentReloadTime -= Time.deltaTime;
-            _hunterAI.CurrentReloadTimer = _currentReloadTime;
+        // The job of this state is to wait until the Animator is no longer
+        // in the "Shooting" or "Reloading" states.
+        AnimatorStateInfo stateInfo = _hunterAI.HunterAnimator.GetCurrentAnimatorStateInfo(0); // 0 is the base layer index
 
-            if (_currentReloadTime <= 0f)
-            {
-                _isReloading = false; // Reload complete
-                Debug.Log($"{_hunterAI.gameObject.name} reload complete.");
-                DecideNextAction();
-            }
+        // Check if the current animation is NOT Shooting and NOT Reloading.
+        // NOTE: Use the exact names of your states from the Animator window.
+        if (!stateInfo.IsName("Shooting") && !stateInfo.IsName("Reloading"))
+        {
+            Debug.Log("Shooting/Reloading animation cycle complete. Deciding next action.");
+            DecideNextAction();
         }
     }
 
     private void DecideNextAction()
     {
-        if (_hunterAI.PlayerTransform == null) // Player might have been destroyed
+        if (_hunterAI.PlayerTransform == null)
         {
             SM.TransitToState(_hunterSM.RoamingState);
             return;
         }
 
+        // After shooting/reloading, decide whether to aim again, chase, or investigate.
         if (_hunterAI.IsPlayerFullySpotted && Vector3.Distance(_hunterAI.transform.position, _hunterAI.PlayerTransform.position) <= _hunterAI.ShootingRange)
         {
             SM.TransitToState(_hunterSM.AimingState);
@@ -81,7 +57,6 @@ public class HunterShootingState : State
         }
         else
         {
-            // LKP was updated when player was last seen or shot at
             SM.TransitToState(_hunterSM.InvestigatingState);
         }
     }
