@@ -79229,12 +79229,32 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1850019906}
     - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Path
+      value: event:/Player/Hurt/Choking
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: playerHurtArghSound.Path
       value: event:/Player/Hurt/Player Hurt
       objectReference: {fileID: 0}
     - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: timeToRegenerateOneLevel
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data1
+      value: 1597201754
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data2
+      value: 1110827087
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data3
+      value: -604923717
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data4
+      value: -218037401
       objectReference: {fileID: 0}
     - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: injuredBreathingLoopEvent.Path
