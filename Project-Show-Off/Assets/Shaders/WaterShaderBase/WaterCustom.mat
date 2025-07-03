@@ -36,14 +36,22 @@ Material:
     m_TexEnvs:
     - _NormalMap:
         m_Texture: {fileID: 2800000, guid: 55c974713d9decb4fb189d9e78cc4ae5, type: 3}
-        m_Scale: {x: 5, y: 5}
-        m_Offset: {x: 0, y: 0}
+        m_Scale: {x: 7, y: 7}
+        m_Offset: {x: 5, y: 0}
     - _RippleMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RippleTex:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_f9647c65c1b64d21bbaaee122fdd6f9a_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f50a59702c610d54b8ef534005dce5a3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SmoothnessTexture:
+        m_Texture: {fileID: 2800000, guid: f50a59702c610d54b8ef534005dce5a3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -61,14 +69,14 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
-    - _Alpha: 0.1
+    - _Alpha: 0.82
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSoftEnd: 2.76
     - _AlphaSoftStart: 0.05
     - _AlphaSrcBlend: 1
-    - _AlphaSwitch: 0.01
-    - _AngleOfShape: 4.52
+    - _AlphaSwitch: 0.33
+    - _AngleOfShape: 6.75
     - _Blablabla: 4.71
     - _BlendMode: 0
     - _ColorSmoothing: 0.71
@@ -80,7 +88,7 @@ Material:
     - _CullModeForward: 2
     - _DepthOffsetEnable: 1
     - _DiffusionProfileHash: 0
-    - _Distortion: 1.04
+    - _Distortion: 0
     - _DoubleSidedEnable: 0
     - _DoubleSidedGIMode: 0
     - _DoubleSidedNormalMode: 2
@@ -94,15 +102,16 @@ Material:
     - _EnableFogOnTransparent: 1
     - _ExcludeFromTUAndAA: 0
     - _Float: 1.75
-    - _IndexOfRefraction: 2.04
-    - _MaskSoftEnd: 0.9
-    - _MaskSoftStart: 0.09
+    - _IndexOfRefraction: 1.33
+    - _MaskSoftEnd: 1.31
+    - _MaskSoftStart: 0.56
     - _MaterialID: 1
     - _MaterialTypeMask: 2
     - _Metallic: 0
     - _NoiseSpotScale: 9.99
-    - _NormalScale: 0.5
-    - _NormalSwitch: 0
+    - _NormalScale: 0
+    - _NormalSmoothnessWaterScale: 13.29
+    - _NormalSwitch: 0.25
     - _OpaqueCullMode: 2
     - _PerPixelSorting: 0
     - _Radius: 0
@@ -119,10 +128,12 @@ Material:
     - _ScaleTurbulence1: 567.82
     - _ScaleTurbulence2: 300
     - _ScaleTurbulence3: 10
-    - _Size_Voronoi: 5.57
+    - _Size_Voronoi: 2.83
     - _SmoothGradientA: -0.73
     - _SmoothGradientB: 3
     - _Smoothness: 0
+    - _SmoothnessSwitch: 0.06
+    - _SmoothnessWater: 2
     - _SpotDarkness: 0.73
     - _SrcBlend: 1
     - _StencilRef: 0
@@ -137,7 +148,9 @@ Material:
     - _StencilWriteMaskMV: 41
     - _SupportDecals: 1
     - _SurfaceType: 1
-    - _Thickness: 0
+    - _TestSwitch: 5
+    - _Thickness: 3.87
+    - _TineSmoothness: 0.05
     - _TransmissionEnable: 1
     - _TransparentBackfaceEnable: 0
     - _TransparentCullMode: 2
@@ -167,6 +180,7 @@ Material:
     - _LakeCenter: {r: 124.77, g: 1.03, b: -111.74065, a: 0}
     - _NoiseSpotScaleUV: {r: 10, g: 10, b: 0, a: 0}
     - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _ScrollSpeed_little: {r: 15678, g: 45, b: 0, a: 0}
     - _ShallowColor: {r: 0.23300096, g: 0.37691793, b: 0.44905645, a: 0.42745098}
     - _Speed: {r: 0, g: 0, b: 0, a: 0}
     - _TineColor: {r: 0.73333335, g: 0, b: 0, a: 1}
