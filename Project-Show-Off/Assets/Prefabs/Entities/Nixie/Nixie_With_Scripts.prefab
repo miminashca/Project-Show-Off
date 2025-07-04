@@ -55,16 +55,16 @@ MonoBehaviour:
   StaringRadius: 20
   DetectionRadiusNormal: 15
   DetectionRadiusLantern: 30
-  PointBlankRadius: 3
-  AttackRange: 1.3
+  PointBlankRadius: 4
+  AttackRange: 2
   StunDuration: 3
   MaxTensionDuration: 10
   MyNixieZone: {fileID: 0}
   MyWaterZone: {fileID: 0}
-  ShowRadiuses: 1
-  ShowLineToPlayer: 1
-  ShowLastKnownPosition: 1
-  ShowStateSpecificGizmos: 1
+  ShowRadiuses: 0
+  ShowLineToPlayer: 0
+  ShowLastKnownPosition: 0
+  ShowStateSpecificGizmos: 0
 --- !u!114 &1207136943921125070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -87,8 +87,8 @@ MonoBehaviour:
   ChasingSpeed: 3
   WeaveFrequency: 3
   WeaveAmplitude: 0.5
-  SubmergedYOffset: -0.5
-  PeekingYOffset: 0.2
+  SubmergedYOffset: 0
+  PeekingYOffset: 0
   VisualsTransform: {fileID: 7730879988559779406}
   VisualsLerpSpeed: 20
   ShowMovementGizmos: 1
