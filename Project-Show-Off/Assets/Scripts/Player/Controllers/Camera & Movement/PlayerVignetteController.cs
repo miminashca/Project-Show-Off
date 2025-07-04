@@ -10,7 +10,7 @@ public class PlayerVignetteController : MonoBehaviour
     [SerializeField] private Volume postProcessingVolume;
     [SerializeField] private Color chokeColor = new Color(0.1f, 0.2f, 0.8f); // A deep blue
     [SerializeField] private Color damageColor = new Color(0.8f, 0.1f, 0.1f); // A blood red
-    [SerializeField, Range(0f, 1f)] private float maxIntensity = 0.5f;
+    [SerializeField, Range(0f, 1f)] private float maxIntensity = 1f;
     // [SerializeField, Range(0.1f, 10f)] private float damageFlashDuration = 5.0f; // REMOVED: No longer needed
     [SerializeField, Range(1f, 20f)] private float fadeSpeed = 5f;
 
@@ -90,8 +90,9 @@ public class PlayerVignetteController : MonoBehaviour
         {
             targetColor = damageColor;
             // Calculate intensity based on how wounded the player is
-            float woundRatio = (float)currentWoundLevel / maxWoundLevel;
+            float woundRatio = ((float)currentWoundLevel +1f) / maxWoundLevel;
             targetIntensity = Mathf.Clamp(woundRatio * maxIntensity, 0f, maxIntensity);
+            //targetIntensity *= 1.5f;
         }
         else if (isChokeActive)
         {
