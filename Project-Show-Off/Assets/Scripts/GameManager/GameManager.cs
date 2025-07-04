@@ -42,11 +42,14 @@ public class GameManager : MonoBehaviour
 
     public event Action OnGameLoaded;
     private StartMenuManager StartMenuManager;
+    private HunterActivationManager hunterActivationManager;
 
     private void Start()
     {
-        StartMenuManager = GetComponentInChildren<StartMenuManager>();  
+        // NO NEED TO PARENT OTHER MANAGERS TO GAME MANAGER!!!
+        // StartMenuManager = GetComponentInChildren<StartMenuManager>();  
     }
+
     void Awake()
     {
         if (Instance == null)
@@ -148,7 +151,12 @@ public class GameManager : MonoBehaviour
         // Subscribe to the correct, unified events
         clueManager.OnClueCollected += SaveGame;
         clueManager.OnClueSubmitted += SaveGame;
-        
+
+        if (hunterActivationManager == null)
+        {
+            Debug.LogWarning("Could not find HunterActivationManager in the scene. State will not be saved/loaded.");
+        }
+
         switch (startState)
         {
             case GameStartState.NewGame:
@@ -159,7 +167,7 @@ public class GameManager : MonoBehaviour
                     Debug.Log("Starting new game. Old save data cleared.");
                 }
                 clueManager.LoadClues(null, null);
-                //SetPlayerControl(true);
+                if (hunterActivationManager != null) hunterActivationManager.InitializeState(false);
                 SetPlayerInputActive(true);
                 break;
 
@@ -174,7 +182,7 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("Game scene loaded directly. Defaulting to a New Game state.");
                 if (PlayerPrefs.HasKey(SaveKey)) PlayerPrefs.DeleteKey(SaveKey);
                 clueManager.LoadClues(null, null);
-                //SetPlayerControl(true);
+                if (hunterActivationManager != null) hunterActivationManager.InitializeState(false);
                 SetPlayerInputActive(true);
                 break;
         }
@@ -253,10 +261,10 @@ public class GameManager : MonoBehaviour
     
     public void Retry()
     {
-        // This is the crucial fix for the restart issue.
         Time.timeScale = 1f;
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        StartMenuManager.OnClickContinue(); // This will reset the start state to Continue
+
+        SetStartState(GameStartState.Continue);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void GoToMainMenu()
@@ -306,6 +314,8 @@ public class GameManager : MonoBehaviour
         data.collectedClueIDs = clueManager.GetCollectedClueIDs();
         data.submittedClueIDs = clueManager.GetSubmittedClueIDs();
 
+        if (hunterActivationManager != null) data.isHunterActivated = hunterActivationManager.IsHunterActive();
+
         string json = JsonUtility.ToJson(data, true);
         PlayerPrefs.SetString(SaveKey, json);
         PlayerPrefs.Save();
@@ -328,7 +338,9 @@ public class GameManager : MonoBehaviour
         playerMovement.SetStamina(data.currentStamina);
         lanternController.ApplyLoadedFuel(data.lanternFuel);
         clueManager.LoadClues(data.collectedClueIDs, data.submittedClueIDs);
-        
+
+        if (hunterActivationManager != null) hunterActivationManager.InitializeState(data.isHunterActivated);
+
         CharacterController cc = PlayerTransform.GetComponent<CharacterController>();
         if (cc != null)
         {
@@ -376,8 +388,9 @@ public class GameManager : MonoBehaviour
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         lanternController = FindFirstObjectByType<LanternController>();
         cameraMovement = FindFirstObjectByType<CameraMovement>();
-        headBob = FindFirstObjectByType<HeadbobController>(); // Assuming you have a Camera component on the player 
-        
+        headBob = FindFirstObjectByType<HeadbobController>(); // Assuming you have a Camera component on the player
+        hunterActivationManager = FindFirstObjectByType<HunterActivationManager>();
+
         clueManager = ClueEventManager.Instance; // Singleton is reliable
 
         if (playerHealth != null)

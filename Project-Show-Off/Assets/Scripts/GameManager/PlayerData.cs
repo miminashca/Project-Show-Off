@@ -17,7 +17,6 @@ public class PlayerData
     public List<string> collectedClueIDs;
     public List<string> submittedClueIDs;
 
-    // You can add more data here in the future!
-    // For example:
-    // public bool hasTransformed; 
+    // Hunter Activation
+    public bool isHunterActivated;
 }
