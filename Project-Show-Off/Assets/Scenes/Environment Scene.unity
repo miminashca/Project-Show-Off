@@ -8905,7 +8905,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &236427721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10230,6 +10230,7 @@ MonoBehaviour:
   shotTensionAmount: 1
   shotLingerDuration: 15
   shotTensionRampUpSpeed: 10
+  chokingTensionAmount: 0.8
   tensionSmoothingSpeed: 2
 --- !u!114 &257389984
 MonoBehaviour:
@@ -80501,6 +80502,230 @@ PrefabInstance:
       propertyPath: postProcessingVolume
       value: 
       objectReference: {fileID: 236427721}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: cameraMovement
+      value: 
+      objectReference: {fileID: 1760310989}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: deathScreenPanel
+      value: 
+      objectReference: {fileID: 1850019906}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Path
+      value: event:/Player/Hurt/Choking
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: musicTensionController
+      value: 
+      objectReference: {fileID: 257389983}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Path
+      value: event:/Player/Hurt/Player Hurt
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: timeToRegenerateOneLevel
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data1
+      value: 1597201754
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data2
+      value: 1110827087
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data3
+      value: -604923717
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: chokingLoopEvent.Guid.Data4
+      value: -218037401
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Path
+      value: event:/Player/Hurt/Player Injured Panting
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data1
+      value: -1508791960
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data2
+      value: 1257117217
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data3
+      value: 1114685625
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: playerHurtArghSound.Guid.Data4
+      value: -376021605
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data1
+      value: -74751347
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data2
+      value: 1185789530
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data3
+      value: 1334007713
+      objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredBreathingLoopEvent.Guid.Data4
+      value: -1592821
+      objectReference: {fileID: 0}
+    - target: {fileID: 2177276955475158849, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Range
+      value: 8.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Intensity
+      value: 11.617239
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_SpotAngle
+      value: 60.00979
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_AreaSize.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_AreaSize.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_ShadowRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_UseBoundingSphereOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_UseCullingMatrixOverride
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e00
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e11
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e22
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e23
+      value: -0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e32
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2569556464218457758, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e33
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508709375727747559, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_ShapeRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3508709375727747559, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_InnerSpotPercent
+      value: 1.666395
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: positionSmoothTime
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3896601799232756080, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: rotationSmoothTime
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.72681683
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000008231806
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.6868314
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000002304906
+      objectReference: {fileID: 0}
+    - target: {fileID: 4525094791180393577, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -86.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: baseFootstepInterval
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Path
+      value: event:/Player/Hurt/Player Injured Sprinting
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data1
+      value: -910728905
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data2
+      value: 1140313556
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data3
+      value: -1696058977
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: injuredSprintingBreathEventPath.Guid.Data4
+      value: 1502675341
+      objectReference: {fileID: 0}
+    - target: {fileID: 4988268301215314928, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6334661837088429990, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: offerPromptUI
       value: 
