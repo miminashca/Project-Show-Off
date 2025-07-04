@@ -254,6 +254,12 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player has died! Notifying GameManager.");
         OnPlayerDied?.Invoke();
 
+        // <<< NEW: Ensure choking tension is turned off if the player dies while being choked. >>>
+        if (musicTensionController != null && numberOfHemannekensAttached > 0)
+        {
+            musicTensionController.SetChokingState(false);
+        }
+
         // This call will correctly stop the sound as the component is about to be disabled by the GameManager.
         UpdateInjuredBreathingState();
 
@@ -379,6 +385,11 @@ public class PlayerHealth : MonoBehaviour
         if (numberOfHemannekensAttached == 0)
         {
             chokeTimer = timeToChoke;
+            // <<< NEW: Tell the music controller that choking has started. >>>
+            if (musicTensionController != null)
+            {
+                musicTensionController.SetChokingState(true);
+            }
         }
         numberOfHemannekensAttached++;
         Debug.Log($"Hemanneken attached. Total: {numberOfHemannekensAttached}. Choke timer started/sped up.");
@@ -390,6 +401,11 @@ public class PlayerHealth : MonoBehaviour
         if (numberOfHemannekensAttached < 0) numberOfHemannekensAttached = 0;
         if (numberOfHemannekensAttached == 0)
         {
+            // <<< NEW: Tell the music controller that choking has stopped. >>>
+            if (musicTensionController != null)
+            {
+                musicTensionController.SetChokingState(false);
+            }
             Debug.Log("Last Hemanneken detached. Choke timer stopped.");
             OnChokeTimerChanged?.Invoke(timeToChoke, timeToChoke);
         }
