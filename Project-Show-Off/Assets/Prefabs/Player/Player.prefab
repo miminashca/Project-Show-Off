@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7607506250657158723}
   - component: {fileID: 7584315435622049681}
   - component: {fileID: 9220622035088159376}
+  - component: {fileID: 861061448298034872}
   - component: {fileID: 4542596350648536079}
   - component: {fileID: 1768335137489469695}
   - component: {fileID: 6956735422866284977}
@@ -23,7 +24,6 @@ GameObject:
   - component: {fileID: 4185991499672993981}
   - component: {fileID: 1066200544536370512}
   - component: {fileID: 8194570042842489309}
-  - component: {fileID: 861061448298034872}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -95,9 +95,36 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!54 &861061448298034872
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495666101020983991}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!114 &4542596350648536079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,7 +358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxWoundLevel: 3
   currentWoundLevel: 0
-  timeToRegenerateOneLevel: 30
+  timeToRegenerateOneLevel: 10
   adrenalineDuration: 10
   adrenalineSpeedBoost: 0.5
   timeToChoke: 10
@@ -349,8 +376,13 @@ MonoBehaviour:
       Data3: 1334007713
       Data4: -1592821
     Path: event:/Player/Hurt/Player Injured Panting
-  deathScreenPanel: {fileID: 0}
-  cameraMovement: {fileID: 0}
+  chokingLoopEvent:
+    Guid:
+      Data1: 1597201754
+      Data2: 1110827087
+      Data3: -604923717
+      Data4: -218037401
+    Path: event:/Player/Hurt/Choking
   musicTensionController: {fileID: 0}
 --- !u!114 &4004112240833274223
 MonoBehaviour:
@@ -450,33 +482,6 @@ MonoBehaviour:
       Data3: 216580012
       Data4: -1560041072
     Path: event:/Player/Player Hey!/Player Hey!
---- !u!54 &861061448298034872
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495666101020983991}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!1 &2177276955475158849
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +513,7 @@ Transform:
   m_GameObject: {fileID: 2177276955475158849}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.69, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -531,8 +536,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Priority:
-    Enabled: 0
-    m_Value: 0
+    Enabled: 1
+    m_Value: 10
   OutputChannel: 1
   StandbyUpdate: 2
   m_StreamingVersion: 20241001
@@ -542,7 +547,7 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60
+    FieldOfView: 50
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -624,10 +629,10 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 1000
+  far clip plane: 250
   field of view: 60
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1773,6 +1778,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 24
       objectReference: {fileID: 0}
+    - target: {fileID: 143474482802388982, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 406058043998488435, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
       propertyPath: m_UseGravity
       value: 1
@@ -1881,6 +1890,66 @@ PrefabInstance:
       propertyPath: m_IsKinematic
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Range
+      value: 8.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Intensity
+      value: 11.617239
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_SpotAngle
+      value: 60.00979
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_BoundingSphereOverride.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_BoundingSphereOverride.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_BoundingSphereOverride.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_BoundingSphereOverride.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e00
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e11
+      value: 1.2375373
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e22
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e23
+      value: -0.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e32
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4914862934160856579, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_Shadows.m_CullingMatrixOverride.e33
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5429876765376644119, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
       propertyPath: lanternLight
       value: 
@@ -1904,6 +1973,34 @@ PrefabInstance:
     - target: {fileID: 5876773660240513517, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
       propertyPath: rotationSmoothTime
       value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 6281550230475067770, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_ShapeRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6281550230475067770, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_InnerSpotPercent
+      value: 1.666395
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436102972759837940, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.72681683
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436102972759837940, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000008231806
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436102972759837940, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.6868314
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436102972759837940, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.000000002304906
+      objectReference: {fileID: 0}
+    - target: {fileID: 6436102972759837940, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -86.76
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 3107329627100570387, guid: e285ac21c8a0ad441bee38e39420721a, type: 3}
