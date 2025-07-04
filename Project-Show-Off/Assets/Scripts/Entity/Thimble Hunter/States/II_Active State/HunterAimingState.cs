@@ -109,23 +109,22 @@ public class HunterAimingState : State
         bool patienceExpired = _currentAimTime <= 0f;
         bool hasEnoughConfidence = currentShotConfidence >= _hunterAI.ShotConfidenceThreshold;
 
-        if (patienceExpired || hasEnoughConfidence)
+        if ((patienceExpired || hasEnoughConfidence) && !_hunterAI.IsShotOnCooldown)
         {
             // Decision time! Check if we have a clear, lethal shot.
             // We check IsPlayerFullySpotted to ensure the player hasn't been gone for too long.
             if (_hunterAI.IsPlayerFullySpotted && _hunterAI.IsPathToPlayerClearForShot(_playerAimPointInternal))
             {
-                Debug.Log($"{_hunterAI.gameObject.name} AIMING: Path is clear, taking lethal shot. Confidence: {currentShotConfidence}, Patience Expired: {patienceExpired}");
-
+                Debug.Log($"{_hunterAI.gameObject.name} AIMING: Path clear, cooldown finished. Triggering shot.");
                 _hunterAI.SetActualFiringDirection(finalSwayedGunDirection);
+                _hunterAI.HunterAnimator.SetTrigger("Shoot");
                 SM.TransitToState(_hunterSM.ShootingState);
             }
             else
             {
                 // Path is blocked or we lost direct sight. The player is likely behind cover.
                 // This is the perfect time for suppressive fire.
-                Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Path blocked or player not fully visible. Transitioning to SUPPRESSING.");
-
+                Debug.LogWarning($"{_hunterAI.gameObject.name} AIMING: Path blocked. Transitioning to SUPPRESSING.");
                 SM.TransitToState(_hunterSM.SuppressingState);
             }
             return; // Exit after making a decision

@@ -79,6 +79,7 @@ public class HunterAI : MonoBehaviour
 
     [Header("Timers")]
     public float AimTime = 2.0f;
+    public float TimeBetweenShots = 2.5f;
     public float ReloadTime = 3.0f;
     public float InvestigationDuration = 8.0f;
     public float SuperpositionAttemptCooldown = 10.0f;
@@ -107,6 +108,8 @@ public class HunterAI : MonoBehaviour
     public PlayerStatus TargetPlayerStatus { get; private set; }
 
     // --- Runtime AI Data (public properties for states to access) ---
+    private float shotCooldownTimer;
+    public bool IsShotOnCooldown => shotCooldownTimer > 0;
     public Vector3 LastKnownPlayerPosition { get; set; }
     public bool IsActivelyScanning { get; set; } = false;
     public bool CanHearPlayerAlert { get; private set; }
@@ -117,9 +120,7 @@ public class HunterAI : MonoBehaviour
     public float CurrentSuperpositionCooldownTimer { get; set; }
     public Transform CurrentTargetNode { get; set; }
     public Vector3 CurrentConfirmedAimTarget { get; set; }
-
     public HunterSoundController SoundController { get; private set; }
-
 
     void Awake()
     {
@@ -178,6 +179,7 @@ public class HunterAI : MonoBehaviour
     void Update()
     {
         // Update timers and other non-transform logic
+        if (shotCooldownTimer > 0) shotCooldownTimer -= Time.deltaTime;
         if (CurrentSuperpositionCooldownTimer > 0) CurrentSuperpositionCooldownTimer -= Time.deltaTime;
         if (AimAttemptCooldownTimer > 0) AimAttemptCooldownTimer -= Time.deltaTime;
 
@@ -395,23 +397,53 @@ public class HunterAI : MonoBehaviour
 
     public void FireGun()
     {
-        Debug.Log($"{gameObject.name}: BANG!");
+        Debug.Log($"{gameObject.name}: Animation trigger 'Shoot' has been set.");
 
         HunterAnimator.SetTrigger("Shoot");
         HunterEventBus.HunterFiredShot();
+    }
 
+    public void HandleShotEventFromAnimation()
+    {
+        shotCooldownTimer = TimeBetweenShots;
+
+        Debug.Log($"{gameObject.name}: BANG! (Cooldown started: {TimeBetweenShots}s)");
+
+        // 1. Play the Sound
+        if (SoundController != null)
+        {
+            SoundController.PlayGunFireSound();
+        }
+
+        // --- VFX and Light Logic (REVISED) ---
+        if (GunMuzzleTransform != null)
+        {
+            // 1. Instantiate Muzzle Flash Prefab
+            if (MuzzleFlashPrefab != null)
+            {
+                // Instantiate the prefab, but keep a reference to it
+                GameObject muzzleFlashInstance = Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, GunMuzzleTransform.rotation, GunMuzzleTransform);
+
+                // Get the VisualEffect component from the new instance
+                UnityEngine.VFX.VisualEffect vfx = muzzleFlashInstance.GetComponentInChildren<UnityEngine.VFX.VisualEffect>();
+
+                // If the component exists, tell it to play!
+                if (vfx != null)
+                {
+                    vfx.Play();
+                }
+
+                // CRITICAL: VFX Graphs don't destroy themselves. We must do it.
+                // Destroy the instance after a short duration (e.g., 2 seconds) to clean up.
+                Destroy(muzzleFlashInstance, 2f);
+            }
+
+            // 2. Start the Light Flash Coroutine (This part is still correct)
+            StartCoroutine(MuzzleFlashLightRoutine());
+        }
+
+        // 3. Perform the Raycast and Damage Logic (Moved from the old FireGun method)
         if (PlayerTransform == null || GunMuzzleTransform == null) return;
-
-        Vector3 idealShotDirection = (CurrentConfirmedAimTarget - GunMuzzleTransform.position).normalized;
-        if (idealShotDirection == Vector3.zero)
-        {
-            idealShotDirection = transform.forward; // Failsafe
-        }
-
-        if (MuzzleFlashPrefab != null && GunMuzzleTransform != null)
-        {
-            Instantiate(MuzzleFlashPrefab, GunMuzzleTransform.position, Quaternion.LookRotation(actualFiringDirection), GunMuzzleTransform);
-        }
 
         // --- Apply Weapon Spread ---
         Quaternion spreadRotation = Quaternion.Euler(
@@ -455,6 +487,8 @@ public class HunterAI : MonoBehaviour
         {
             if (hit.collider.transform.IsChildOf(PlayerTransform) || hit.collider.transform == PlayerTransform)
             {
+                Debug.Log($"{gameObject.name} HIT Player: {hit.collider.name} at {hit.point}");
+
                 // Check if the *actual hit point on the player* is submerged
                 if (TargetPlayerStatus != null && TargetPlayerStatus.IsSubmerged(hit.point))
                 {
@@ -480,6 +514,36 @@ public class HunterAI : MonoBehaviour
         {
             Debug.Log($"{gameObject.name} SHOT missed (hit nothing within range).");
         }
+    }
+
+    /// <summary>
+    /// Creates a bright light at the muzzle for a split second and then destroys it.
+    /// </summary>
+    private System.Collections.IEnumerator MuzzleFlashLightRoutine()
+    {
+        // Create a new empty GameObject to hold our light
+        GameObject lightGO = new GameObject("MuzzleFlashLight");
+        lightGO.transform.position = GunMuzzleTransform.position;
+
+        // Add a Light component to the new GameObject
+        Light lightComp = lightGO.AddComponent<Light>();
+
+        // Configure the light to be a bright, short-range flash
+        // Set the color using RGB values (example: orange flash)
+        lightComp.color = new Color(1.0f, 0.7f, 0.2f); // Change these values as needed (R,G,B, 0-1)
+        lightComp.intensity = 8f;   // Very bright
+        lightComp.range = 25f;      // Affects a good area
+        lightComp.shadows = LightShadows.None; // No shadows for performance and instant effect
+        lightComp.bounceIntensity = 10;
+
+        // Make sure the light updates the environment in real time
+        lightComp.renderMode = LightRenderMode.ForcePixel; // Ensures real-time lighting
+
+        // Wait for a fraction of a second
+        yield return new WaitForSeconds(0.06f);
+
+        // Destroy the temporary light GameObject
+        Destroy(lightGO);
     }
 
     public Transform GetConfiguredRoamNode()

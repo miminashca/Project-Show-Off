@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     private PlayerHealth playerHealth;
     private PlayerMovement playerMovement;
     private LanternController lanternController;
+    private HeadbobController headBob; // Assuming you have a HeadbobController script
     [NonSerialized] public Transform PlayerTransform;
     private ClueEventManager clueManager;
 
@@ -40,7 +41,12 @@ public class GameManager : MonoBehaviour
     [NonSerialized] public bool isWhiteLadyActive = false;
 
     public event Action OnGameLoaded;
+    private StartMenuManager StartMenuManager;
 
+    private void Start()
+    {
+        StartMenuManager = GetComponentInChildren<StartMenuManager>();  
+    }
     void Awake()
     {
         if (Instance == null)
@@ -182,7 +188,7 @@ public class GameManager : MonoBehaviour
         if (playerMovement != null) playerMovement.enabled = isActive;
         if (lanternController != null) lanternController.enabled = isActive;
         if (cameraMovement != null) cameraMovement.enabled = isActive;
-        // if (headbobController != null) headbobController.enabled = isActive; // Uncomment if you have this
+        if (headBob != null) headBob.enabled = isActive; 
 
         Debug.Log($"Player controls set to: {isActive}");
 
@@ -249,14 +255,15 @@ public class GameManager : MonoBehaviour
     {
         // This is the crucial fix for the restart issue.
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        StartMenuManager.OnClickContinue(); // This will reset the start state to Continue
     }
 
     public void GoToMainMenu()
     {
         // Always reset time scale before leaving a scene.
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu"); // Make sure you have this scene in your build settings
+        SceneManager.LoadScene("StartScreen"); // Make sure you have this scene in your build settings
     }
 
     public void QuitGame()
@@ -369,6 +376,8 @@ public class GameManager : MonoBehaviour
         playerMovement = FindFirstObjectByType<PlayerMovement>();
         lanternController = FindFirstObjectByType<LanternController>();
         cameraMovement = FindFirstObjectByType<CameraMovement>();
+        headBob = FindFirstObjectByType<HeadbobController>(); // Assuming you have a Camera component on the player 
+        
         clueManager = ClueEventManager.Instance; // Singleton is reliable
 
         if (playerHealth != null)

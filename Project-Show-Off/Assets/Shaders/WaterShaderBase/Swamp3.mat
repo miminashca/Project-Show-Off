@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Swamp3
+  m_Shader: {fileID: -6465566751694194690, guid: 0dc60fa22da069a4d8c9b35d9c9cbe84, type: 3}
+  m_Parent: {fileID: 2100000, guid: 5fce807744066a545b6d4692153a6a87, type: 2}
+  m_ModifiedSerializedProperties: 4
+  m_ValidKeywords:
+  - _DEPTHOFFSET_ON
+  - _DISABLE_SSR_TRANSPARENT
+  - _ENABLE_FOG_ON_TRANSPARENT
+  - _SURFACE_TYPE_TRANSPARENT
+  - _TRANSPARENT_WRITES_MOTION_VEC
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 1
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 2989
+  stringTagMap:
+    MotionVector: User
+    RenderType: Transparent
+  disabledShaderPasses:
+  - TransparentDepthPrepass
+  - MOTIONVECTORS
+  - TransparentBackface
+  - RayTracingPrepass
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NormalMap:
+        m_Texture: {fileID: 2800000, guid: 6e2fb6f6e1fff884aa957c1f177b43b0, type: 3}
+        m_Scale: {x: 15, y: 10}
+        m_Offset: {x: 5, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Alpha: 0.99
+    - _AlphaDstBlend: 10
+    - _AlphaSwitch: 0.23
+    - _AngleOfShape: 5.09
+    - _ColorSmoothingA: 0.63
+    - _ColorSmoothingB: -0.13
+    - _ColorSwitch: 0.0001
+    - _DepthOffsetEnable: 1
+    - _DoubleSidedNormalMode: 2
+    - _DstBlend: 10
+    - _DstBlend2: 10
+    - _Float: 4.19
+    - _MaskSoftEnd: 0.8
+    - _MaskSoftStart: 0.54
+    - _MaterialTypeMask: 2
+    - _NoiseSpotScale: 9.99
+    - _NormalScale: 2.1
+    - _NormalSwitch: 0.33
+    - _RadiusColor: 1.84
+    - _RequireSplitLighting: 0
+    - _ReverseDistance: -1.38
+    - _ScaleTurbulence1: 1200
+    - _ScaleTurbulence2: 1000
+    - _ScaleTurbulence3: 900
+    - _Size_Voronoi: 2.38
+    - _SmoothGradientA: -0.73
+    - _Smoothness: 0
+    - _SmoothnessSwitch: -0.54
+    - _SmoothnessWater: 0.17
+    - _SpotDarkness: 0.73
+    - _StencilRefDepth: 0
+    - _StencilRefGBuffer: 2
+    - _StencilRefMV: 32
+    - _SurfaceType: 1
+    - _Thickness: 3.87
+    - _TineSmoothness: 0.55
+    - _TransparentDepthPostpassEnable: 1
+    - _TransparentSortPriority: -11
+    - _TransparentWritingMotionVec: 1
+    - _TransparentZWrite: 1
+    - _ZTestDepthEqualForOpaque: 4
+    m_Colors:
+    - _CenterUV_Color: {r: 0.48, g: 0.55, b: 0, a: 0}
+    - _DeepColor: {r: 0.25095764, g: 0.2873161, b: 0.3509434, a: 1}
+    - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
+    - _GradientEnd: {r: 0.6, g: 1, b: 0, a: 0}
+    - _GradientStart: {r: 1.14, g: 0.32, b: 0, a: 0}
+    - _NoiseSpotScaleUV: {r: 10, g: 10, b: 0, a: 0}
+    - _NormalScrollSpeed: {r: 0, g: 0, b: 0, a: 0}
+    - _ShallowColor: {r: 0.045816995, g: 0.12043583, b: 0.12452829, a: 0.42745098}
+    - _TineColorA: {r: 0.22054109, g: 0.3962264, b: 0.29298866, a: 1}
+    - _TineColorB: {r: 0.21726593, g: 0.3207547, b: 0.2621416, a: 1}
+    - _WaveParamA: {r: 0.008, g: 0.055, b: 0.3, a: 0.5}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &6259490366650901164
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da692e001514ec24dbc4cca1949ff7e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 13
+  hdPluginSubTargetMaterialVersions:
+    m_Keys: []
+    m_Values: 

@@ -34,8 +34,14 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private EventReference playerHurtArghSound;
     [Tooltip("Looping injured breathing sound for when player is NOT sprinting. This event should contain the snapshot to mute other breathing sounds.")]
     [SerializeField] private EventReference injuredBreathingLoopEvent;
+    // NEW FMOD CHANGE
+    [Tooltip("Looping choking sound that plays while a Hemanneken is attached.")]
+    [SerializeField] private EventReference chokingLoopEvent;
+    // END FMOD CHANGE
 
     private EventInstance injuredBreathingInstance;
+    // NEW FMOD CHANGE
+    private EventInstance chokingLoopInstance;
     // END FMOD CHANGE
 
     //death screen implementation
@@ -90,6 +96,13 @@ public class PlayerHealth : MonoBehaviour
             injuredBreathingInstance = RuntimeManager.CreateInstance(injuredBreathingLoopEvent);
         }
         // END FMOD CHANGE
+        // NEW FMOD CHANGE
+        // Create the FMOD instance for the looping choking sound.
+        if (!chokingLoopEvent.IsNull)
+        {
+            chokingLoopInstance = RuntimeManager.CreateInstance(chokingLoopEvent);
+        }
+        // END FMOD CHANGE
     }
 
     //private void OnEnable() => controls.Enable();
@@ -110,6 +123,13 @@ public class PlayerHealth : MonoBehaviour
             injuredBreathingInstance.release();
         }
         // END FMOD CHANGE
+        // NEW FMOD CHANGE
+        if (chokingLoopInstance.isValid())
+        {
+            chokingLoopInstance.stop(FMOD.Studio.STOP_MODE.IMMEDIATE);
+            chokingLoopInstance.release();
+        }
+        // END FMOD CHANGE
     }
 
     private void Update()
@@ -124,6 +144,13 @@ public class PlayerHealth : MonoBehaviour
 
         // Check the breathing state every frame to react to starting/stopping sprinting.
         UpdateInjuredBreathingState();
+        // END FMOD CHANGE
+        // NEW FMOD CHANGE
+        // Update the 3D attributes for the choking sound as well.
+        if (chokingLoopInstance.isValid())
+        {
+            chokingLoopInstance.set3DAttributes(RuntimeUtils.To3DAttributes(transform));
+        }
         // END FMOD CHANGE
 
         //coment this if you wanna revert to the old death screen implementation
@@ -232,7 +259,7 @@ public class PlayerHealth : MonoBehaviour
 
         // Tell the GameManager to handle everything else (pausing time, showing UI, disabling controls).
         GameManager.Instance.PlayerDied();
-        
+
     }
     public void SetWoundLevel(int level)
     {
@@ -287,6 +314,11 @@ public class PlayerHealth : MonoBehaviour
         // <<< CHANGED: Check the isDead flag >>>
         if (isDead) return;
 
+        // NEW FMOD CHANGE
+        if (!chokingLoopInstance.isValid()) return; // Early exit if the sound isn't set up
+        chokingLoopInstance.getPlaybackState(out PLAYBACK_STATE state);
+        // END FMOD CHANGE
+
         if (numberOfHemannekensAttached > 0)
         {
             chokeTimer -= Time.deltaTime * numberOfHemannekensAttached;
@@ -296,7 +328,24 @@ public class PlayerHealth : MonoBehaviour
                 Debug.Log("Player has been choked to death by Hemanneken!");
                 Die();
             }
+            // NEW FMOD CHANGE
+            // If we are being choked and the sound is not yet playing, start it.
+            if (state == PLAYBACK_STATE.STOPPED)
+            {
+                chokingLoopInstance.start();
+            }
+            // END FMOD CHANGE
         }
+        // NEW FMOD CHANGE
+        else
+        {
+            // If we are NOT being choked, but the sound is still playing, stop it with a fade out.
+            if (state != PLAYBACK_STATE.STOPPED)
+            {
+                chokingLoopInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+            }
+        }
+        // END FMOD CHANGE
     }
 
     private void HandleAdrenalineRush()

@@ -16,8 +16,12 @@ public class AsyncLoader : MonoBehaviour
 
     public void LoadSceneButton(string sceneName)
     {
-        menuScene.SetActive(false);
-        loadingScene.SetActive(true);
+        if (menuScene)
+        {
+            menuScene.SetActive(false);
+            loadingScene.SetActive(true);
+        }
+        
         StartCoroutine(LoadLevelAsync(sceneName));
     }
     //Run async coroutine to load the scene

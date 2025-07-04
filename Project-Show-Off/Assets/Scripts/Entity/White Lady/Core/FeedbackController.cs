@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 public class FeedbackController : MonoBehaviour
 {
@@ -10,27 +12,56 @@ public class FeedbackController : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [Tooltip("Reference to the player's CameraMovement script.")]
     [SerializeField] private CameraMovement cameraMovement;
-    // [SerializeField] private PlayerHealth playerHealth; // Assign your player health script
+    [SerializeField] private PlayerHealth playerHealth;
     // [SerializeField] private LanternController lanternController; // Assign your lantern script
     [SerializeField] private GameObject breathVFXPrefab;
+    
+    [Header("Post-Processing")]
+    [Tooltip("The Post Process Volume to control for fear effects.")]
+    [SerializeField] private Volume ladyPostProcessingVolume;
+    [Tooltip("How long (in seconds) the post-processing effects take to transition in or out.")]
+    [SerializeField] private float postProcessTransitionDuration = 5.0f;
+    
+    [Header("Post-Processing Fear Values")]
+    [Tooltip("Target intensity for the Vignette effect when seen.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float targetVignetteIntensity = 0.6f;
+    [Tooltip("Target intensity for the Film Grain effect when seen.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float targetFilmGrainIntensity = 0.8f;
+    [Tooltip("Target contrast for Color Adjustments when seen.")]
+    [Range(-100f, 100f)]
+    [SerializeField] private float targetContrast = -25f;
 
     private LadyAIConfig _config;
     private Coroutine _fovRestoreCoroutine;
+    private Coroutine _postProcessingCoroutine;
     private float _originalFOV;
     private GameObject _currentBreathVFX;
     // private EventInstance _breathAudioInstance; // FMOD instance
-
-    // --- NEW: Variables for Combined Dolly Zoom & Shrink Effect ---
+    
     private bool _isFovEffectActive = false;
     private Transform _fovTarget;
     private float _fovEffectTimer;
     private float _initialDollySize; // The starting perceived size of the target
     private float _targetDollySize;  // The final perceived size after shrinking
     
+    // --- Post-Processing Effect References ---
+    private Vignette _vignette;
+    private FilmGrain _filmGrain;
+    private ColorAdjustments _colorAdjustments;
+
+    // --- Original Post-Processing Values ---
+    private float _originalVignetteIntensity;
+    private float _originalFilmGrainIntensity;
+    private float _originalContrast;
+    
     private void Start()
     {
         if (playerCamera == null) playerCamera = Camera.main;
         _originalFOV = playerCamera.fieldOfView;
+        
+        CacheOriginalPostProcessingValues();
     }
 
     private void Update()
@@ -60,12 +91,9 @@ public class FeedbackController : MonoBehaviour
         {
             _currentBreathVFX = Instantiate(breathVFXPrefab, playerCamera.transform.position + playerCamera.transform.forward, playerCamera.transform.rotation, playerCamera.transform);
         }
-
-        // Lantern Flicker
-        // lanternController?.StartSorrowfulFlicker();
     }
     
-    // --- NEW: Method to control the camera pull ---
+    // --- Control the camera pull ---
     public void SetGazePullActive(bool isActive)
     {
         if (cameraMovement != null)
@@ -88,9 +116,10 @@ public class FeedbackController : MonoBehaviour
         float initialDistance = Vector3.Distance(playerCamera.transform.position, target.position);
         _initialDollySize = initialDistance * Mathf.Tan(playerCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
         _targetDollySize = _initialDollySize * _config.dollyZoomTargetScale;
-
-        // IMPORTANT: Activate the pull effect when the state begins.
+        
         SetGazePullActive(true);
+        
+        StartSeenVFX();
     }
     public void StopAllEffects()
     {
@@ -106,9 +135,7 @@ public class FeedbackController : MonoBehaviour
         if (_fovRestoreCoroutine != null) StopCoroutine(_fovRestoreCoroutine);
         _fovRestoreCoroutine = StartCoroutine(RestoreFovCoroutine());
         
-        // Stop other effects
-        // lanternController?.ReturnToNormalFlicker();
-        // Disable screen-space shader effect here.
+        ResetSeenVFX();
     }
 
     // --- PLAYER STATE CHANGES ---
@@ -124,7 +151,7 @@ public class FeedbackController : MonoBehaviour
     public void KillPlayer()
     {
         Debug.Log("Feedback: Player has been killed by the gaze.");
-        // playerHealth?.Die();
+        playerHealth?.Die();
         // You would trigger your game over sequence here.
     }
     
@@ -157,6 +184,39 @@ public class FeedbackController : MonoBehaviour
             cameraMovement.UpdateGazeData(directionToTarget, currentPullLerp);
         }
     }
+    
+    // --- Post Processing ---
+    /// <summary>
+    /// Starts the transition to the "fear" post-processing settings.
+    /// </summary>
+    public void StartSeenVFX()
+    {
+        if (ladyPostProcessingVolume == null) return;
+
+        // Stop any previous coroutine to prevent conflicts
+        if (_postProcessingCoroutine != null)
+        {
+            StopCoroutine(_postProcessingCoroutine);
+        }
+        // Start the new transition to activate the effects
+        _postProcessingCoroutine = StartCoroutine(TransitionPostProcessing(true));
+    }
+
+    /// <summary>
+    /// Starts the transition back to the normal post-processing settings.
+    /// </summary>
+    public void ResetSeenVFX()
+    {
+        if (ladyPostProcessingVolume == null) return;
+
+        if (_postProcessingCoroutine != null)
+        {
+            StopCoroutine(_postProcessingCoroutine);
+        }
+        // Start the new transition to deactivate the effects
+        _postProcessingCoroutine = StartCoroutine(TransitionPostProcessing(false));
+    }
+    
 
     // --- HELPER COROUTINE ---
 
@@ -176,6 +236,82 @@ public class FeedbackController : MonoBehaviour
             yield return null;
         }
         playerCamera.fieldOfView = _originalFOV;
+    }
+    
+    private void CacheOriginalPostProcessingValues()
+    {
+        if (ladyPostProcessingVolume == null || ladyPostProcessingVolume.profile == null)
+        {
+            Debug.LogWarning("FeedbackController: No Volume assigned. VFX will be disabled.");
+            return;
+        }
+
+        // Use TryGet<T>() which is the correct method for HDRP Volumes
+        ladyPostProcessingVolume.profile.TryGet(out _vignette);
+        ladyPostProcessingVolume.profile.TryGet(out _filmGrain);
+        ladyPostProcessingVolume.profile.TryGet(out _colorAdjustments);
+
+        // Store the default values so we can return to them
+        if (_vignette != null) _originalVignetteIntensity = _vignette.intensity.value;
+        if (_filmGrain != null) _originalFilmGrainIntensity = _filmGrain.intensity.value;
+        if (_colorAdjustments != null) _originalContrast = _colorAdjustments.contrast.value;
+    }
+
+    private IEnumerator TransitionPostProcessing(bool activate)
+    {
+        // Ensure we have valid references before starting
+        if (_vignette == null || _filmGrain == null || _colorAdjustments == null)
+        {
+            Debug.LogError("One or more Post Processing effects are missing from the Volume Profile!");
+            yield break;
+        }
+
+        float timer = 0f;
+
+        // In HDRP, we usually control the effect by changing the volume's 'weight' or the effect's parameters.
+        // We will animate the parameters directly.
+        // We must also ensure the effect is active to be modified.
+        if (activate)
+        {
+            _vignette.active = true;
+            _filmGrain.active = true;
+            _colorAdjustments.active = true;
+        }
+
+        float startVignette = _vignette.intensity.value;
+        float startGrain = _filmGrain.intensity.value;
+        float startContrast = _colorAdjustments.contrast.value;
+        
+        float endVignette = activate ? targetVignetteIntensity : _originalVignetteIntensity;
+        float endGrain = activate ? targetFilmGrainIntensity : _originalFilmGrainIntensity;
+        float endContrast = activate ? targetContrast : _originalContrast;
+
+        while (timer < postProcessTransitionDuration)
+        {
+            timer += Time.deltaTime;
+            float progress = Mathf.Clamp01(timer / postProcessTransitionDuration);
+
+            // Directly set the .value of the parameter
+            _vignette.intensity.value = Mathf.Lerp(startVignette, endVignette, progress);
+            _filmGrain.intensity.value = Mathf.Lerp(startGrain, endGrain, progress);
+            _colorAdjustments.contrast.value = Mathf.Lerp(startContrast, endContrast, progress);
+
+            yield return null;
+        }
+
+        // Ensure the final values are set exactly
+        _vignette.intensity.value = endVignette;
+        _filmGrain.intensity.value = endGrain;
+        _colorAdjustments.contrast.value = endContrast;
+
+        // If deactivating, you might want to set the effects back to inactive
+        // if they were originally inactive. For simplicity, we'll leave them active
+        // but at their original values. Or you could cache the active state too.
+        if (!activate)
+        {
+             // Optional: If you want to disable them fully
+             // _vignette.active = false; // (etc.)
+        }
     }
     
     

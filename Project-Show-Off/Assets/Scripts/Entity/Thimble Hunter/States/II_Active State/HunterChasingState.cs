@@ -36,6 +36,11 @@ public class HunterChasingState : State
         }
 
         timeSinceLostSight = 0f; // Reset the grace period timer
+
+        if (_hunterAI.SoundController != null)
+        {
+            _hunterAI.SoundController.PlayFocusGrunt();
+        }
     }
 
     public override void Handle()
