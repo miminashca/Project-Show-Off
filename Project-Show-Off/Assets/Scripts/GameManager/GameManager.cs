@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
     {
         IsGamePaused = false; // reset pause state when a new scene is loaded
 
-        if (scene.name == "LanaStartScene" || scene.name == "StartScene")
+        if (scene.name == "LanaStartScene" || scene.name == "StartScreen")
         {
             Time.timeScale = 1f;
             Cursor.lockState = CursorLockMode.None;
