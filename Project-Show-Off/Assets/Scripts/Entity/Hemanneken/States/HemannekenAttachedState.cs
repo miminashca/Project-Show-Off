@@ -24,7 +24,7 @@ public class HemannekenAttachedState : State
         }
         HSM.PerformAttachmentToPlayer();
         HemannekenEventBus.AttachHemanneken();
-        HSM.Visuals.PlayReplyHeySound();
+        HSM.SoundController.StartCloseHeyLoop(); // NEW FMOD CHANGE
         //HSM.Visuals.EnableVignette();
         HSM.PlayerHealth.IncrementAttachedHemannekens();
     }
@@ -52,6 +52,7 @@ public class HemannekenAttachedState : State
         HemannekenEventBus.DetachHemanneken();
         //HSM.Visuals.DisableVignette();
         HSM.PlayerHealth.DecrementAttachedHemannekens();
+        HSM.SoundController.StopCloseHeyLoop(); // NEW FMOD CHANGE
     }
     
     private bool CanBeStunnedByLantern()

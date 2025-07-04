@@ -18,7 +18,7 @@ public class CreepingState : State
         SM.FeedbackController.StopAllEffects();
 
         _gazeBuildupTimer = 0f;
-        
+
         // Req 3.1.1: Trigger player feedbackx
         SM.FeedbackController.StartCreepingEffects();
 
@@ -26,6 +26,8 @@ public class CreepingState : State
         // This sound should be attached to the White Lady's GameObject in the Unity Editor
         // and configured for 3D spatialization.
         // FMODUnity.RuntimeManager.PlayOneShot(SM.Config.creepingAudioEvent, SM.transform.position);
+
+        SM.WLSoundController.PlayLullaby(); // NEW FMOD CHANGE
     }
 
     public override void Handle()
@@ -38,7 +40,7 @@ public class CreepingState : State
             _gazeBuildupTimer = 0f;
             targetCurrentlyVisible = SM.GazeSystem.IsTargetVisible;
         }
-        
+
         if (targetCurrentlyVisible)
         {
             if (_gazeBuildupTimer >= SM.Config.timeToTriggerSeen)
