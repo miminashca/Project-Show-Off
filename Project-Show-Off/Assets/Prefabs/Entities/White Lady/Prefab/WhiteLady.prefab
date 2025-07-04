@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9046757089717243441}
   - component: {fileID: 5314066804072647376}
   - component: {fileID: 8118424371575357841}
+  - component: {fileID: 8926317459167233282}
   m_Layer: 22
   m_Name: WhiteLady
   m_TagString: Untagged
@@ -74,7 +75,34 @@ MonoBehaviour:
   AiRenderer: {fileID: 0}
   AiCollider: {fileID: 0}
   PlayerTransform: {fileID: 0}
+  WLSoundController: {fileID: 0}
   PullTargetTransform: {fileID: 5527533480142667037}
+--- !u!114 &8926317459167233282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516915659096450392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d231f549fe0b3546bb36353a4820fa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  WLKillNoise:
+    Guid:
+      Data1: -1383347410
+      Data2: 1323745409
+      Data3: 1188417704
+      Data4: -1273306759
+    Path: event:/Enemies/White Lady/White Lady Noise
+  WLLullaby:
+    Guid:
+      Data1: -15917291
+      Data2: 1310361960
+      Data3: -1625924939
+      Data4: 692274325
+    Path: event:/Enemies/White Lady/Creepy WL 1
 --- !u!1 &2207306217546624046
 GameObject:
   m_ObjectHideFlags: 0
