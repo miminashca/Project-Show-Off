@@ -49940,7 +49940,7 @@ Transform:
   m_GameObject: {fileID: 1101196818}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -125.507, y: 9.944, z: 10.955}
+  m_LocalPosition: {x: 60.22, y: 11.3, z: -114.42}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -80704,15 +80704,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -125.507
+      value: 60.22
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.944
+      value: 11.3
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 10.955
+      value: -114.42
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w
@@ -89796,6 +89796,20 @@ MonoBehaviour:
   requiredClueCount: 5
   hintMessageUI: {fileID: 1154313866}
   hintDisplayTime: 4
+  branchSound:
+    Guid:
+      Data1: 318942188
+      Data2: 1141388607
+      Data3: -1436885323
+      Data4: -1157088851
+    Path: event:/End Cutscene/Branches Cutscene
+  kidSound:
+    Guid:
+      Data1: -742469458
+      Data2: 1205810629
+      Data3: 597469360
+      Data4: -241908655
+    Path: event:/End Cutscene/Kid Cutscene
 --- !u!114 &2097678046
 MonoBehaviour:
   m_ObjectHideFlags: 0

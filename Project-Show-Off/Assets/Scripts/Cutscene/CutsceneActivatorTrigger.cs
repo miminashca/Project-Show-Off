@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using System.Collections;
 using Unity.Cinemachine;
+using FMODUnity;
 
 public class CutsceneActivatorTrigger : MonoBehaviour
 {
@@ -22,6 +23,11 @@ public class CutsceneActivatorTrigger : MonoBehaviour
     [SerializeField] private GameObject hintMessageUI;
     [Tooltip("How long the hint message should stay on screen.")]
     [SerializeField] private float hintDisplayTime = 4f;
+
+    // NEW FMOD CHANGE
+    [SerializeField] private EventReference branchSound;
+    [SerializeField] private EventReference kidSound;
+    // END FMOD CHANGE
 
     private Collider triggerCollider;
 
@@ -118,6 +124,18 @@ public class CutsceneActivatorTrigger : MonoBehaviour
     IEnumerator WaitForTimeline()
     {
         yield return new WaitForSeconds(1f);
+
+        if (!kidSound.IsNull)
+        {
+            RuntimeManager.PlayOneShot(kidSound, transform.position);
+        }
+
+        // Play the branch sound at the position of this GameObject.
+        if (!branchSound.IsNull)
+        {
+            RuntimeManager.PlayOneShot(branchSound, transform.position);
+        }
+
         cinemachineBrain.GetComponent<Camera>().enabled = true;
         cutsceneDirector.Play();
     }
