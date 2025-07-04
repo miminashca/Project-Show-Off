@@ -27,7 +27,6 @@ public class AmbientMusicTensionController : MonoBehaviour
     [Tooltip("The distance (in meters) at which a monster causes maximum tension (1.0).")]
     public float monsterMaxTensionRange = 10f;
 
-    // ----- NEW: SHOT TENSION SETTINGS -----
     [Header("Shot Tension Settings")]
     [Tooltip("The value the tension parameter will spike to when the player is shot.")]
     public float shotTensionAmount = 1.0f;
@@ -35,7 +34,13 @@ public class AmbientMusicTensionController : MonoBehaviour
     public float shotLingerDuration = 10.0f;
     [Tooltip("How quickly the tension ramps up after being shot. Should be faster than the normal smoothing speed.")]
     public float shotTensionRampUpSpeed = 10.0f;
-    // ------------------------------------
+
+    // <<< NEW: CHOKING TENSION SETTINGS >>>
+    [Header("Choking Tension Settings")]
+    [Tooltip("The value the tension parameter will be set to while the player is being choked.")]
+    [Range(0f, 1f)]
+    public float chokingTensionAmount = 1.0f;
+    // <<< END NEW >>>
 
     [Header("Tension Control Settings")]
     [Tooltip("How quickly the tension parameter smooths to its target value.")]
@@ -44,9 +49,11 @@ public class AmbientMusicTensionController : MonoBehaviour
     private float currentTensionValue = 0f;
     private GameObject[] spiritTrees; // To cache found trees
 
-    // ----- NEW -----
     private float shotLingerTimer = 0.0f;
-    // ---------------
+
+    // <<< NEW: State for choking >>>
+    private bool isPlayerChoking = false;
+    // <<< END NEW >>>
 
     void Start()
     {
@@ -91,30 +98,26 @@ public class AmbientMusicTensionController : MonoBehaviour
     {
         if (!ambientMusicInstance.isValid() || playerTransform == null) return;
 
-        // ----- NEW: Update shot linger timer -----
         if (shotLingerTimer > 0)
         {
             shotLingerTimer -= Time.deltaTime;
         }
-        // ----------------------------------------
 
         // --- Calculate tension from different sources ---
         float treeTension = CalculateTreeTension();
         float monsterTension = CalculateMonsterTension();
-
-        // ----- NEW: Calculate tension from being shot -----
         float shotTension = CalculateShotTension();
-        // --------------------------------------------------
+        // <<< NEW: Calculate tension from choking >>>
+        float chokingTension = CalculateChokingTension();
+        // <<< END NEW >>>
 
         // --- Determine the final target tension ---
-        // ----- MODIFIED: We use the highest tension value from ALL sources. -----
-        // This ensures the shot tension overrides proximity, but if proximity is higher, it will be used instead.
-        float targetTension = Mathf.Max(treeTension, monsterTension, shotTension);
+        // <<< MODIFIED: We use the highest tension value from ALL sources, now including choking. >>>
+        float targetTension = Mathf.Max(treeTension, monsterTension, shotTension, chokingTension);
 
         SmoothlyUpdateTension(targetTension);
     }
 
-    // ----- NEW: PUBLIC METHOD TO BE CALLED FROM OTHER SCRIPTS -----
     /// <summary>
     /// Call this method from your player's health script when they take damage from a shot.
     /// It will trigger a period of high musical tension that lingers for a set duration.
@@ -124,20 +127,34 @@ public class AmbientMusicTensionController : MonoBehaviour
         Debug.Log("Shot tension triggered!");
         shotLingerTimer = shotLingerDuration;
     }
-    // --------------------------------------------------------------
 
-    // ----- NEW: CALCULATES THE SHOT TENSION VALUE -----
+    // <<< NEW: PUBLIC METHOD TO BE CALLED FROM PlayerHealth.cs >>>
+    /// <summary>
+    /// Sets the musical tension state based on whether the player is being choked by a Hemanneken.
+    /// </summary>
+    /// <param name="isChoking">True if the player is being choked, false otherwise.</param>
+    public void SetChokingState(bool isChoking)
+    {
+        isPlayerChoking = isChoking;
+        Debug.Log($"Music tension choking state set to: {isChoking}");
+    }
+    // <<< END NEW >>>
+
     private float CalculateShotTension()
     {
         if (shotLingerTimer <= 0) return 0f;
 
-        // Calculate tension based on the remaining timer.
-        // This makes the tension fade out over the linger duration.
-        // It's a linear fade-out from shotTensionAmount to 0.
         float tension = (shotLingerTimer / shotLingerDuration) * shotTensionAmount;
         return Mathf.Clamp01(tension);
     }
-    // ----------------------------------------------------
+
+    // <<< NEW: CALCULATES THE CHOKING TENSION VALUE >>>
+    private float CalculateChokingTension()
+    {
+        // If the player is being choked, return the configured tension amount. Otherwise, return 0.
+        return isPlayerChoking ? chokingTensionAmount : 0f;
+    }
+    // <<< END NEW >>>
 
     private float CalculateTreeTension()
     {
@@ -188,13 +205,11 @@ public class AmbientMusicTensionController : MonoBehaviour
         return Mathf.Clamp01(tension);
     }
 
-    // ----- MODIFIED: To allow for a faster ramp-up after being shot -----
     void SmoothlyUpdateTension(float targetTension)
     {
         // Determine which smoothing speed to use
         float currentSmoothingSpeed = tensionSmoothingSpeed;
 
-        // If the shot linger is active AND we are trying to increase the tension, use the faster ramp-up speed.
         if (shotLingerTimer > 0 && targetTension > currentTensionValue)
         {
             currentSmoothingSpeed = shotTensionRampUpSpeed;
@@ -207,7 +222,6 @@ public class AmbientMusicTensionController : MonoBehaviour
             ambientMusicInstance.setParameterByName(TENSION_PARAMETER_NAME, currentTensionValue);
         }
     }
-    // ------------------------------------------------------------------------
 
     void OnDestroy()
     {
@@ -225,10 +239,15 @@ public class AmbientMusicTensionController : MonoBehaviour
         {
             monsterMaxDetectionRange = monsterMaxTensionRange + 1.0f;
         }
-        // ----- NEW: Validation for shot linger settings -----
+
         if (shotLingerDuration < 0) shotLingerDuration = 0;
         if (shotTensionAmount < 0) shotTensionAmount = 0;
         if (shotTensionRampUpSpeed < 0) shotTensionRampUpSpeed = 0;
+
+        // <<< NEW: Validation for choking tension >>>
+        if (chokingTensionAmount < 0f) chokingTensionAmount = 0f;
+        if (chokingTensionAmount > 1f) chokingTensionAmount = 1f;
+        // <<< END NEW >>>
     }
 
     void OnDrawGizmosSelected()

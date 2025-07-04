@@ -10230,6 +10230,7 @@ MonoBehaviour:
   shotTensionAmount: 1
   shotLingerDuration: 15
   shotTensionRampUpSpeed: 10
+  chokingTensionAmount: 0.8
   tensionSmoothingSpeed: 2
 --- !u!114 &257389984
 MonoBehaviour:
@@ -65801,7 +65802,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1487973822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -80259,6 +80260,10 @@ PrefabInstance:
       propertyPath: chokingLoopEvent.Path
       value: event:/Player/Hurt/Choking
       objectReference: {fileID: 0}
+    - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: musicTensionController
+      value: 
+      objectReference: {fileID: 257389983}
     - target: {fileID: 1818643132028363201, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: playerHurtArghSound.Path
       value: event:/Player/Hurt/Player Hurt
