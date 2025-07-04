@@ -11,6 +11,11 @@ public class LadyStateMachine : StateMachine
     [HideInInspector] public Renderer AiRenderer;
     [HideInInspector] public Collider AiCollider;
     [HideInInspector] public Transform PlayerTransform;
+
+    // NEW FMOD CHANGE
+    public WLSoundController WLSoundController;
+    // END FMOD CHANGE
+
     public Transform PullTargetTransform;
 
     public event Action OnLadyDie;
@@ -35,6 +40,10 @@ public class LadyStateMachine : StateMachine
         CreepingState = new CreepingState(this);
         SeenState = new SeenState(this);
         DissipatedState = new DissipatedState(this);
+
+        // NEW FMOD CHANGE
+        WLSoundController = GetComponent<WLSoundController>();
+        // END FMOD CHANGE
     }
     
     public void Initialize(LadyAIConfig config, Transform playerTransform)

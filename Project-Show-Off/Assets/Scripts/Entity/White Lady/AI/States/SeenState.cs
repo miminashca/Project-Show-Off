@@ -20,6 +20,8 @@ public class SeenState : State
         // Req 3.2.1: Stop creeping audio cues (handled by starting new effects)
         // and trigger SEEN effects.
         SM.FeedbackController.StartSeenEffects(SM.PullTargetTransform);
+
+        SM.WLSoundController.StartKillNoise();
     }
 
     public override void Handle()
@@ -106,5 +108,7 @@ public class SeenState : State
         // Gaze timer automatically "pauses" because Handle() is no longer called.
         // When re-entering, it will pick up where it left off.
         // The DISSIPATED state is responsible for stopping all feedback effects.
+
+        SM.WLSoundController.StopKillNoise();
     }
 }
