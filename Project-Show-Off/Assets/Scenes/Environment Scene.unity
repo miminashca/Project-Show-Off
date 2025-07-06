@@ -28144,13 +28144,37 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: ShootingRange
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
       propertyPath: PlayerTransform
       value: 
       objectReference: {fileID: 1075171911}
     - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: VisionConeRange
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
       propertyPath: MuzzleFlashPrefab
       value: 
       objectReference: {fileID: 3483494495089876350, guid: dfbd747499d598b4da478375140c3d8e, type: 3}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: MovementSpeedChasing
+      value: 4.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: MovementSpeedRoaming
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: MovementSpeedInvestigating
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
+      propertyPath: GizmoToggles.ShowSuperpositionRange
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7755889249375797271, guid: 7e34d768ce628db4db4cde54f010d85a, type: 3}
       propertyPath: GizmoToggles.ShowVolumetricLoSLines
       value: 0
@@ -48797,7 +48821,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1101196819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64484,7 +64508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1487973822
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64501,7 +64525,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: 6acda1dc34c7f1f44bd121d055061ac3, type: 2}
+  sharedProfile: {fileID: 11400000, guid: fbc649fc9dcf19444871f4d9f1d30c3c, type: 2}
 --- !u!4 &1487973823
 Transform:
   m_ObjectHideFlags: 0
@@ -78733,6 +78757,14 @@ PrefabInstance:
       value: -86.76
       objectReference: {fileID: 0}
     - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: maxStamina
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
+      propertyPath: minStaminaToSprint
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4542596350648536079, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: baseFootstepInterval
       value: 0.7
       objectReference: {fileID: 0}
@@ -78826,15 +78858,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 56.22
+      value: 183.44
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 11.35
+      value: 11.7
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -113.48
+      value: -97.32
       objectReference: {fileID: 0}
     - target: {fileID: 7607506250657158723, guid: 283fb1960314846ef9346666a94e4541, type: 3}
       propertyPath: m_LocalRotation.w
