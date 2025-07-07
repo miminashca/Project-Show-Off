@@ -5,16 +5,11 @@ using UnityEngine.Rendering.HighDefinition;
 
 public class FeedbackController : MonoBehaviour
 {
-    // Note: FMOD logic is templated. Your sound designer will need the FMOD for Unity integration.
-    // using FMOD.Studio; // Add this when FMOD is integrated
-
     [Header("Component References")]
     [SerializeField] private Camera playerCamera;
     [Tooltip("Reference to the player's CameraMovement script.")]
     [SerializeField] private CameraMovement cameraMovement;
     [SerializeField] private PlayerHealth playerHealth;
-    // [SerializeField] private LanternController lanternController; // Assign your lantern script
-    [SerializeField] private GameObject breathVFXPrefab;
     
     [Header("Post-Processing")]
     [Tooltip("The Post Process Volume to control for fear effects.")]
@@ -32,13 +27,17 @@ public class FeedbackController : MonoBehaviour
     [Tooltip("Target contrast for Color Adjustments when seen.")]
     [Range(-100f, 100f)]
     [SerializeField] private float targetContrast = -25f;
+    [Tooltip("Target saturation for Color Adjustments when seen.")]
+    [Range(-100f, 100f)]
+    [SerializeField] private float targetSaturation = -50f;
+    [Tooltip("Target intensity for the Chromatic Aberration effect when seen.")]
+    [Range(0f, 1f)]
+    [SerializeField] private float targetChromaticAberrationIntensity = 0.6f;
 
     private LadyAIConfig _config;
     private Coroutine _fovRestoreCoroutine;
     private Coroutine _postProcessingCoroutine;
     private float _originalFOV;
-    private GameObject _currentBreathVFX;
-    // private EventInstance _breathAudioInstance; // FMOD instance
     
     private bool _isFovEffectActive = false;
     private Transform _fovTarget;
@@ -50,12 +49,17 @@ public class FeedbackController : MonoBehaviour
     private Vignette _vignette;
     private FilmGrain _filmGrain;
     private ColorAdjustments _colorAdjustments;
+    private LensDistortion _lensDistortion;
+    private ChromaticAberration _chromaticAberration;
 
     // --- Original Post-Processing Values ---
     private float _originalVignetteIntensity;
     private float _originalFilmGrainIntensity;
     private float _originalContrast;
-    
+    private float _originalSaturation;
+    private float _originalLensDistortionIntensity;
+    private float _originalChromaticAberrationIntensity;
+
     private void Start()
     {
         if (playerCamera == null) playerCamera = Camera.main;
@@ -76,21 +80,6 @@ public class FeedbackController : MonoBehaviour
     public void Initialize(LadyAIConfig config)
     {
         _config = config;
-    }
-
-    // --- EFFECT TRIGGERS ---
-
-    public void StartCreepingEffects()
-    {
-        if (_config == null) return;
-        Debug.Log("Feedback: Starting Creeping effects.");
-
-        // Player Breath SFX & VFX
-        // PlayFMODEvent(ref _breathAudioInstance, _config.playerBreathAudioEvent);
-        if (breathVFXPrefab != null && _currentBreathVFX == null)
-        {
-            _currentBreathVFX = Instantiate(breathVFXPrefab, playerCamera.transform.position + playerCamera.transform.forward, playerCamera.transform.rotation, playerCamera.transform);
-        }
     }
     
     // --- Control the camera pull ---
@@ -130,7 +119,6 @@ public class FeedbackController : MonoBehaviour
         SetGazePullActive(false);
 
         _isFovEffectActive = false;
-        if (_currentBreathVFX != null) Destroy(_currentBreathVFX);
 
         if (_fovRestoreCoroutine != null) StopCoroutine(_fovRestoreCoroutine);
         _fovRestoreCoroutine = StartCoroutine(RestoreFovCoroutine());
@@ -144,15 +132,12 @@ public class FeedbackController : MonoBehaviour
     {
         if (_config == null) return;
         Debug.Log($"Feedback: Inflicting {_config.gazeDamageAmount} damage.");
-        // PlayFMODEvent(_config.gazeDamageAudioEvent);
-        // playerHealth?.TakeDamage(_config.gazeDamageAmount);
     }
 
     public void KillPlayer()
     {
         Debug.Log("Feedback: Player has been killed by the gaze.");
         playerHealth?.Die();
-        // You would trigger your game over sequence here.
     }
     
     // --- FOV Effect Logic ---
@@ -250,11 +235,19 @@ public class FeedbackController : MonoBehaviour
         ladyPostProcessingVolume.profile.TryGet(out _vignette);
         ladyPostProcessingVolume.profile.TryGet(out _filmGrain);
         ladyPostProcessingVolume.profile.TryGet(out _colorAdjustments);
+        ladyPostProcessingVolume.profile.TryGet(out _lensDistortion);
+        ladyPostProcessingVolume.profile.TryGet(out _chromaticAberration);
 
         // Store the default values so we can return to them
         if (_vignette != null) _originalVignetteIntensity = _vignette.intensity.value;
         if (_filmGrain != null) _originalFilmGrainIntensity = _filmGrain.intensity.value;
-        if (_colorAdjustments != null) _originalContrast = _colorAdjustments.contrast.value;
+        if (_colorAdjustments != null)
+        {
+            _originalContrast = _colorAdjustments.contrast.value;
+            _originalSaturation = _colorAdjustments.saturation.value;
+        }
+        if (_lensDistortion != null) _originalLensDistortionIntensity = _lensDistortion.intensity.value;
+        if (_chromaticAberration != null) _originalChromaticAberrationIntensity = _chromaticAberration.intensity.value;
     }
 
     private IEnumerator TransitionPostProcessing(bool activate)
@@ -276,15 +269,22 @@ public class FeedbackController : MonoBehaviour
             _vignette.active = true;
             _filmGrain.active = true;
             _colorAdjustments.active = true;
+            _lensDistortion.active = true;
+            _chromaticAberration.active = true;
         }
 
         float startVignette = _vignette.intensity.value;
         float startGrain = _filmGrain.intensity.value;
         float startContrast = _colorAdjustments.contrast.value;
-        
+        float startSaturation = _colorAdjustments.saturation.value;
+        float startLensDistortion = _lensDistortion.intensity.value;
+        float startChromaticAberration = _chromaticAberration.intensity.value;
+
         float endVignette = activate ? targetVignetteIntensity : _originalVignetteIntensity;
         float endGrain = activate ? targetFilmGrainIntensity : _originalFilmGrainIntensity;
         float endContrast = activate ? targetContrast : _originalContrast;
+        float endSaturation = activate ? targetSaturation : _originalSaturation;
+        float endChromaticAberration = activate ? targetChromaticAberrationIntensity : _originalChromaticAberrationIntensity;
 
         while (timer < postProcessTransitionDuration)
         {
@@ -295,6 +295,8 @@ public class FeedbackController : MonoBehaviour
             _vignette.intensity.value = Mathf.Lerp(startVignette, endVignette, progress);
             _filmGrain.intensity.value = Mathf.Lerp(startGrain, endGrain, progress);
             _colorAdjustments.contrast.value = Mathf.Lerp(startContrast, endContrast, progress);
+            _colorAdjustments.saturation.value = Mathf.Lerp(startSaturation, endSaturation, progress);
+            _chromaticAberration.intensity.value = Mathf.Lerp(startChromaticAberration, endChromaticAberration, progress);
 
             yield return null;
         }
@@ -303,37 +305,15 @@ public class FeedbackController : MonoBehaviour
         _vignette.intensity.value = endVignette;
         _filmGrain.intensity.value = endGrain;
         _colorAdjustments.contrast.value = endContrast;
+        _colorAdjustments.saturation.value = endSaturation;
+        _chromaticAberration.intensity.value = endChromaticAberration;
 
-        // If deactivating, you might want to set the effects back to inactive
-        // if they were originally inactive. For simplicity, we'll leave them active
-        // but at their original values. Or you could cache the active state too.
+        // If deactivating, you can optionally set the effects back to inactive
         if (!activate)
         {
-             // Optional: If you want to disable them fully
-             // _vignette.active = false; // (etc.)
+            // This is optional. Leaving them active at 0 intensity is usually fine.
+            // _lensDistortion.active = false;
+            // _chromaticAberration.active = false;
         }
     }
-    
-    
-    // --- FMOD TEMPLATES ---
-    /*
-    private void PlayFMODEvent(ref EventInstance instance, string path)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        instance = FMODUnity.RuntimeManager.CreateInstance(path);
-        instance.start();
-    }
-    
-    private void PlayFMODEvent(string path)
-    {
-        if (string.IsNullOrEmpty(path)) return;
-        FMODUnity.RuntimeManager.PlayOneShot(path, transform.position);
-    }
-
-    private void StopFMODEvent(ref EventInstance instance)
-    {
-        instance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-        instance.release();
-    }
-    */
 }

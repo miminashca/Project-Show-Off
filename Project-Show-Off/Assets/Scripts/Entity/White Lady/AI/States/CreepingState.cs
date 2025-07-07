@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CreepingState : State
 {
-    private LadyStateMachine SM;
+    private new LadyStateMachine SM;
     private float _gazeBuildupTimer;
 
     private bool targetCurrentlyVisible = false;
@@ -18,14 +18,6 @@ public class CreepingState : State
         SM.FeedbackController.StopAllEffects();
 
         _gazeBuildupTimer = 0f;
-
-        // Req 3.1.1: Trigger player feedbackx
-        SM.FeedbackController.StartCreepingEffects();
-
-        // Req 3.1.1: Play spatialized weeping/humming (FMOD template)
-        // This sound should be attached to the White Lady's GameObject in the Unity Editor
-        // and configured for 3D spatialization.
-        // FMODUnity.RuntimeManager.PlayOneShot(SM.Config.creepingAudioEvent, SM.transform.position);
 
         SM.WLSoundController.PlayLullaby(); // NEW FMOD CHANGE
     }

@@ -10,7 +10,7 @@ public class InspectionManager : MonoBehaviour
 
     [Header("Inspection Settings")]
     [SerializeField] private Transform inspectionPoint;
-    [SerializeField] private float rotationSpeed = 100f;
+    [SerializeField] private float rotationSpeed = 0.2f;
     [SerializeField] private float inspectionObjectBaseScale = 1f;
     [SerializeField] private float objectLerpSpeed = 10f;
 
@@ -92,7 +92,7 @@ public class InspectionManager : MonoBehaviour
         // Player Action Map
         playerInputActions.Inspection.RotateObject.started += OnRotateObjectStarted;
         playerInputActions.Inspection.RotateObject.canceled += OnRotateObjectCanceled;
-        playerInputActions.Inspection.ConfirmInspection.performed += OnInteractPerformed;
+        playerInputActions.Inspection.ConfirmInspection.performed += OnConfirmInspection;
         playerInputActions.Inspection.CancelInspection.performed += OnCancelPerformed;
     }
 
@@ -102,7 +102,7 @@ public class InspectionManager : MonoBehaviour
         {
             playerInputActions.Inspection.RotateObject.started -= OnRotateObjectStarted;
             playerInputActions.Inspection.RotateObject.canceled -= OnRotateObjectCanceled;
-            playerInputActions.Inspection.ConfirmInspection.performed -= OnInteractPerformed;
+            playerInputActions.Inspection.ConfirmInspection.performed -= OnConfirmInspection;
             playerInputActions.Inspection.CancelInspection.performed -= OnCancelPerformed;
 
             playerInputActions.Inspection.Disable();
@@ -150,29 +150,41 @@ public class InspectionManager : MonoBehaviour
         }
     }
 
-    private void OnInteractPerformed(InputAction.CallbackContext context)
+    private void OnConfirmInspection(InputAction.CallbackContext context)
     {
         if (isInspecting)
         {
-            if(inspectionLight) inspectionLight.enabled = false;
+            // Re-enable lantern if it was active before
             if (lantern && lanternInitiallyActive)
             {
                 lantern.SetActive(true);
             }
-            CollectCurrentClue();
-        } 
+            if (inspectionLight) inspectionLight.enabled = false;
+
+            // --- NEW LOGIC ---
+            if (currentClueData.objectType == ClueObject.InteractableType.Clue)
+            {
+                // If it's a clue, collect it.
+                CollectCurrentClue();
+            }
+            else if (currentClueData.objectType == ClueObject.InteractableType.Note)
+            {
+                // If it's a note, just exit the inspection.
+                CancelInspection();
+            }
+        }
     }
 
     private void OnCancelPerformed(InputAction.CallbackContext context)
     {
-        if(inspectionLight) inspectionLight.enabled = false;
-        if (lantern && lanternInitiallyActive)
-        {
-            lantern.SetActive(true);
-        }
-
         if (isInspecting)
         {
+            if (lantern && lanternInitiallyActive)
+            {
+                lantern.SetActive(true);
+            }
+            if (inspectionLight) inspectionLight.enabled = false;
+
             CancelInspection();
         }
     }
@@ -181,7 +193,12 @@ public class InspectionManager : MonoBehaviour
     {
         if (isInspecting || clueToInspect == null) return;
 
-        if(inspectionLight) inspectionLight.enabled = true;
+        if (clueToInspect.objectType == ClueObject.InteractableType.Note)
+        {
+            clueToInspect.SetProximityLightActive(false);
+        }
+
+        if (inspectionLight) inspectionLight.enabled = true;
         if (lantern)
         {
             lanternInitiallyActive = lantern.activeInHierarchy;
@@ -307,6 +324,11 @@ public class InspectionManager : MonoBehaviour
     public void CancelInspection()
     {
         if (!isInspecting) return;
+
+        if (currentClueData != null && currentClueData.objectType == ClueObject.InteractableType.Note)
+        {
+            currentClueData.SetProximityLightActive(true);
+        }
 
         StopAndClearActivateInspectionCoroutine();
 

@@ -11,7 +11,9 @@ GameObject:
   - component: {fileID: 187001251896253118}
   - component: {fileID: 5044220836757248898}
   - component: {fileID: 7473466991999955264}
-  m_Layer: 0
+  - component: {fileID: 6624363733617316553}
+  - component: {fileID: 2908409613526264878}
+  m_Layer: 15
   m_Name: White_Ladies_Note
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -26,9 +28,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5713873639381328950}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 0.01, y: 0.010000001, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -86,3 +88,45 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &6624363733617316553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5713873639381328950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69d9b3c16635e5244a7c61f3155c705a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectType: 1
+  clueID: lady_note
+  clueName: Mysterious Object
+  clueDescription: 
+  inspectionRotationOffset: {x: 0, y: 0, z: 0}
+  inspectionScaleFactor: 1
+  highlightColor: {r: 1, g: 1, b: 0.5, a: 1}
+  fireflies: {fileID: 0}
+  proximityLight: {fileID: 0}
+--- !u!65 &2908409613526264878
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5713873639381328950}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.000023364699, y: 47.250008, z: 66.82503}
+  m_Center: {x: 0.000061035156, y: 0.000007629395, z: -0.0000038146973}

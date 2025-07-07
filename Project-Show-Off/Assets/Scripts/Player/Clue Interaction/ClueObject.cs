@@ -4,22 +4,28 @@ using UnityEngine.VFX;
 
 public class ClueObject : MonoBehaviour
 {
+    public enum InteractableType { Clue, Note }
+
     [Header("Clue Properties")]
-    public string clueID; // Unique identifier for this clue
-    public string clueName = "Mysterious Object"; // Display name
+    public InteractableType objectType = InteractableType.Clue; // Default to Clue
+    public string clueID;
+    public string clueName = "Mysterious Object";
     [TextArea]
     public string clueDescription = "An interesting object worth inspecting.";
 
+    [Header("Inspection Settings")]
     public Vector3 inspectionRotationOffset = Vector3.zero;
     public float inspectionScaleFactor = 1f;
 
-    private bool isInteractable = true;
+    [Header("Effects")]
+    [SerializeField] private Color highlightColor = new Color(1f, 1f, 0.5f, 1f);
+    [SerializeField] private FirefliesVfxController fireflies;
+    [Tooltip("Assign the ProximityLight component here. Only used if Object Type is 'Note'.")]
+    [SerializeField] private ProximityLight proximityLight;
 
+    private bool isInteractable = true;
     private Renderer objectRenderer;
     private Color originalColor;
-    [SerializeField] private Color highlightColor = new Color(1f, 1f, 0.5f, 1f); // A light yellow
-
-    [SerializeField] private FirefliesVfxController fireflies;
 
     void Awake()
     {
@@ -51,6 +57,13 @@ public class ClueObject : MonoBehaviour
     }
     void Start()
     {
+        if (objectType == InteractableType.Clue && proximityLight != null)
+        {
+            // Clues should not have a proximity light. Disable it.
+            proximityLight.SetEnabled(false);
+            proximityLight.enabled = false;
+        }
+
         if (ClueEventManager.Instance != null)
         {
             ClueEventManager.Instance.OnGameDataLoaded += CheckStatusOnLoad;
@@ -60,12 +73,17 @@ public class ClueObject : MonoBehaviour
             Debug.LogError($"ClueObject '{clueID}' cannot subscribe to load event because ClueEventManager.Instance is null.");
         }
 
-        // Check if this clue has already been collected OR submitted in the loaded save data.
         if (ClueEventManager.Instance.IsClueCollected(clueID) || ClueEventManager.Instance.IsClueSubmitted(clueID))
         {
-            Debug.Log($"ClueObject '{clueID}' has already been processed. Destroying this instance.");
-            // If it's already in the player's inventory or has been submitted, it should not be in the world.
             Destroy(gameObject);
+        }
+    }
+
+    public void SetProximityLightActive(bool state)
+    {
+        if (proximityLight != null)
+        {
+            proximityLight.SetEnabled(state);
         }
     }
 
@@ -79,7 +97,7 @@ public class ClueObject : MonoBehaviour
         return isInteractable;
     }
 
-    public void Highlight(bool shouldHighlight) // Renamed parameter for clarity
+    public void Highlight(bool shouldHighlight)
     {
         if (objectRenderer != null && objectRenderer.material != null) // Ensure renderer and material are still valid
         {
