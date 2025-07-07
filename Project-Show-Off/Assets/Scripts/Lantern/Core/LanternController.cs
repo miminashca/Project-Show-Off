@@ -1,10 +1,11 @@
-using UnityEngine;
+using FMOD.Studio;
+using FMODUnity;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.VFX;
-using FMODUnity;
-using FMOD.Studio;
-using System;
 
 public class LanternController : MonoBehaviour
 {
@@ -14,8 +15,7 @@ public class LanternController : MonoBehaviour
 
     private GameObject currentLanternInstance;
     private PhysicsLanternSway currentPhysicsSwayScript;
-    private Light lanternLight;
-    private LightFlicker lightFlicker;
+    private Light[] lanternLights;
 
     [Header("State")]
     public bool isEquipped = false;
@@ -50,9 +50,7 @@ public class LanternController : MonoBehaviour
     [Tooltip("The MAXIMUM intensity multiplier when a Nixie is chasing.")]
     public float nixieFlickerMaxIntensity = 1.6f;
 
-    private float _originalFlickerSpeed;
-    private float _originalMinIntensity;
-    private float _originalMaxIntensity;
+    private Dictionary<LightFlicker, (float speed, float min, float max)> _originalFlickerValues = new Dictionary<LightFlicker, (float, float, float)>();
     private bool _isNixieFlickerActive = false;
 
     [Header("Raise Animation")]
@@ -64,15 +62,15 @@ public class LanternController : MonoBehaviour
     [SerializeField]
     private EventReference lanternPutAwaySoundEvent;
     [SerializeField]
-    private EventReference lanternGasBurnLoopEvent; // Event for the looping gas burn sound
+    private EventReference lanternGasBurnLoopEvent;
 
-    private EventInstance gasBurnSoundInstance; // Instance for the looping sound
+    private EventInstance gasBurnSoundInstance;
 
     [Header("VFX Settings")]
     [Tooltip("Name of the exposed Vector2 property in the VFX Graph for flame size X (min) and Y (max).")]
     public string flameSizeRangePropertyName = "Flame_SizeRange";
     public Vector2 defaultFlameSize = new Vector2(0.1f, 0.2f);
-    public Vector2 raisedFlameSize = new Vector2(0.2f, 0.4f); // Make sure this is noticeably larger
+    public Vector2 raisedFlameSize = new Vector2(0.2f, 0.4f);
 
     private GameObject currentLanternVFXHolder;
     private VisualEffect lanternVFXGraph;
@@ -112,7 +110,7 @@ public class LanternController : MonoBehaviour
             return;
         }
         currentFuel = maxFuel;
-        OnFuelChanged?.Invoke(currentFuel, maxFuel); // <<< NEW: Notify UI of initial fuel state.
+        OnFuelChanged?.Invoke(currentFuel, maxFuel);
 
         ClueEventManager.Instance.OnFuelPickedUp += RefillFuel;
     }
@@ -138,8 +136,7 @@ public class LanternController : MonoBehaviour
         }
         else if (outOfFuel && isEquipped)
         {
-            if (lanternLight != null && lanternLight.enabled) SetLightState(false);
-            // VFX is handled by OutOfFuel() or ToggleEquip()
+            if (lanternLights != null && lanternLights.Length > 0 && IsLightOn) SetLightState(false);
         }
     }
 
@@ -175,14 +172,13 @@ public class LanternController : MonoBehaviour
             ToggleEquip();
         }
 
-        // --- NEW: Unsubscribe from Nixie events to prevent memory leaks ---
         NixieEventBus.OnNixieChaseStart -= HandleNixieChaseStart;
         NixieEventBus.OnNixieChaseEnd -= HandleNixieChaseEnd;
     }
 
     private void OnDestroy()
     {
-        StopGasBurnLoopSFX(); // Stop sound if object is destroyed
+        StopGasBurnLoopSFX();
     }
 
     void HandleInput()
@@ -206,13 +202,12 @@ public class LanternController : MonoBehaviour
                 StopRaising();
             }
         }
-        else if (isRaised && playerInputActions.Player.RaiseLantern.WasReleasedThisFrame()) // Handle release even if out of fuel, to lower it visually
+        else if (isRaised && playerInputActions.Player.RaiseLantern.WasReleasedThisFrame())
         {
             StopRaising();
         }
     }
 
-    // ToggleEquip, StartRaising, StopRaising remain unchanged...
     void ToggleEquip()
     {
         isEquipped = !isEquipped;
@@ -228,48 +223,33 @@ public class LanternController : MonoBehaviour
                 if (parts == null)
                 {
                     Debug.LogError("LanternController: Lantern prefab is missing the LanternParts script!", currentLanternInstance);
-                    isEquipped = false; // Revert equip status
+                    isEquipped = false;
                     if (currentLanternInstance != null) Destroy(currentLanternInstance);
                     currentLanternInstance = null;
                     return;
                 }
-
                 currentPhysicsSwayScript = parts.swayScript;
 
-                // VFX Setup - Find VFX components within the newly instantiated lantern
                 currentLanternVFXHolder = parts.lanternVFXHolder;
                 if (currentLanternVFXHolder != null)
                 {
                     lanternVFXGraph = currentLanternVFXHolder.GetComponentInChildren<VisualEffect>();
-                    if (lanternVFXGraph == null)
-                    {
-                        Debug.LogError($"LanternController: Could not find VisualEffect component.");
-                    }
                 }
-                else
-                {
-                    Debug.LogError($"LanternController: Could not find VFX Holder GameObject.");
-                }
-
 
                 if (currentPhysicsSwayScript != null)
                 {
-                    Camera mainCam = Camera.main;
-                    if (mainCam == null) Debug.LogError("LanternController cannot find Player Camera for PhysicsLanternSway!");
-                    if (parts.handleRigidbody == null) Debug.LogError("LanternParts on prefab has no Handle Rigidbody assigned.", parts);
-
-                    currentPhysicsSwayScript.InitializeSway(
-                        this.playerInputActions,
-                        lanternHandAnchor,
-                        parts.swingingLanternBodyRB
-                    );
+                    currentPhysicsSwayScript.InitializeSway(this.playerInputActions, lanternHandAnchor, parts.swingingLanternBodyRB);
                 }
                 else Debug.LogError("No PhysicsLanternSway script found on lantern prefab!");
 
-                if (lanternLight == null) lanternLight = currentLanternInstance.GetComponentInChildren<Light>();
-                if (lightFlicker == null && lanternLight != null) lightFlicker = lanternLight.GetComponent<LightFlicker>();
-
-                if (lanternLight == null) Debug.LogError("LanternController: Could not find a Light component on the lantern prefab or its children!", currentLanternInstance);
+                if (lanternLights == null || lanternLights.Length == 0)
+                {
+                    lanternLights = parts.lanternLights;
+                }
+                if (lanternLights == null || lanternLights.Length == 0)
+                {
+                    Debug.LogError("LanternController: No Lights have been assigned in the LanternParts component on the prefab!", currentLanternInstance);
+                }
             }
 
 
@@ -288,30 +268,20 @@ public class LanternController : MonoBehaviour
 
             if (!outOfFuel)
             {
-                if (lanternLight != null) SetLightState(true, defaultIntensity, defaultRange);
-                // Enable and configure VFX
-                if (currentLanternVFXHolder != null)
-                {
-                    currentLanternVFXHolder.SetActive(true);
-                }
-                else
-                {
-                    Debug.Log("holder is null");
-                }
+                if (lanternLights != null && lanternLights.Length > 0) SetLightState(true, defaultIntensity, defaultRange);
+                if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(true);
                 if (lanternVFXGraph != null)
                 {
                     lanternVFXGraph.SetVector2(flameSizeRangePropertyName, defaultFlameSize);
-                    lanternVFXGraph.Play(); // Explicitly play the VFX
+                    lanternVFXGraph.Play();
                 }
             }
             else // Equipping while out of fuel
             {
-                if (lanternLight != null) SetLightState(false);
-                // Keep VFX off if out of fuel
+                if (lanternLights != null && lanternLights.Length > 0) SetLightState(false);
                 if (lanternVFXGraph != null) lanternVFXGraph.Stop();
                 if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(false);
             }
-            Debug.Log("Lantern Equipped");
 
             if (lanternPullOutSoundEvent.Guid != System.Guid.Empty)
             {
@@ -335,23 +305,11 @@ public class LanternController : MonoBehaviour
                 playerStatus.IsLanternRaised = false; // Ensure status is updated if not raised but unequipped
             }
 
+            if (lanternLights != null && lanternLights.Length > 0) SetLightState(false);
 
-            if (lanternLight != null) SetLightState(false);
-
-            // Disable VFX before deactivating the lantern instance
-            if (lanternVFXGraph != null)
-            {
-                lanternVFXGraph.Stop();
-            }
-            if (currentLanternVFXHolder != null)
-            {
-                currentLanternVFXHolder.SetActive(false);
-            }
-
-            if (currentLanternInstance != null)
-            {
-                currentLanternInstance.SetActive(false); // Deactivate the lantern object
-            }
+            if (lanternVFXGraph != null) lanternVFXGraph.Stop();
+            if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(false);
+            if (currentLanternInstance != null) currentLanternInstance.SetActive(false);
 
             Debug.Log("Lantern Unequipped");
 
@@ -371,16 +329,13 @@ public class LanternController : MonoBehaviour
 
         isRaised = true;
         if (playerStatus != null) playerStatus.IsLanternRaised = true;
-        SetLightState(true, raisedIntensity, raisedRange);
-        UpdatePlayerStatus();
 
-        // Adjust VFX flame size
-        if (lanternVFXGraph != null && !outOfFuel) // Ensure VFX graph exists and we have fuel
+        SetLightState(true, raisedIntensity, raisedRange);
+
+        if (lanternVFXGraph != null && !outOfFuel)
         {
             lanternVFXGraph.SetVector2(flameSizeRangePropertyName, raisedFlameSize);
         }
-
-        Debug.Log("Lantern Raised");
 
         if (interactionCoroutine != null) StopCoroutine(interactionCoroutine);
         interactionCoroutine = StartCoroutine(HemannekenInteractionCheck());
@@ -389,6 +344,7 @@ public class LanternController : MonoBehaviour
         {
             currentPhysicsSwayScript.targetLocalOffset = raisedLocalPositionOffset;
         }
+        UpdatePlayerStatus();
     }
 
     void StopRaising()
@@ -396,26 +352,18 @@ public class LanternController : MonoBehaviour
         // Only proceed if it was actually raised or if equipped and out of fuel (to reset visual state)
         if (!isRaised && !(isEquipped && outOfFuel)) return;
 
-        bool wasActuallyRaised = isRaised; // Store before changing
         isRaised = false;
-        if (playerStatus != null) playerStatus.IsLanternRaised = false;
 
-        if (lanternLight != null)
+        if (lanternLights != null && lanternLights.Length > 0)
         {
             if (!outOfFuel) SetLightState(true, defaultIntensity, defaultRange);
-            else SetLightState(false); // Ensure light is off if out of fuel
+            else SetLightState(false);
         }
 
-        UpdatePlayerStatus();
-
-        // Adjust VFX flame size back to default
-        if (lanternVFXGraph != null && !outOfFuel) // Ensure VFX graph exists and we have fuel
+        if (lanternVFXGraph != null && !outOfFuel)
         {
             lanternVFXGraph.SetVector2(flameSizeRangePropertyName, defaultFlameSize);
         }
-
-        if (wasActuallyRaised) Debug.Log("Lantern Lowered");
-
 
         if (interactionCoroutine != null)
         {
@@ -427,6 +375,7 @@ public class LanternController : MonoBehaviour
         {
             currentPhysicsSwayScript.targetLocalOffset = Vector3.zero;
         }
+        UpdatePlayerStatus();
     }
 
     void DrainFuel(float deltaTime)
@@ -436,7 +385,7 @@ public class LanternController : MonoBehaviour
         currentFuel -= drain * deltaTime;
         currentFuel = Mathf.Clamp(currentFuel, 0f, maxFuel);
 
-        OnFuelChanged?.Invoke(currentFuel, maxFuel); // <<< NEW: Notify UI of fuel change every frame.
+        OnFuelChanged?.Invoke(currentFuel, maxFuel);
 
         if (currentFuel <= 0) OutOfFuel();
     }
@@ -448,17 +397,12 @@ public class LanternController : MonoBehaviour
             gasBurnSoundInstance = RuntimeManager.CreateInstance(lanternGasBurnLoopEvent);
             if (currentLanternInstance != null)
             {
-                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance); // Updated to use GameObject instead of Transform
+                RuntimeManager.AttachInstanceToGameObject(gasBurnSoundInstance, currentLanternInstance);
                 gasBurnSoundInstance.start();
-            }
-            else
-            {
-                Debug.LogError("FMOD: Tried to start gas burn loop, but currentLanternInstance is null.");
             }
         }
     }
 
-    // Renaming your method from "StartGasBurnLoopSFX" to "StopGasBurnLoopSFX" for clarity, as that's what it does.
     private void StopGasBurnLoopSFX()
     {
         if (gasBurnSoundInstance.isValid())
@@ -470,54 +414,40 @@ public class LanternController : MonoBehaviour
 
     void OutOfFuel()
     {
-        Debug.Log("Lantern Out of Fuel!");
         outOfFuel = true;
-        if (playerStatus != null) playerStatus.IsLanternRaised = false; // Update status immediately
-        if (lanternLight != null) SetLightState(false);
-        UpdatePlayerStatus();
 
-        if (lanternVFXGraph != null)
-        {
-            lanternVFXGraph.Stop();
-        }
-        if (currentLanternVFXHolder != null)
-        {
-            currentLanternVFXHolder.SetActive(false);
-        }
+        if (playerStatus != null) playerStatus.IsLanternRaised = false; // Update status immediately
+
+        if (lanternLights != null && lanternLights.Length > 0) SetLightState(false);
+
+        if (lanternVFXGraph != null) lanternVFXGraph.Stop();
+        if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(false);
 
         StopGasBurnLoopSFX();
 
-        if (isRaised) // If it was raised when fuel ran out
+        if (isRaised)
         {
             StopRaising();
         }
+        UpdatePlayerStatus();
     }
 
     public void RefillFuel()
     {
-        Debug.Log("Refilling Lantern Fuel");
         currentFuel = maxFuel;
         outOfFuel = false;
 
-        OnFuelChanged?.Invoke(currentFuel, maxFuel); // <<< NEW: Notify UI that fuel has been refilled.
+        OnFuelChanged?.Invoke(currentFuel, maxFuel);
 
         if (isEquipped)
         {
             SetLightState(true, isRaised ? raisedIntensity : defaultIntensity, isRaised ? raisedRange : defaultRange);
-            UpdatePlayerStatus();
 
             if (currentLanternVFXHolder != null && lanternVFXGraph != null)
             {
                 currentLanternVFXHolder.SetActive(true);
                 lanternVFXGraph.Play();
-                if (isRaised)
-                {
-                    lanternVFXGraph.SetVector2(flameSizeRangePropertyName, raisedFlameSize);
-                }
-                else
-                {
-                    lanternVFXGraph.SetVector2(flameSizeRangePropertyName, defaultFlameSize);
-                }
+                lanternVFXGraph.SetVector2(flameSizeRangePropertyName, isRaised ? raisedFlameSize : defaultFlameSize);
             }
 
             if (playerStatus != null) playerStatus.IsLanternRaised = isRaised;
@@ -529,30 +459,46 @@ public class LanternController : MonoBehaviour
 
             StartGasBurnLoop();
         }
+        UpdatePlayerStatus();
     }
 
     void SetLightState(bool enabled, float intensity = 0, float range = 0)
     {
-        if (lanternLight == null) return;
-        lanternLight.enabled = enabled;
+        if (lanternLights == null || lanternLights.Length == 0) return;
+
         IsLightOn = enabled; // Update IsLightOn status
-        if (enabled)
+
+        foreach (Light light in lanternLights)
         {
-            if (lightFlicker != null)
+            if (light == null) continue; // Skip if a light in the array is null
+
+            light.enabled = enabled;
+            LightFlicker flicker = light.GetComponent<LightFlicker>();
+
+            if (enabled)
             {
-                lightFlicker.enabled = true;
-                lightFlicker.SetBaseValues(intensity, range);
+                if (flicker != null && flicker.enabled)
+                {
+                    // If flicker is active (e.g., from Nixie), let it control the light.
+                    // Just ensure its base values are updated.
+                    flicker.SetBaseValues(intensity, range);
+                }
+                else
+                {
+                    // If no flicker, set values directly.
+                    light.intensity = intensity;
+                    if (light.type == LightType.Point || light.type == LightType.Spot)
+                    {
+                        light.range = range;
+                    }
+                }
             }
             else
             {
-                lanternLight.intensity = intensity;
-                lanternLight.range = range;
+                // When turning off, always disable flicker and zero out intensity.
+                if (flicker != null) flicker.enabled = false;
+                light.intensity = 0;
             }
-        }
-        else
-        {
-            if (lightFlicker != null) lightFlicker.enabled = false;
-            lanternLight.intensity = 0; // Ensure intensity is zero when disabled
         }
     }
 
@@ -586,21 +532,25 @@ public class LanternController : MonoBehaviour
     /// </summary>
     private void HandleNixieChaseStart()
     {
-        // Don't do anything if we don't have a flicker script or if it's already active
-        if (lightFlicker == null || _isNixieFlickerActive) return;
-
-        Debug.Log("Nixie chase started! Increasing lantern flicker.");
+        if (_isNixieFlickerActive || lanternLights == null) return;
         _isNixieFlickerActive = true;
+        _originalFlickerValues.Clear(); // Clear old values
 
-        // Store original values so we can restore them later
-        _originalFlickerSpeed = lightFlicker.flickerSpeed;
-        _originalMinIntensity = lightFlicker.minIntensityMultiplier;
-        _originalMaxIntensity = lightFlicker.maxIntensityMultiplier;
+        foreach (var light in lanternLights)
+        {
+            LightFlicker flicker = light.GetComponent<LightFlicker>();
+            if (flicker != null)
+            {
+                flicker.enabled = true; // Ensure flicker is on
+                // Store original values
+                _originalFlickerValues[flicker] = (flicker.flickerSpeed, flicker.minIntensityMultiplier, flicker.maxIntensityMultiplier);
 
-        // Apply intense, panicked flicker values
-        lightFlicker.flickerSpeed = nixieFlickerSpeed;
-        lightFlicker.minIntensityMultiplier = nixieFlickerMinIntensity;
-        lightFlicker.maxIntensityMultiplier = nixieFlickerMaxIntensity;
+                // Apply panicked flicker values
+                flicker.flickerSpeed = nixieFlickerSpeed;
+                flicker.minIntensityMultiplier = nixieFlickerMinIntensity;
+                flicker.maxIntensityMultiplier = nixieFlickerMaxIntensity;
+            }
+        }
     }
 
     /// <summary>
@@ -608,32 +558,23 @@ public class LanternController : MonoBehaviour
     /// </summary>
     private void HandleNixieChaseEnd()
     {
-        // Don't do anything if we don't have a flicker script or if it isn't active
-        if (lightFlicker == null || !_isNixieFlickerActive) return;
-
-        Debug.Log("Nixie chase ended. Restoring normal lantern flicker.");
+        if (!_isNixieFlickerActive) return;
         _isNixieFlickerActive = false;
 
-        // Restore the original flicker values
-        lightFlicker.flickerSpeed = _originalFlickerSpeed;
-        lightFlicker.minIntensityMultiplier = _originalMinIntensity;
-        lightFlicker.maxIntensityMultiplier = _originalMaxIntensity;
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        Vector3 interactionCenter = lanternHandAnchor != null ? lanternHandAnchor.position : transform.position;
-
-        if (isRaised && isEquipped && !outOfFuel)
+        foreach (var flickerKvp in _originalFlickerValues)
         {
-            Gizmos.color = Color.red; // Hemanneken repel radius
-            Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
+            LightFlicker flicker = flickerKvp.Key;
+            var originalValues = flickerKvp.Value;
+
+            if (flicker != null)
+            {
+                // Restore original values
+                flicker.flickerSpeed = originalValues.speed;
+                flicker.minIntensityMultiplier = originalValues.min;
+                flicker.maxIntensityMultiplier = originalValues.max;
+            }
         }
-        else if (isEquipped)
-        {
-            Gizmos.color = Color.gray;
-            Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
-        }
+        _originalFlickerValues.Clear();
     }
     
     public void ApplyLoadedFuel(float fuelAmount)
@@ -652,7 +593,7 @@ public class LanternController : MonoBehaviour
             if (outOfFuel)
             {
                 // If we loaded and are now out of fuel, turn everything off
-                if (lanternLight != null) SetLightState(false);
+                if (lanternLights != null && lanternLights.Length > 0) SetLightState(false);
                 if (lanternVFXGraph != null) lanternVFXGraph.Stop();
                 if (currentLanternVFXHolder != null) currentLanternVFXHolder.SetActive(false);
                 StopGasBurnLoopSFX();
@@ -668,8 +609,24 @@ public class LanternController : MonoBehaviour
                     lanternVFXGraph.Play();
                     lanternVFXGraph.SetVector2(flameSizeRangePropertyName, isRaised ? raisedFlameSize : defaultFlameSize);
                 }
-                StartGasBurnLoop(); // This method already checks if it's running
+                StartGasBurnLoop();
             }
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Vector3 interactionCenter = lanternHandAnchor != null ? lanternHandAnchor.position : transform.position;
+
+        if (isRaised && isEquipped && !outOfFuel)
+        {
+            Gizmos.color = Color.red; // Hemanneken repel radius
+            Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
+        }
+        else if (isEquipped)
+        {
+            Gizmos.color = Color.gray;
+            Gizmos.DrawWireSphere(interactionCenter, hemannekenRepelRadius);
         }
     }
 }
