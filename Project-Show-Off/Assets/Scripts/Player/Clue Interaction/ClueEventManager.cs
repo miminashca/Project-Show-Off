@@ -10,6 +10,7 @@ public class ClueEventManager : MonoBehaviour
 
     private HashSet<string> collectedClueIDs = new HashSet<string>();
     private HashSet<string> submittedClueIDs = new HashSet<string>();
+    int numberOfCluesCollectedOverall = 0;
 
     public event Action OnClueCollected; // Event for when a specific clue is collected
     public event Action<string> OnClueCollectedWithId; // Event for when a specific clue is collected
@@ -45,9 +46,11 @@ public class ClueEventManager : MonoBehaviour
 
         if (collectedClueIDs.Add(clueID)) // .Add returns true if the item was new
         {
+            numberOfCluesCollectedOverall++;
+
             Debug.Log($"Clue Event Manager: Clue '{clueID}' registered. Total clues: {collectedClueIDs.Count}");
             OnClueCollectedWithId?.Invoke(clueID);
-            OnClueCollectedAmount?.Invoke(collectedClueIDs.Count);
+            OnClueCollectedAmount?.Invoke(numberOfCluesCollectedOverall);
             OnClueCollected?.Invoke();
             OnClueCountChanged?.Invoke(collectedClueIDs.Count);
 
