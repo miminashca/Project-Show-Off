@@ -10,6 +10,7 @@ public class ClueEventManager : MonoBehaviour
 
     private HashSet<string> collectedClueIDs = new HashSet<string>();
     private HashSet<string> submittedClueIDs = new HashSet<string>();
+    int numberOfCluesCollectedOverall = 0;
 
     public event Action OnClueCollected; // Event for when a specific clue is collected
     public event Action<string> OnClueCollectedWithId; // Event for when a specific clue is collected
@@ -18,10 +19,10 @@ public class ClueEventManager : MonoBehaviour
     public event Action<string> OnClueSubmittedWithId; // Event for when a specific clue is submitted
     public event Action<int> OnClueCountChanged; // Event for when the total count of collected clues changes
     public event Action OnFuelPickedUp; // Event for when the total count of collected clues changes
-
-
+    
+    
     public event Action OnGameDataLoaded; // This event signals that the save data is ready.
-
+    
     void Awake()
     {
         if (Instance == null)
@@ -45,9 +46,11 @@ public class ClueEventManager : MonoBehaviour
 
         if (collectedClueIDs.Add(clueID)) // .Add returns true if the item was new
         {
+            numberOfCluesCollectedOverall++;
+
             Debug.Log($"Clue Event Manager: Clue '{clueID}' registered. Total clues: {collectedClueIDs.Count}");
             OnClueCollectedWithId?.Invoke(clueID);
-            OnClueCollectedAmount?.Invoke(collectedClueIDs.Count);
+            OnClueCollectedAmount?.Invoke(numberOfCluesCollectedOverall);
             OnClueCollected?.Invoke();
             OnClueCountChanged?.Invoke(collectedClueIDs.Count);
 
@@ -111,13 +114,13 @@ public class ClueEventManager : MonoBehaviour
     {
         OnFuelPickedUp?.Invoke();
     }
-
+    
     public void LoadClues(List<string> loadedCollected, List<string> loadedSubmitted)
     {
         collectedClueIDs = loadedCollected != null ? new HashSet<string>(loadedCollected) : new HashSet<string>();
         submittedClueIDs = loadedSubmitted != null ? new HashSet<string>(loadedSubmitted) : new HashSet<string>();
         Debug.Log($"Loaded {collectedClueIDs.Count} collected clues and {submittedClueIDs.Count} submitted clues.");
-
+        
         // This is fine for UI counters that need an immediate update
         OnClueCountChanged?.Invoke(collectedClueIDs.Count);
 
@@ -135,8 +138,8 @@ public class ClueEventManager : MonoBehaviour
     {
         return submittedClueIDs.ToList();
     }
-
-
+    
+    
     // Example of how another script might subscribe:
     // void OnEnable() { ClueEventManager.Instance.OnClueCountChanged += HandleClueCountChanged; }
     // void OnDisable() { ClueEventManager.Instance.OnClueCountChanged -= HandleClueCountChanged; }
