@@ -18,10 +18,10 @@ public class ClueEventManager : MonoBehaviour
     public event Action<string> OnClueSubmittedWithId; // Event for when a specific clue is submitted
     public event Action<int> OnClueCountChanged; // Event for when the total count of collected clues changes
     public event Action OnFuelPickedUp; // Event for when the total count of collected clues changes
-    
-    
+
+
     public event Action OnGameDataLoaded; // This event signals that the save data is ready.
-    
+
     void Awake()
     {
         if (Instance == null)
@@ -111,13 +111,13 @@ public class ClueEventManager : MonoBehaviour
     {
         OnFuelPickedUp?.Invoke();
     }
-    
+
     public void LoadClues(List<string> loadedCollected, List<string> loadedSubmitted)
     {
         collectedClueIDs = loadedCollected != null ? new HashSet<string>(loadedCollected) : new HashSet<string>();
         submittedClueIDs = loadedSubmitted != null ? new HashSet<string>(loadedSubmitted) : new HashSet<string>();
         Debug.Log($"Loaded {collectedClueIDs.Count} collected clues and {submittedClueIDs.Count} submitted clues.");
-        
+
         // This is fine for UI counters that need an immediate update
         OnClueCountChanged?.Invoke(collectedClueIDs.Count);
 
@@ -135,8 +135,8 @@ public class ClueEventManager : MonoBehaviour
     {
         return submittedClueIDs.ToList();
     }
-    
-    
+
+
     // Example of how another script might subscribe:
     // void OnEnable() { ClueEventManager.Instance.OnClueCountChanged += HandleClueCountChanged; }
     // void OnDisable() { ClueEventManager.Instance.OnClueCountChanged -= HandleClueCountChanged; }
