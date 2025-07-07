@@ -49,7 +49,6 @@ public class FeedbackController : MonoBehaviour
     private Vignette _vignette;
     private FilmGrain _filmGrain;
     private ColorAdjustments _colorAdjustments;
-    private LensDistortion _lensDistortion;
     private ChromaticAberration _chromaticAberration;
 
     // --- Original Post-Processing Values ---
@@ -57,7 +56,6 @@ public class FeedbackController : MonoBehaviour
     private float _originalFilmGrainIntensity;
     private float _originalContrast;
     private float _originalSaturation;
-    private float _originalLensDistortionIntensity;
     private float _originalChromaticAberrationIntensity;
 
     private void Start()
@@ -235,7 +233,6 @@ public class FeedbackController : MonoBehaviour
         ladyPostProcessingVolume.profile.TryGet(out _vignette);
         ladyPostProcessingVolume.profile.TryGet(out _filmGrain);
         ladyPostProcessingVolume.profile.TryGet(out _colorAdjustments);
-        ladyPostProcessingVolume.profile.TryGet(out _lensDistortion);
         ladyPostProcessingVolume.profile.TryGet(out _chromaticAberration);
 
         // Store the default values so we can return to them
@@ -246,7 +243,6 @@ public class FeedbackController : MonoBehaviour
             _originalContrast = _colorAdjustments.contrast.value;
             _originalSaturation = _colorAdjustments.saturation.value;
         }
-        if (_lensDistortion != null) _originalLensDistortionIntensity = _lensDistortion.intensity.value;
         if (_chromaticAberration != null) _originalChromaticAberrationIntensity = _chromaticAberration.intensity.value;
     }
 
@@ -269,7 +265,6 @@ public class FeedbackController : MonoBehaviour
             _vignette.active = true;
             _filmGrain.active = true;
             _colorAdjustments.active = true;
-            _lensDistortion.active = true;
             _chromaticAberration.active = true;
         }
 
@@ -277,7 +272,6 @@ public class FeedbackController : MonoBehaviour
         float startGrain = _filmGrain.intensity.value;
         float startContrast = _colorAdjustments.contrast.value;
         float startSaturation = _colorAdjustments.saturation.value;
-        float startLensDistortion = _lensDistortion.intensity.value;
         float startChromaticAberration = _chromaticAberration.intensity.value;
 
         float endVignette = activate ? targetVignetteIntensity : _originalVignetteIntensity;

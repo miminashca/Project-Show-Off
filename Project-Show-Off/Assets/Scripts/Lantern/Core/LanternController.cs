@@ -31,6 +31,14 @@ public class LanternController : MonoBehaviour
     public float raisedRange = 15f;
     public Color lightColor = Color.yellow;
 
+    [Header("Subtle Flicker Settings")]
+    [Tooltip("The default, subtle flicker speed when the lantern is on.")]
+    public float defaultFlickerSpeed = 2f;
+    [Tooltip("The MINIMUM intensity multiplier for the default, subtle flicker.")]
+    public float defaultFlickerMinIntensity = 0.9f;
+    [Tooltip("The MAXIMUM intensity multiplier for the default, subtle flicker.")]
+    public float defaultFlickerMaxIntensity = 1.1f;
+
     [Header("Fuel System")]
     public float maxFuel = 100f;
     public float currentFuel;
@@ -477,27 +485,35 @@ public class LanternController : MonoBehaviour
 
             if (enabled)
             {
-                if (flicker != null && flicker.enabled)
+                if (flicker != null)
                 {
-                    // If flicker is active (e.g., from Nixie), let it control the light.
-                    // Just ensure its base values are updated.
+                    flicker.enabled = true; // Always enable flicker when the light is on.
                     flicker.SetBaseValues(intensity, range);
-                }
-                else
-                {
-                    // If no flicker, set values directly.
-                    light.intensity = intensity;
-                    if (light.type == LightType.Point || light.type == LightType.Spot)
+
+                    // Check if Nixie flicker is active and apply the correct parameters.
+                    if (_isNixieFlickerActive)
                     {
-                        light.range = range;
+                        flicker.UpdateFlickerParameters(nixieFlickerSpeed, nixieFlickerMinIntensity, nixieFlickerMaxIntensity);
+                    }
+                    else
+                    {
+                        // Apply the default, subtle flicker parameters.
+                        flicker.UpdateFlickerParameters(defaultFlickerSpeed, defaultFlickerMinIntensity, defaultFlickerMaxIntensity);
                     }
                 }
+                else // Failsafe if flicker script is missing
+                {
+                    light.intensity = intensity;
+                    light.range = range;
+                }
             }
-            else
+            else // When turning the light OFF
             {
-                // When turning off, always disable flicker and zero out intensity.
-                if (flicker != null) flicker.enabled = false;
-                light.intensity = 0;
+                if (flicker != null)
+                {
+                    flicker.enabled = false; // Disable the flicker script entirely.
+                }
+                light.intensity = 0; // Ensure intensity is zero.
             }
         }
     }
@@ -534,21 +550,14 @@ public class LanternController : MonoBehaviour
     {
         if (_isNixieFlickerActive || lanternLights == null) return;
         _isNixieFlickerActive = true;
-        _originalFlickerValues.Clear(); // Clear old values
 
+        // Loop through all lights and command them to use the intense flicker values.
         foreach (var light in lanternLights)
         {
             LightFlicker flicker = light.GetComponent<LightFlicker>();
-            if (flicker != null)
+            if (flicker != null && flicker.enabled) // Only update if it's on
             {
-                flicker.enabled = true; // Ensure flicker is on
-                // Store original values
-                _originalFlickerValues[flicker] = (flicker.flickerSpeed, flicker.minIntensityMultiplier, flicker.maxIntensityMultiplier);
-
-                // Apply panicked flicker values
-                flicker.flickerSpeed = nixieFlickerSpeed;
-                flicker.minIntensityMultiplier = nixieFlickerMinIntensity;
-                flicker.maxIntensityMultiplier = nixieFlickerMaxIntensity;
+                flicker.UpdateFlickerParameters(nixieFlickerSpeed, nixieFlickerMinIntensity, nixieFlickerMaxIntensity);
             }
         }
     }
@@ -561,22 +570,17 @@ public class LanternController : MonoBehaviour
         if (!_isNixieFlickerActive) return;
         _isNixieFlickerActive = false;
 
-        foreach (var flickerKvp in _originalFlickerValues)
+        // Loop through all lights and command them to revert to the subtle flicker values.
+        foreach (var light in lanternLights)
         {
-            LightFlicker flicker = flickerKvp.Key;
-            var originalValues = flickerKvp.Value;
-
-            if (flicker != null)
+            LightFlicker flicker = light.GetComponent<LightFlicker>();
+            if (flicker != null && flicker.enabled) // Only update if it's on
             {
-                // Restore original values
-                flicker.flickerSpeed = originalValues.speed;
-                flicker.minIntensityMultiplier = originalValues.min;
-                flicker.maxIntensityMultiplier = originalValues.max;
+                flicker.UpdateFlickerParameters(defaultFlickerSpeed, defaultFlickerMinIntensity, defaultFlickerMaxIntensity);
             }
         }
-        _originalFlickerValues.Clear();
     }
-    
+
     public void ApplyLoadedFuel(float fuelAmount)
     {
         currentFuel = Mathf.Clamp(fuelAmount, 0f, maxFuel);

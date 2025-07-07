@@ -3,19 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(Light))]
 public class LightFlicker : MonoBehaviour
 {
-    [Header("Flicker Settings")]
-    [Tooltip("Minimum multiplier for base intensity")]
-    public float minIntensityMultiplier = 0.8f;
-    [Tooltip("Maximum multiplier for base intensity")]
-    public float maxIntensityMultiplier = 1.2f;
-
-    [Tooltip("Minimum multiplier for base range")]
-    public float minRangeMultiplier = 0.9f;
-    [Tooltip("Maximum multiplier for base range")]
-    public float maxRangeMultiplier = 1.1f;
-
-    [Tooltip("How fast the flickering noise changes")]
-    public float flickerSpeed = 5f;
+    private float _currentMinIntensityMultiplier = 0.95f;
+    private float _currentMaxIntensityMultiplier = 1.05f;
+    private float _currentMinRangeMultiplier = 0.98f;
+    private float _currentMaxRangeMultiplier = 1.02f;
+    private float _currentFlickerSpeed = 1f;
 
     // Internal State
     private Light targetLight;
@@ -26,37 +18,41 @@ public class LightFlicker : MonoBehaviour
     void Awake()
     {
         targetLight = GetComponent<Light>();
-        // Initialize base values from the light's current settings
-        // These will be overwritten by LanternController::SetLightState
-        baseIntensity = targetLight.intensity;
-        baseRange = targetLight.range;
-        // Add a random offset to the time used in Perlin noise
         randomOffset = Random.Range(0f, 1000f);
     }
 
-    // Call this from LanternController when changing light states
+    /// <summary>
+    /// Sets the base intensity and range the flicker will modulate.
+    /// Called by LanternController when the light state (e.g., raised/lowered) changes.
+    /// </summary>
     public void SetBaseValues(float intensity, float range)
     {
         baseIntensity = intensity;
         baseRange = range;
-        // Make sure the light component has roughly correct starting values
-        // though the Update loop will quickly take over.
-        targetLight.intensity = intensity;
-        targetLight.range = range;
     }
 
 
+    /// <summary>
+    /// Updates the parameters that control the flicker's behavior (speed, intensity).
+    /// Called by LanternController for subtle flicker or intense Nixie flicker.
+    /// </summary>
+    public void UpdateFlickerParameters(float speed, float minIntensity, float maxIntensity)
+    {
+        _currentFlickerSpeed = speed;
+        _currentMinIntensityMultiplier = minIntensity;
+        _currentMaxIntensityMultiplier = maxIntensity;
+        // You could also add min/max range here if you want Nixies to affect range too
+    }
+
     void Update()
     {
-        if (baseIntensity <= 0) return; // Don't flicker if base intensity is zero (light off)
+        if (baseIntensity <= 0 || !targetLight.enabled) return;
 
-        // Use Perlin noise for smoother, more natural flickering
-        float timeInput = (Time.time + randomOffset) * flickerSpeed;
-        float intensityNoise = Mathf.PerlinNoise(timeInput, timeInput * 0.3f); // 2D noise for more variation
-        float rangeNoise = Mathf.PerlinNoise(timeInput * 0.7f, timeInput);    // Use slightly different inputs
+        float timeInput = (Time.time + randomOffset) * _currentFlickerSpeed;
+        float intensityNoise = Mathf.PerlinNoise(timeInput, timeInput * 0.3f);
+        float rangeNoise = Mathf.PerlinNoise(timeInput * 0.7f, timeInput);
 
-        // Map noise (0-1 range) to our desired multiplier range
-        targetLight.intensity = baseIntensity * Mathf.Lerp(minIntensityMultiplier, maxIntensityMultiplier, intensityNoise);
-        targetLight.range = baseRange * Mathf.Lerp(minRangeMultiplier, maxRangeMultiplier, rangeNoise);
+        targetLight.intensity = baseIntensity * Mathf.Lerp(_currentMinIntensityMultiplier, _currentMaxIntensityMultiplier, intensityNoise);
+        targetLight.range = baseRange * Mathf.Lerp(_currentMinRangeMultiplier, _currentMaxRangeMultiplier, rangeNoise);
     }
 }
