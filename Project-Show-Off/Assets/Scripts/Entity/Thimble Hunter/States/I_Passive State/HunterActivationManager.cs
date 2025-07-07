@@ -28,7 +28,7 @@ public class HunterActivationManager : MonoBehaviour
         // Subscribe to the clue event manager. This is for the *first time* activation.
         if (ClueEventManager.Instance != null)
         {
-            ClueEventManager.Instance.OnClueCollectedAmount += HandleClueCountChanged;
+            ClueEventManager.Instance.OnClueCountChanged += HandleClueCountChanged;
         }
         else
         {
@@ -41,7 +41,7 @@ public class HunterActivationManager : MonoBehaviour
         // Always unsubscribe to prevent errors.
         if (ClueEventManager.Instance != null)
         {
-            ClueEventManager.Instance.OnClueCollectedAmount -= HandleClueCountChanged;
+            ClueEventManager.Instance.OnClueCountChanged -= HandleClueCountChanged;
         }
     }
 
