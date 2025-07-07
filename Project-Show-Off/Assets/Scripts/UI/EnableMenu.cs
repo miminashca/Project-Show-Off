@@ -16,7 +16,7 @@ public class EnableMenu : MonoBehaviour
     private void DisableLoadingCanvas()
     {
         
-       loadingCanvas.enabled = false;
+       if(loadingCanvas) loadingCanvas.enabled = false;
         
     }
 
