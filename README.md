@@ -53,38 +53,38 @@ Audio is deeply integrated with gameplay logic via FMOD Studio:
 This game was brought to life by a multidisciplinary team of 7 students.
 
 * **[Nichita Cebotari (Lead Architectural & AI Engineer)](https://linktr.ee/nikkicheb)**
-    * Designed core code architecture and managed Git control (merging, QA, refactoring).
-    * Developed the **Thimble Hunter AI** (FSM, Volumetric LoS) and **Nixie AI** (Underwater NavMesh navigation).
-    * Programmed Player Controller and Entity-Environment interactions.
-    * Co-developed the Lantern physics system.
+  * Designed core code architecture and managed Git control (merging, QA, refactoring).
+  * Developed the **Thimble Hunter AI** (FSM, Volumetric LoS) and **Nixie AI** (Underwater NavMesh navigation).
+  * Programmed Player Controller and Entity-Environment interactions.
+  * Co-developed the Lantern physics system.
 
 * **[Svitlana Sosnova (Gameplay Mechanics Engineer)](https://linktr.ee/miminashca?ltsid=7c9b94a2-6f6e-431a-937d-a78485047df2)**
-    * Developed the **Hemanneken AI** and **White Lady AI** (including the magnetic gaze mechanic).
-    * Built the Save/Load system and Event Systems.
-    * Polished Lantern physics and mechanics.
+  * Developed the **Hemanneken AI** and **White Lady AI** (including the magnetic gaze mechanic).
+  * Built the Save/Load system and Event Systems.
+  * Polished Lantern physics and mechanics.
 
 * **[Bogdan Pascari (UI/UX Designer)](https://pascaribogdan.journoportfolio.com/)**
-    * Fully developed the HUD, responsive UI elements, and tutorial systems.
-    * Co-developed Save/Reload logic connecting back-end systems to the UI.
-    * Contributed to Level and Environment Design.
+  * Fully developed the HUD, responsive UI elements, and tutorial systems.
+  * Co-developed Save/Reload logic connecting back-end systems to the UI.
+  * Contributed to Level and Environment Design.
 
 * **[Simeon Dorne (Sound Designer)](https://simeondorne.com/)**
-    * Recorded and edited audio in Ableton Live; defined behaviors in FMOD Studio.
-    * Wrote C# scripts to connect game logic (Stamina, Health, Zones) to FMOD parameters.
-    * Created adaptive ambience that reacts to Zones and underwater states.
+  * Recorded and edited audio in Ableton Live; defined behaviors in FMOD Studio.
+  * Wrote C# scripts to connect game logic (Stamina, Health, Zones) to FMOD parameters.
+  * Created adaptive ambience that reacts to Zones and underwater states.
 
 * **[Catalin Apostol (3D Artist - Foliage/Creatures)](https://cata1029.artstation.com)**
-    * Modeled and textured the **Nixie** and **White Lady**.
-    * Created all foliage assets using Speedtree.
-    * Collaborated on concept art and creature design.
+  * Modeled and textured the **Nixie** and **White Lady**.
+  * Created all foliage assets using Speedtree.
+  * Collaborated on concept art and creature design.
 
 * **[Mariia Nechepurenko (Technical Artist)](https://www.artstation.com/mariianechepurenko)**
-    * Responsible for Shaders (Swamp water, Fireflies) and VFX (Muzzle flashes).
-    * Modeled the Lantern components and environmental props/landmarks.
+  * Responsible for Shaders (Swamp water, Fireflies) and VFX (Muzzle flashes).
+  * Modeled the Lantern components and environmental props/landmarks.
 
 * **[Stefani Badzheva (Character Animation Artist)](https://stefanibadzheva.artstation.com/)**
-    * Modeled, textured, and rigged the **Thimble Hunter** and **Rabbits**.
-    * Responsible for rigging and in-game cinematics.
+  * Modeled, textured, and rigged the **Thimble Hunter** and **Rabbits**.
+  * Responsible for rigging and in-game cinematics.
 
 ---
 
@@ -102,14 +102,19 @@ This game was brought to life by a multidisciplinary team of 7 students.
 ---
 
 ## >_ Installation / How to Run
+1.  Clone the repository:
 
-1.  Clone the repository:
-    ```bash
-    git clone [https://github.com/miminashca/Project-Show-Off.git](https://github.com/miminashca/Project-Show-Off.git)
-    ```
-2.  Open the project in **Unity 6 (HDRP)**.
-3.  Ensure **FMOD** is correctly linked (if applicable for the repo version).
-4.  Open `Assets/Scenes/MainMenu.unity` and press Play.
+    ```bash
+
+    git clone [https://github.com/miminashca/Project-Show-Off.git](https://github.com/miminashca/Project-Show-Off.git)
+
+    ```
+
+2.  Open the project in **Unity 6 (HDRP)**.
+
+3.  Ensure **FMOD** is correctly linked (if applicable for the repo version).
+
+4.  Open `Assets/Scenes/MainMenu.unity` and press Play.
 
 ---
 
